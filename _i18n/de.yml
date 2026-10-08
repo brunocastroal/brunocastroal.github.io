@@ -1,0 +1,66 @@
+# ==============================================================================
+# WEBSEITE-ÜBERSETZUNGEN — DEUTSCH (DE)
+# ==============================================================================
+
+nav_home: "Startseite"
+nav_research: "Forschung"
+nav_teaching: "Lehre"
+nav_projects: "Projekte"
+nav_blog: "Blog"
+nav_cv: "Lebenslauf"
+nav_about: "Über mich"
+nav_publications: "Publikationen"
+cv_download_btn: "↓ Lebenslauf herunterladen (PDF)"
+
+search_title: "Suche"
+search_placeholder: "Beiträge, Publikationen, Projekte suchen..."
+search_no_results: "Keine Ergebnisse gefunden."
+search_tip: "ESC drücken zum Schließen oder tippen zum Suchen."
+theme_toggle: "Hell-/Dunkelmodus umschalten"
+
+recent_posts: "Neueste Beiträge"
+view_all_posts: "Alle Beiträge anzeigen"
+reading_time: "Min. Lesezeit"
+read_more: "Beitrag lesen"
+read_online: "Online lesen"
+
+cite: "Zitieren"
+copy: "Kopieren"
+copied: "Kopiert!"
+download_bib: ".bib herunterladen"
+close: "Schließen"
+abstract: "Zusammenfassung"
+code: "Code"
+data: "Daten"
+replication: "Replikation"
+pdf: "PDF"
+doi: "DOI"
+
+all: "Alle"
+filter_by_year: "Jahr"
+filter_by_category: "Kategorie"
+
+research_agenda: "Forschungsagenda"
+research_projects: "Forschungsprojekte"
+selected_publications: "Ausgewählte Publikationen"
+view_all_pubs: "Alle Publikationen anzeigen"
+all_publications: "Publikationen & Working Papers"
+
+pub_journal_articles: "Zeitschriftenartikel"
+pub_conference_papers: "Konferenzbeiträge"
+pub_working_papers: "Arbeitspapiere (Working Papers)"
+pub_work_in_progress: "In Vorbereitung"
+pub_monographs: "Abschlussarbeiten & Monografien"
+pub_other: "Sonstige Arbeiten"
+
+teaching_courses: "Lehrveranstaltungen"
+teaching_assistant: "Lehrassistenz & Tutoriate"
+syllabus: "Lehrplan"
+materials: "Lehrmaterialien"
+
+cv_education: "Ausbildung"
+cv_experience: "Akademische Erfahrung & Lehre"
+cv_skills: "Fähigkeiten & Werkzeuge"
+cv_languages: "Sprachen"
+related_projects: "Verwandte Projekte"
+footer_static_note: "Persönliche akademische Webseite von Bruno Castro Alves."

@@ -1,0 +1,188 @@
+[
+  {
+    "type": "blog",
+    "title": "Análise textual das atas do Copom: comunicação e política monetária",
+    "category": "Macroeconomia",
+    "tags": [
+      "Copom",
+      "Política Monetária",
+      "Text Mining",
+      "NLP"
+    ],
+    "date": "2026-10-03",
+    "url": "posts/2026-10-03-analise-textual-atas-copom.html",
+    "snippet": "Análise multidimensional das atas publicadas sobre as reuniões do Comitê de Política Monetária do Banco Central do Brasil, examinando sentimento, tom de comunicação e expectativas inflacionárias."
+  },
+  {
+    "type": "blog",
+    "title": "Machine learning na economia: por onde começar uma revisão bibliométrica?",
+    "category": "Ciência de Dados",
+    "tags": [
+      "Ciência de Dados",
+      "Bibliometria",
+      "Métodos Quantitativos",
+      "Machine Learning"
+    ],
+    "date": "2025-11-04",
+    "url": "posts/2025-11-04-machine-learning-economia.html",
+    "snippet": "Um guia metodológico e reflexão bibliométrica sobre a incorporação de técnicas de aprendizado de máquina na literatura econômica internacional e nacional."
+  },
+  {
+    "type": "blog",
+    "title": "Moeda, bancos e desempenho econômico dos municípios nordestinos",
+    "category": "Economia Regional",
+    "tags": [
+      "Macroeconomia",
+      "Economia Regional",
+      "Bancos",
+      "Desenvolvimento Regional"
+    ],
+    "date": "2024-08-15",
+    "url": "posts/2024-08-15-moeda-nordeste.html",
+    "snippet": "Notas de pesquisa investigando a preferência pela liquidez do sistema bancário e seus impactos no nível de atividade dos municípios do Nordeste brasileiro."
+  },
+  {
+    "type": "blog",
+    "title": "Economia solidária na prática: tecnologia simples e finanças populares no litoral do Piauí",
+    "category": "Economia Regional",
+    "tags": [
+      "Economia Solidária",
+      "Extensão Universitária",
+      "Desenvolvimento Regional",
+      "Tecnologia Social"
+    ],
+    "date": "2024-06-22",
+    "url": "posts/2024-06-22-economia-solidaria.html",
+    "snippet": "Relato analítico sobre o desenvolvimento de tecnologias sociais de gestão financeira com mais de 45 feirantes agroecológicas em Parnaíba (PI), abordando precificação justa e fundos rotativos."
+  },
+  {
+    "type": "publication",
+    "title": "TRENDS IN RESEARCH ON ECONOMIC GROWTH AND CLIMATE CHANGE",
+    "category": "Mercator (Fortaleza)",
+    "tags": [
+      "Economic Growth",
+      "Climate Change",
+      "Bibliometrics",
+      "Sustainable Development",
+      "R"
+    ],
+    "date": "2026",
+    "url": "publications.html#gama-2026-economic-growth-climate-change",
+    "snippet": "The concept of sustainable development emerged in the 1970s as an alternative to uncontrolled economic growth. It gained relevance through the 1972 Club of Rome report, which highlighted the need for balancing economic growth, environmental protection, and social justice. Accordingly, the aims of the present study are to map the progress of the literature on the Economic Growth/Climate Change intersection based on the bibliometric analysis of 5919 documents selected in the Scopus and Web of Science databases (1978-2024) in the R software. Based on the results, there was yearly growth by 13.77% in scientific production. China was the leader in number of publications, and it was followed by the United States and the United Kingdom.\n"
+  },
+  {
+    "type": "publication",
+    "title": "Integração da Econometria Espacial nos Estudos em Economia Regional e Urbana: uma análise bibliométrica",
+    "category": "XXVIII Encontro de Economia da Região Sul (ANPEC Sul 2025) / XXII Encontro Nacional da ABER (BRSA 2024)",
+    "tags": [
+      "Econometria Espacial",
+      "Economia Regional",
+      "Economia Urbana",
+      "Bibliometria",
+      "Bibliometrix"
+    ],
+    "date": "2025",
+    "url": "publications.html#gama-2025-econometria-espacial-regional",
+    "snippet": "A econometria espacial constitui uma ferramenta indispensável para a análise de dados geograficamente referenciados, possibilitando a modelagem de fenômenos econômicos regionais e urbanos. Este estudo tem como objetivo investigar a integração progressiva dos métodos de econometria espacial nas pesquisas de ciência regional e urbana ao longo do tempo, visando compreender as tendências e evoluções nesse campo. Foi realizada uma análise detalhada de publicações acadêmicas no domínio da economia regional e urbana utilizando-se de métricas bibliométricas no pacote Bibliometrix (software R). A análise fundamenta-se em conjuntos de dados das bases Clarivate e Elsevier (1959 a 2024). Os resultados evidenciam um progresso significativo na aplicação da econometria espacial no contexto da análise econômica regional e urbana.\n"
+  },
+  {
+    "type": "publication",
+    "title": "Avanço da Ciência de Dados nos Estudos de Economia: uma análise bibliométrica do uso de machine learning",
+    "category": "31º Encontro Regional de Economia — ANPEC Nordeste",
+    "tags": [
+      "Ciência de Dados",
+      "Machine Learning",
+      "Economia",
+      "Bibliometria",
+      "Bibliometrix",
+      "ANPEC Nordeste"
+    ],
+    "date": "2023",
+    "url": "publications.html#azevedo-2023-machine-learning-economia",
+    "snippet": "O presente trabalho objetiva explorar os resultados de um mapeamento das pesquisas acadêmicas voltadas às Ciência de Dados nos estudos em Economia, com foco específico no uso de técnicas de machine learning. Busca identificar de que forma que a Ciência de Dados intercepta a economia e seus diversos eixos de atuação. Trata-se de uma pesquisa de cunho descritivo, em que foram realizadas análises bibliométricas por meio do pacote Bibliometrix do software R, de informações sobre produção acadêmica extraídas da base de dados da Scopus (SCP), tomando como recorte temporal o período de 2013 a 2023. Para a realização das análises foram utilizados os descritores 'machine' e 'learning', tendo sido encontrados 1.415 trabalhos. Com base nos resultados foi possível confirmar a forte evolução na publicação de trabalhos que versam sobre machine learning aplicados a economia ou fatores econômicos, assim como o mapeamento dos principais eixos de discussões sobre o tema e as respectivas redes de autoria.\n"
+  },
+  {
+    "type": "project",
+    "title": "Análise Textual da Comunicação do Banco Central do Brasil",
+    "category": "Ciência de Dados",
+    "tags": [
+      "Python",
+      "NLP",
+      "spaCy",
+      "Transformers",
+      "Pandas",
+      "Econometria de Séries Temporais"
+    ],
+    "date": "",
+    "url": "projects.html#copom-text-analysis",
+    "snippet": "Pipeline em Python para mineração de texto e processamento de linguagem natural (NLP) aplicado às atas e comunicados do Copom. Avalia-se empiricamente a transmissão do tom da autoridade monetária para a curva de juros (contratos de DI futuro) e expectativas inflacionárias.\n"
+  },
+  {
+    "type": "project",
+    "title": "Pipeline Bibliométrico e Mineração em Literatura Econômica",
+    "category": "Ciência de Dados",
+    "tags": [
+      "R",
+      "Python",
+      "bibliometrix",
+      "NetworkX",
+      "Scopus API"
+    ],
+    "date": "",
+    "url": "projects.html#bibliometria-ml-economia",
+    "snippet": "Conjunto de rotinas em R e Python para extração sistemática, limpeza e análise de redes de co-citação e co-ocorrência de termos de bases de dados acadêmicas (Scopus e Web of Science) sobre inteligência artificial e economia regional.\n"
+  },
+  {
+    "type": "project",
+    "title": "Modelagem Espacial da Liquidez Bancária e Dinâmica Municipal no Nordeste",
+    "category": "Pesquisa Aplicada",
+    "tags": [
+      "R",
+      "Econometria Espacial",
+      "spdep",
+      "Microdados ESTBAN",
+      "GeoDa"
+    ],
+    "date": "",
+    "url": "projects.html#liquidez-nordeste",
+    "snippet": "Modelagem de econometria espacial com microdados do ESTBAN/Banco Central para avaliar os impactos da retenção e preferência pela liquidez das agências bancárias comerciais sobre as disparidades de produto per capita entre os municípios nordestinos.\n"
+  },
+  {
+    "type": "project",
+    "title": "Tecnologia Social e Finanças de Proximidade em Feiras Agroecológicas",
+    "category": "Extensão Universitária",
+    "tags": [
+      "Tecnologia Social",
+      "Economia Solidária",
+      "Finanças Populares",
+      "Educação Financeira"
+    ],
+    "date": "",
+    "url": "projects.html#gestao-feiras-agroecologicas",
+    "snippet": "Desenvolvimento e aplicação prática de metodologia participativa de controle financeiro e formação de preço justo junto a mais de 45 agricultoras familiares e feirantes de 3 associações agroecológicas comunitárias no litoral piauiense (Parnaíba e região). Incluiu planilhas abertas de gestão de caixa e oficinas populares presenciais.\n"
+  },
+  {
+    "type": "teaching",
+    "title": "Macroeconomia I",
+    "category": "Ensino",
+    "tags": [
+      "ECO0203",
+      "2023.2 / 2025.1"
+    ],
+    "date": "2023.2 / 2025.1",
+    "url": "teaching.html#macroeconomia-i",
+    "snippet": "Fundamentos da contabilidade social, determinação do produto e emprego no curto prazo, modelo clássico, modelo keynesiano simples, equilíbrio conjunto IS-LM e introdução à economia aberta (Mundell-Fleming).\n"
+  },
+  {
+    "type": "teaching",
+    "title": "Macroeconomia II",
+    "category": "Ensino",
+    "tags": [
+      "ECO0204",
+      "2024.1"
+    ],
+    "date": "2024.1",
+    "url": "teaching.html#macroeconomia-ii",
+    "snippet": "Modelos de médio e longo prazo: Modelo de Oferta e Demanda Agregada (OA-DA), curva de Phillips, expectativas racionais, microfundamentos do consumo e teoria do crescimento neoclássico (Solow-Swan).\n"
+  }
+]

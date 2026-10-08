@@ -1,0 +1,93 @@
+# ==============================================================================
+# PUBLICAÇÕES CIENTÍFICAS E TRABALHOS ACADÊMICOS
+# 
+# Para adicionar uma nova publicação, copie um dos blocos abaixo e preencha.
+# O site irá organizar automaticamente as seções e gerar botões de Citação
+# nos formatos ABNT, BibTeX, APA, Chicago, IEEE e MLA.
+#
+# Categorias disponíveis (category):
+#   - journal_article     (Artigos em periódicos)
+#   - conference_paper    (Trabalhos em anais de congressos)
+#   - working_paper       (Working Papers / Textos para Discussão)
+#   - monograph           (Monografias / Dissertações / Teses)
+# ==============================================================================
+
+- id: "gama-2026-economic-growth-climate-change"
+  title: "TRENDS IN RESEARCH ON ECONOMIC GROWTH AND CLIMATE CHANGE"
+  authors:
+    - "Fabio Junior Clemente Gama"
+    - "Antonio Vinicius Pereira Melo"
+    - "Caio Oliveira Azevedo"
+    - "Kaylane Manuele Nunes Feitoza"
+    - "Suzana Quinet de Andrade Bastos"
+    - "Bruno Castro Alves"
+    - "Cleidson Ramos Santos"
+  year: 2026
+  category: "journal_article"
+  journal: "Mercator (Fortaleza)"
+  volume: "25"
+  pages: "e25006"
+  publisher: "Universidade Federal do Ceará"
+  doi: "10.4215/rm2026.e25006"
+  url: "https://www.scielo.br/j/mercator/a/Wggbqd3wZXDcDL5zZRYnVQt/?lang=en"
+  scholar: "https://scholar.google.com.py/scholar?oi=bibs&cluster=12971211432846941578&btnI=1&hl=es"
+  selected: true
+  abstract: >
+    The concept of sustainable development emerged in the 1970s as an alternative to uncontrolled economic growth. It gained relevance through the 1972 Club of Rome report, which highlighted the need for balancing economic growth, environmental protection, and social justice. Accordingly, the aims of the present study are to map the progress of the literature on the Economic Growth/Climate Change intersection based on the bibliometric analysis of 5919 documents selected in the Scopus and Web of Science databases (1978-2024) in the R software. Based on the results, there was yearly growth by 13.77% in scientific production. China was the leader in number of publications, and it was followed by the United States and the United Kingdom.
+  keywords:
+    - "Economic Growth"
+    - "Climate Change"
+    - "Bibliometrics"
+    - "Sustainable Development"
+    - "R"
+
+- id: "gama-2025-econometria-espacial-regional"
+  title: "Integração da Econometria Espacial nos Estudos em Economia Regional e Urbana: uma análise bibliométrica"
+  authors:
+    - "Fábio Júnior Clemente Gama"
+    - "Caio Oliveira Azevedo"
+    - "Bruno Castro Alves"
+    - "Ana Échilei Santiago do Nascimento"
+    - "Suzana Quinet de Andrade Bastos"
+  year: 2025
+  category: "conference_paper"
+  journal: "XXVIII Encontro de Economia da Região Sul (ANPEC Sul 2025) / XXII Encontro Nacional da ABER (BRSA 2024)"
+  publisher: "ANPEC / BRSA"
+  pdf: "https://brsa.org.br/wp-content/uploads/wpcf7-submissions/31785/identificado.pdf"
+  url: "https://scholar.google.com.py/scholar?oi=bibs&cluster=14768362309194346935&btnI=1&hl=es"
+  scholar: "https://scholar.google.com.py/scholar?oi=bibs&cluster=14768362309194346935&btnI=1&hl=es"
+  selected: true
+  abstract: >
+    A econometria espacial constitui uma ferramenta indispensável para a análise de dados geograficamente referenciados, possibilitando a modelagem de fenômenos econômicos regionais e urbanos. Este estudo tem como objetivo investigar a integração progressiva dos métodos de econometria espacial nas pesquisas de ciência regional e urbana ao longo do tempo, visando compreender as tendências e evoluções nesse campo. Foi realizada uma análise detalhada de publicações acadêmicas no domínio da economia regional e urbana utilizando-se de métricas bibliométricas no pacote Bibliometrix (software R). A análise fundamenta-se em conjuntos de dados das bases Clarivate e Elsevier (1959 a 2024). Os resultados evidenciam um progresso significativo na aplicação da econometria espacial no contexto da análise econômica regional e urbana.
+  keywords:
+    - "Econometria Espacial"
+    - "Economia Regional"
+    - "Economia Urbana"
+    - "Bibliometria"
+    - "Bibliometrix"
+
+- id: "azevedo-2023-machine-learning-economia"
+  title: "Avanço da Ciência de Dados nos Estudos de Economia: uma análise bibliométrica do uso de machine learning"
+  authors:
+    - "Caio Oliveira Azevedo"
+    - "Fábio Junior Clemente Gama"
+    - "Bruno Castro Alves"
+    - "Kaylane Manuele Nunes Feitoza"
+  year: 2023
+  volume: "31"
+  category: "conference_paper"
+  journal: "31º Encontro Regional de Economia — ANPEC Nordeste"
+  publisher: "ANPEC"
+  pdf: "https://www.anpec.org.br/nordeste/2023/submissao/arquivos_identificados/060-1927970dbd3dc9a41a96300c8beb88e6.pdf"
+  url: "https://scholar.google.com.br/scholar?oi=bibs&cluster=14799592502392225145&btnI=1&hl=pt-BR"
+  scholar: "https://scholar.google.com.br/scholar?oi=bibs&cluster=14799592502392225145&btnI=1&hl=pt-BR"
+  selected: true
+  abstract: >
+    O presente trabalho objetiva explorar os resultados de um mapeamento das pesquisas acadêmicas voltadas às Ciência de Dados nos estudos em Economia, com foco específico no uso de técnicas de machine learning. Busca identificar de que forma que a Ciência de Dados intercepta a economia e seus diversos eixos de atuação. Trata-se de uma pesquisa de cunho descritivo, em que foram realizadas análises bibliométricas por meio do pacote Bibliometrix do software R, de informações sobre produção acadêmica extraídas da base de dados da Scopus (SCP), tomando como recorte temporal o período de 2013 a 2023. Para a realização das análises foram utilizados os descritores 'machine' e 'learning', tendo sido encontrados 1.415 trabalhos. Com base nos resultados foi possível confirmar a forte evolução na publicação de trabalhos que versam sobre machine learning aplicados a economia ou fatores econômicos, assim como o mapeamento dos principais eixos de discussões sobre o tema e as respectivas redes de autoria.
+  keywords:
+    - "Ciência de Dados"
+    - "Machine Learning"
+    - "Economia"
+    - "Bibliometria"
+    - "Bibliometrix"
+    - "ANPEC Nordeste"

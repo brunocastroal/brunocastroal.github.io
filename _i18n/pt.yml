@@ -1,0 +1,66 @@
+# ==============================================================================
+# TRADUÇÕES DO SITE — PORTUGUÊS (PT)
+# ==============================================================================
+
+nav_home: "Início"
+nav_research: "Pesquisa"
+nav_teaching: "Ensino"
+nav_projects: "Projetos"
+nav_blog: "Blog"
+nav_cv: "CV"
+nav_about: "Sobre"
+nav_publications: "Publicações"
+cv_download_btn: "↓ Baixar CV (PDF)"
+
+search_title: "Busca"
+search_placeholder: "Buscar textos, publicações, projetos, disciplinas..."
+search_no_results: "Nenhum resultado encontrado."
+search_tip: "Pressione ESC para fechar ou digite para pesquisar."
+theme_toggle: "Alternar modo claro/escuro"
+
+recent_posts: "Últimos textos"
+view_all_posts: "Ver todos os textos"
+reading_time: "min de leitura"
+read_more: "Ler texto"
+read_online: "Ler online"
+
+cite: "Citar"
+copy: "Copiar"
+copied: "Copiado!"
+download_bib: "Baixar .bib"
+close: "Fechar"
+abstract: "Resumo"
+code: "Código"
+data: "Dados"
+replication: "Replicação"
+pdf: "PDF"
+doi: "DOI"
+
+all: "Todos"
+filter_by_year: "Ano"
+filter_by_category: "Categoria"
+
+research_agenda: "Agenda de Pesquisa"
+research_projects: "Projetos de Pesquisa"
+selected_publications: "Publicações selecionadas"
+view_all_pubs: "Ver todas as publicações"
+all_publications: "Publicações & Working Papers"
+
+pub_journal_articles: "Artigos em periódicos"
+pub_conference_papers: "Trabalhos em anais de congressos"
+pub_working_papers: "Working Papers"
+pub_work_in_progress: "Trabalhos em elaboração"
+pub_monographs: "Monografias e Trabalhos de Conclusão de Curso (TCC)"
+pub_other: "Outras publicações"
+
+teaching_courses: "Disciplinas"
+teaching_assistant: "Atividades de Monitoria Docente"
+syllabus: "Ementa"
+materials: "Materiais didáticos"
+
+cv_education: "Formação Acadêmica"
+cv_experience: "Experiência Acadêmica e Ensino"
+cv_skills: "Habilidades e Ferramentas"
+cv_languages: "Idiomas"
+related_projects: "Projetos relacionados"
+footer_static_note: "Página acadêmica pessoal de Bruno Castro Alves."

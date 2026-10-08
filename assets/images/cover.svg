@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 720" role="img" aria-labelledby="title desc">
+  <title id="title">Visual de economia regional e ciência de dados</title>
+  <desc id="desc">Composição abstrata com gráfico de barras, pontos, linhas e áreas geográficas.</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8fbfd"/>
+      <stop offset=".45" stop-color="#f5f8ef"/>
+      <stop offset="1" stop-color="#fdf7f2"/>
+    </linearGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M64 0H0v64" fill="none" stroke="#dbe3ea" stroke-width="1"/>
+    </pattern>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#344054" flood-opacity=".12"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="720" fill="url(#paper)"/>
+  <rect width="1600" height="720" fill="url(#grid)" opacity=".55"/>
+
+  <g opacity=".9">
+    <path d="M1114 106c84 20 142 67 183 135 49 81 57 184 12 257-45 74-144 118-256 106-102-11-183-68-222-147-38-76-34-166 10-235 50-79 151-139 273-116Z" fill="#eef2f7"/>
+    <path d="M1082 146c73 12 130 52 159 112 36 76 20 162-42 211-59 47-150 54-227 17-65-32-105-92-103-155 2-73 57-142 139-170 24-9 49-14 74-15Z" fill="#dfe9e5"/>
+    <path d="M1138 194c48 12 84 47 97 92 14 51-3 108-45 138-43 31-105 32-153 2-41-26-64-72-59-117 7-66 76-130 160-115Z" fill="#f4e4ca"/>
+    <path d="M1005 281c58 38 126 48 204 30" fill="none" stroke="#226a8f" stroke-width="5" stroke-linecap="round"/>
+    <path d="M984 362c98-18 177-3 237 44" fill="none" stroke="#a04668" stroke-width="5" stroke-linecap="round"/>
+    <path d="M1094 155c19 105 7 205-38 300" fill="none" stroke="#5f9c7b" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#soft)">
+    <rect x="124" y="106" width="600" height="430" rx="18" fill="#ffffff" opacity=".94"/>
+    <path d="M180 450c75-110 132-150 203-115 74 36 118 13 166-63 38-61 84-83 130-72" fill="none" stroke="#226a8f" stroke-width="12" stroke-linecap="round"/>
+    <path d="M180 398c55-45 102-60 151-31 43 25 87 21 133-15 65-50 119-56 179-17" fill="none" stroke="#a04668" stroke-width="8" stroke-linecap="round" opacity=".82"/>
+    <line x1="180" y1="468" x2="648" y2="468" stroke="#cad4df" stroke-width="3"/>
+    <line x1="180" y1="198" x2="180" y2="468" stroke="#cad4df" stroke-width="3"/>
+    <rect x="218" y="354" width="42" height="114" rx="10" fill="#d6a64a"/>
+    <rect x="292" y="306" width="42" height="162" rx="10" fill="#5f9c7b"/>
+    <rect x="366" y="270" width="42" height="198" rx="10" fill="#226a8f"/>
+    <rect x="440" y="322" width="42" height="146" rx="10" fill="#a04668"/>
+    <rect x="514" y="236" width="42" height="232" rx="10" fill="#374151"/>
+    <circle cx="246" cy="286" r="10" fill="#226a8f"/>
+    <circle cx="323" cy="248" r="10" fill="#a04668"/>
+    <circle cx="418" cy="204" r="10" fill="#5f9c7b"/>
+    <circle cx="566" cy="166" r="10" fill="#d6a64a"/>
+  </g>
+
+  <g opacity=".74">
+    <circle cx="818" cy="212" r="8" fill="#226a8f"/>
+    <circle cx="872" cy="294" r="8" fill="#a04668"/>
+    <circle cx="928" cy="248" r="8" fill="#5f9c7b"/>
+    <circle cx="790" cy="358" r="8" fill="#d6a64a"/>
+    <circle cx="884" cy="424" r="8" fill="#226a8f"/>
+    <circle cx="978" cy="384" r="8" fill="#a04668"/>
+    <path d="M818 212 872 294 928 248M872 294 790 358 884 424 978 384M928 248 978 384" fill="none" stroke="#8a96a8" stroke-width="3"/>
+  </g>
+
+  <g fill="#ffffff" opacity=".88" stroke="#d7dee8">
+    <rect x="1088" y="520" width="184" height="58" rx="14"/>
+    <rect x="1288" y="472" width="184" height="58" rx="14"/>
+    <rect x="856" y="520" width="184" height="58" rx="14"/>
+  </g>
+</svg>

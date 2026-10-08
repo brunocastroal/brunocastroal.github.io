@@ -1,0 +1,74 @@
+# ==============================================================================
+# CURRÍCULO ACADÊMICO
+#
+# Edite este arquivo para atualizar sua formação acadêmica, experiências docentes,
+# habilidades técnicas e idiomas. O site gerará automaticamente a página cv.html.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. FORMAÇÃO ACADÊMICA
+# ------------------------------------------------------------------------------
+education:
+  - period: "2020 — 2025"
+    degree: "Bacharelado em Ciências Econômicas"
+    degree_en: "Bachelor of Arts in Economics"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
+    institution_en: "Federal University of Delta do Parnaíba (UFDPar)"
+
+# ------------------------------------------------------------------------------
+# 2. EXPERIÊNCIA ACADÊMICA E ENSINO
+# ------------------------------------------------------------------------------
+experience:
+  - period: "2025.1"
+    role: "Monitor Bolsista de Macroeconomia I"
+    role_en: "Teaching Assistant for Macroeconomics I"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
+    institution_en: "Federal University of Delta do Parnaíba (UFDPar)"
+
+  - period: "2024.1"
+    role: "Monitor Bolsista de Macroeconomia II"
+    role_en: "Teaching Assistant for Macroeconomics II"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
+    institution_en: "Federal University of Delta do Parnaíba (UFDPar)"
+
+  - period: "2023.2 — 2024.1"
+    role: "Monitor Bolsista de Macroeconomia I"
+    role_en: "Teaching Assistant for Macroeconomics I"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
+    institution_en: "Federal University of Delta do Parnaíba (UFDPar)"
+
+  - period: "2022 — 2023"
+    role: "Presidente do Centro Acadêmico de Economia XIII de Agosto"
+    role_en: "President of the Economics Student Academic Center (CAECO)"
+    institution: "Representação Estudantil — UFDPar"
+    institution_en: "Student Body Representation — UFDPar"
+
+# ------------------------------------------------------------------------------
+# 3. HABILIDADES E FERRAMENTAS
+# ------------------------------------------------------------------------------
+skills:
+  - category: "Métodos Quantitativos"
+    category_en: "Quantitative Methods"
+    items: "Econometria Espacial, Análise Bibliométrica, Processamento de Linguagem Natural (NLP), Séries Temporais."
+
+  - category: "Linguagens e Softwares"
+    category_en: "Languages & Tools"
+    items: "Python (Pandas, spaCy, Transformers), R (tidyverse, bibliometrix, spdep), Stata, LaTeX."
+
+  - category: "Desenvolvimento e Controle de Versão"
+    category_en: "Development & Version Control"
+    items: "Git, GitHub, GitHub Pages, HTML5/CSS3."
+
+# ------------------------------------------------------------------------------
+# 4. IDIOMAS
+# ------------------------------------------------------------------------------
+languages:
+  - language: "Português"
+    language_en: "Portuguese"
+    level: "Nativo"
+    level_en: "Native"
+
+  - language: "Inglês"
+    language_en: "English"
+    level: "Intermediário / Leitura Acadêmica"
+    level_en: "Intermediate / Academic Reading"

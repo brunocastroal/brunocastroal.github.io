@@ -1,0 +1,66 @@
+# ==============================================================================
+# TRADUCCIONES DEL SITIO — ESPAÑOL (ES)
+# ==============================================================================
+
+nav_home: "Inicio"
+nav_research: "Investigación"
+nav_teaching: "Docencia"
+nav_projects: "Proyectos"
+nav_blog: "Blog"
+nav_cv: "CV"
+nav_about: "Sobre mí"
+nav_publications: "Publicaciones"
+cv_download_btn: "↓ Descargar CV (PDF)"
+
+search_title: "Búsqueda"
+search_placeholder: "Buscar textos, publicaciones, proyectos, materias..."
+search_no_results: "No se encontraron resultados."
+search_tip: "Presione ESC para cerrar o escriba para buscar."
+theme_toggle: "Cambiar tema claro/oscuro"
+
+recent_posts: "Últimos textos"
+view_all_posts: "Ver todos los textos"
+reading_time: "min de lectura"
+read_more: "Leer texto"
+read_online: "Leer en línea"
+
+cite: "Citar"
+copy: "Copiar"
+copied: "¡Copiado!"
+download_bib: "Descargar .bib"
+close: "Cerrar"
+abstract: "Resumen"
+code: "Código"
+data: "Datos"
+replication: "Replicación"
+pdf: "PDF"
+doi: "DOI"
+
+all: "Todos"
+filter_by_year: "Año"
+filter_by_category: "Categoría"
+
+research_agenda: "Agenda de Investigación"
+research_projects: "Proyectos de Investigación"
+selected_publications: "Publicaciones seleccionadas"
+view_all_pubs: "Ver todas las publicaciones"
+all_publications: "Publicaciones & Documentos de Trabajo"
+
+pub_journal_articles: "Artículos en revistas científicas"
+pub_conference_papers: "Trabajos en anales de congresos"
+pub_working_papers: "Documentos de trabajo (Working Papers)"
+pub_work_in_progress: "Trabajos en curso"
+pub_monographs: "Monografías y Trabajos de Grado (TCC)"
+pub_other: "Otras publicaciones"
+
+teaching_courses: "Materias"
+teaching_assistant: "Ayudantías de Docencia"
+syllabus: "Programa"
+materials: "Materiales didácticos"
+
+cv_education: "Educación"
+cv_experience: "Experiencia Académica y Docente"
+cv_skills: "Habilidades y Herramientas"
+cv_languages: "Idiomas"
+related_projects: "Proyectos relacionados"
+footer_static_note: "Página académica de Bruno Castro Alves."

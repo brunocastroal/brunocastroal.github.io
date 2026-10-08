@@ -1,0 +1,11 @@
+# ========================================================
+# ARQUIVO GERADO AUTOMATICAMENTE A PARTIR DE data/profile.yml
+# NAO EDITE ESTE ARQUIVO DIRETAMENTE!
+# Edite data/profile.yml e execute 'node build.js'
+# ========================================================
+title: "Bruno Castro Alves"
+email: "brunocastr0@usp.br"
+description: "Pesquisador em Economia (UFDPar/USP). Macroeconomia, Economia Monetária, Economia Regional e Ciência de Dados."
+baseurl: ""
+url: "https://brunocastroal.github.io"
+theme: jekyll-theme-cayman

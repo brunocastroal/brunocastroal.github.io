@@ -1,0 +1,67 @@
+[
+  {
+    "id": "copom-text-analysis",
+    "title": "Análise Textual da Comunicação do Banco Central do Brasil",
+    "status": "Em andamento",
+    "category": "Ciência de Dados",
+    "description": "Pipeline em Python para mineração de texto e processamento de linguagem natural (NLP) aplicado às atas e comunicados do Copom. Avalia-se empiricamente a transmissão do tom da autoridade monetária para a curva de juros (contratos de DI futuro) e expectativas inflacionárias.\n",
+    "technologies": [
+      "Python",
+      "NLP",
+      "spaCy",
+      "Transformers",
+      "Pandas",
+      "Econometria de Séries Temporais"
+    ],
+    "github": "https://github.com/brunocastroal/Copom_Text_Analysis",
+    "demo": "https://luanmugarte.github.io/Copom_Text_Analysis/",
+    "blog": "posts/2026-10-03-analise-textual-atas-copom.html"
+  },
+  {
+    "id": "bibliometria-ml-economia",
+    "title": "Pipeline Bibliométrico e Mineração em Literatura Econômica",
+    "status": "Concluído",
+    "category": "Ciência de Dados",
+    "description": "Conjunto de rotinas em R e Python para extração sistemática, limpeza e análise de redes de co-citação e co-ocorrência de termos de bases de dados acadêmicas (Scopus e Web of Science) sobre inteligência artificial e economia regional.\n",
+    "technologies": [
+      "R",
+      "Python",
+      "bibliometrix",
+      "NetworkX",
+      "Scopus API"
+    ],
+    "github": "https://github.com/brunocastroal/bibliometria-ml-economia",
+    "paper": "publications.html#azevedo-2023-machine-learning-economia",
+    "blog": "posts/2025-11-04-machine-learning-economia.html"
+  },
+  {
+    "id": "liquidez-nordeste",
+    "title": "Modelagem Espacial da Liquidez Bancária e Dinâmica Municipal no Nordeste",
+    "status": "Concluído",
+    "category": "Pesquisa Aplicada",
+    "description": "Modelagem de econometria espacial com microdados do ESTBAN/Banco Central para avaliar os impactos da retenção e preferência pela liquidez das agências bancárias comerciais sobre as disparidades de produto per capita entre os municípios nordestinos.\n",
+    "technologies": [
+      "R",
+      "Econometria Espacial",
+      "spdep",
+      "Microdados ESTBAN",
+      "GeoDa"
+    ],
+    "blog": "posts/2024-08-15-moeda-nordeste.html"
+  },
+  {
+    "id": "gestao-feiras-agroecologicas",
+    "title": "Tecnologia Social e Finanças de Proximidade em Feiras Agroecológicas",
+    "status": "Concluído",
+    "category": "Extensão Universitária",
+    "description": "Desenvolvimento e aplicação prática de metodologia participativa de controle financeiro e formação de preço justo junto a mais de 45 agricultoras familiares e feirantes de 3 associações agroecológicas comunitárias no litoral piauiense (Parnaíba e região). Incluiu planilhas abertas de gestão de caixa e oficinas populares presenciais.\n",
+    "technologies": [
+      "Tecnologia Social",
+      "Economia Solidária",
+      "Finanças Populares",
+      "Educação Financeira"
+    ],
+    "github": "https://github.com/brunocastroal/gestao-feiras-agroecologicas",
+    "blog": "posts/2024-06-22-economia-solidaria.html"
+  }
+]

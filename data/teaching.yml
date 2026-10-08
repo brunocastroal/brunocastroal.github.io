@@ -1,0 +1,86 @@
+# ==============================================================================
+# ENSINO, DISCIPLINAS E MONITORIA DOCENTE
+#
+# Adicione ou edite suas disciplinas, ementas, notas de aula e listas de exercícios.
+# O site gera automaticamente a estrutura da página de Ensino.
+# ==============================================================================
+
+courses:
+  - id: "macroeconomia-i"
+    name: "Macroeconomia I"
+    code: "ECO0203"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
+    level: "Graduação em Ciências Econômicas"
+    period: "2023.2 / 2025.1"
+    role: "Monitor Bolsista"
+    description: >
+      Fundamentos da contabilidade social, determinação do produto e emprego no curto prazo, modelo clássico, modelo keynesiano simples, equilíbrio conjunto IS-LM e introdução à economia aberta (Mundell-Fleming).
+    syllabus:
+      - "1. Contabilidade Social e Agregados Macroeconômicos (PIB, RNB, Poupança e Investimento)"
+      - "2. O Modelo Clássico: Mercado de Trabalho, Lei de Say e Teoria Quantitativa da Moeda"
+      - "3. O Modelo Keynesiano Simples e o Multiplicador de Gastos Autônomos"
+      - "4. O Modelo IS-LM: Equilíbrio Conjunto dos Mercados de Bens e Monetário"
+      - "5. Políticas Fiscais e Monetárias sob Diferentes Sensibilidades dos Juros"
+      - "6. Introdução à Macroeconomia Aberta: O Modelo Mundell-Fleming"
+    materials:
+      - title: "Notas de Aula — Fundamentos e Derivação do Modelo IS-LM"
+        type: "PDF"
+        url: "assets/teaching/macro1_notas_is_lm.pdf"
+        description: "Demonstração passo a passo do equilíbrio no mercado de bens e monetário."
+      - title: "Lista de Exercícios 01 — Multiplicador Keynesiano e IS-LM"
+        type: "PDF"
+        url: "assets/teaching/macro1_lista_01.pdf"
+        description: "Exercícios teóricos e questões de exames da ANPEC resolvidas."
+      - title: "Lista de Exercícios 02 — Economia Aberta e Câmbio"
+        type: "PDF"
+        url: "assets/teaching/macro1_lista_02.pdf"
+        description: "Aplicações de política fiscal e monetária sob câmbio fixo e flutuante."
+
+  - id: "macroeconomia-ii"
+    name: "Macroeconomia II"
+    code: "ECO0204"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
+    level: "Graduação em Ciências Econômicas"
+    period: "2024.1"
+    role: "Monitor Bolsista"
+    description: >
+      Modelos de médio e longo prazo: Modelo de Oferta e Demanda Agregada (OA-DA), curva de Phillips, expectativas racionais, microfundamentos do consumo e teoria do crescimento neoclássico (Solow-Swan).
+    syllabus:
+      - "1. O Modelo de Oferta e Demanda Agregada (OA-DA) e Choques de Oferta"
+      - "2. A Curva de Phillips: Inflação, Desemprego e Formação de Expectativas"
+      - "3. Microfundamentação do Consumo: Renda Permanente e Ciclo de Vida"
+      - "4. Teoria do Investimento: Custo de Ajuste e q de Tobin"
+      - "5. Teoria do Crescimento Neoclássico: Modelo de Solow-Swan e Regra de Ouro"
+      - "6. Contabilidade do Crescimento e Resíduo de Solow"
+    materials:
+      - title: "Notas de Aula — O Modelo de Solow Passo a Passo"
+        type: "PDF"
+        url: "assets/teaching/macro2_solow_passo_a_passo.pdf"
+        description: "Derivação matemática completa da dinâmica de transição e estado estacionário."
+      - title: "Lista de Exercícios 01 — Modelo OA-DA e Choques Macroeconômicos"
+        type: "PDF"
+        url: "assets/teaching/macro2_lista_01.pdf"
+        description: "Exercícios sobre transmissão de choques de oferta e demanda."
+      - title: "Lista de Exercícios 02 — Dinâmica de Crescimento e Solow"
+        type: "PDF"
+        url: "assets/teaching/macro2_lista_02.pdf"
+        description: "Questões sobre convergência de renda e acumulação de capital."
+
+assistantships:
+  - period: "2025.1"
+    course: "Macroeconomia I"
+    institution: "UFDPar"
+    role: "Monitor Bolsista"
+    description: "Plantões presenciais de dúvidas, condução de sessões de resolução de exercícios e suporte aos discentes nos módulos de contabilidade social e equilíbrio IS-LM."
+
+  - period: "2024.1"
+    course: "Macroeconomia II"
+    institution: "UFDPar"
+    role: "Monitor Bolsista"
+    description: "Elaboração de listas preparatórias e suporte no treinamento analítico de modelos de crescimento neoclássico e dinâmica inflacionária."
+
+  - period: "2023.2"
+    course: "Macroeconomia I"
+    institution: "UFDPar"
+    role: "Monitor Bolsista"
+    description: "Atendimento discente, elaboração de notas de aula de apoio e resolução de listas sobre determinação do produto e mercado de trabalho."

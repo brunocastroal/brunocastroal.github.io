@@ -1,0 +1,66 @@
+# ==============================================================================
+# SITE TRANSLATIONS — ENGLISH (EN)
+# ==============================================================================
+
+nav_home: "Home"
+nav_research: "Research"
+nav_teaching: "Teaching"
+nav_projects: "Projects"
+nav_blog: "Blog"
+nav_cv: "CV"
+nav_about: "About"
+nav_publications: "Publications"
+cv_download_btn: "↓ Download CV (PDF)"
+
+search_title: "Search"
+search_placeholder: "Search posts, publications, projects, courses..."
+search_no_results: "No results found."
+search_tip: "Press ESC to close or type to search."
+theme_toggle: "Toggle light/dark theme"
+
+recent_posts: "Recent Posts"
+view_all_posts: "View all posts"
+reading_time: "min read"
+read_more: "Read post"
+read_online: "Read online"
+
+cite: "Cite"
+copy: "Copy"
+copied: "Copied!"
+download_bib: "Download .bib"
+close: "Close"
+abstract: "Abstract"
+code: "Code"
+data: "Data"
+replication: "Replication"
+pdf: "PDF"
+doi: "DOI"
+
+all: "All"
+filter_by_year: "Year"
+filter_by_category: "Category"
+
+research_agenda: "Research Agenda"
+research_projects: "Research Projects"
+selected_publications: "Selected Publications"
+view_all_pubs: "View all publications"
+all_publications: "Publications & Working Papers"
+
+pub_journal_articles: "Journal Articles"
+pub_conference_papers: "Conference Proceedings"
+pub_working_papers: "Working Papers"
+pub_work_in_progress: "Work in Progress"
+pub_monographs: "Theses & Academic Monographs"
+pub_other: "Other Works"
+
+teaching_courses: "Courses"
+teaching_assistant: "Teaching Assistantships"
+syllabus: "Syllabus"
+materials: "Teaching Materials"
+
+cv_education: "Education"
+cv_experience: "Academic & Teaching Experience"
+cv_skills: "Skills & Tools"
+cv_languages: "Languages"
+related_projects: "Related projects"
+footer_static_note: "Academic homepage of Bruno Castro Alves."

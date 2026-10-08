@@ -1,0 +1,66 @@
+# ==============================================================================
+# 网站翻译 — 中文 (ZH)
+# ==============================================================================
+
+nav_home: "首页"
+nav_research: "研究"
+nav_teaching: "教学"
+nav_projects: "项目"
+nav_blog: "博客"
+nav_cv: "简历"
+nav_about: "关于"
+nav_publications: "学术成果"
+cv_download_btn: "↓ 下载简历 (PDF)"
+
+search_title: "搜索"
+search_placeholder: "搜索文章、论文、项目、课程..."
+search_no_results: "未找到相关结果。"
+search_tip: "按 ESC 关闭或输入关键词进行搜索。"
+theme_toggle: "切换明亮/暗黑模式"
+
+recent_posts: "最新文章"
+view_all_posts: "查看所有文章"
+reading_time: "分钟阅读"
+read_more: "阅读全文"
+read_online: "在线阅读"
+
+cite: "引用"
+copy: "复制"
+copied: "已复制！"
+download_bib: "下载 .bib"
+close: "关闭"
+abstract: "摘要"
+code: "代码"
+data: "数据"
+replication: "复现"
+pdf: "PDF"
+doi: "DOI"
+
+all: "全部"
+filter_by_year: "年份"
+filter_by_category: "分类"
+
+research_agenda: "研究方向"
+research_projects: "科研项目"
+selected_publications: "精选论文"
+view_all_pubs: "查看所有论文"
+all_publications: "学术论文与工作论文"
+
+pub_journal_articles: "期刊论文"
+pub_conference_papers: "会议论文"
+pub_working_papers: "工作论文 (Working Papers)"
+pub_work_in_progress: "正在进行的研究"
+pub_monographs: "学位论文与专著"
+pub_other: "其他成果"
+
+teaching_courses: "主讲课程"
+teaching_assistant: "助教经历"
+syllabus: "教学大纲"
+materials: "课程资料"
+
+cv_education: "教育背景"
+cv_experience: "学术与教学经历"
+cv_skills: "技能与工具"
+cv_languages: "语言能力"
+related_projects: "相关项目"
+footer_static_note: "Bruno Castro Alves 的个人学术主页。"

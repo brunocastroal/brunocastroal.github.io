@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Análise textual das atas do Copom: comunicação e política monetária | Bruno Castro Alves</title>
+  <meta name="description" content="Análise multidimensional das atas publicadas sobre as reuniões do Comitê de Política Monetária do Banco Central do Brasil, examinando sentimento, tom de comunicação e expectativas inflacionárias.">
+  <meta name="author" content="Bruno Castro Alves">
+  <link rel="canonical" href="https://brunocastroal.github.io/posts/2026-10-03-analise-textual-atas-copom.html">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Análise textual das atas do Copom: comunicação e política monetária | Bruno Castro Alves">
+  <meta property="og:description" content="Análise multidimensional das atas publicadas sobre as reuniões do Comitê de Política Monetária do Banco Central do Brasil, examinando sentimento, tom de comunicação e expectativas inflacionárias.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://brunocastroal.github.io/posts/2026-10-03-analise-textual-atas-copom.html">
+  <meta property="og:image" content="https://brunocastroal.github.io/assets/images/avatar.jpeg">
+  <meta name="twitter:card" content="summary">
+
+  <!-- JSON-LD Structured Data for Academic Person -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Bruno Castro Alves",
+    "jobTitle": "Pesquisador em Economia",
+    "worksFor": {
+      "@type": "CollegeOrUniversity",
+      "name": "Universidade Federal do Delta do Parnaíba (UFDPar) / Universidade de São Paulo (USP)"
+    },
+    "url": "https://brunocastroal.github.io",
+    "sameAs": [
+      "https://lattes.cnpq.br/4936269417036697",
+      "https://scholar.google.com.br/citations?user=G48yrGsAAAAJ&hl=pt-BR&oi=ao",
+      "https://orcid.org/0009-0004-9469-8239",
+      "https://github.com/brunocastroal",
+      "https://www.linkedin.com/in/brunocastroalves",
+      "https://www.instagram.com/brun0_castr0/"
+]
+  }
+  </script>
+
+  <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="site-wrapper">
+    
+    <header class="site-header" role="banner">
+      <div class="site-header-inner">
+        <div class="brand">
+          <a class="brand-link" href="../index.html">
+            <span class="brand-name">Bruno Castro Alves</span>
+          </a>
+        </div>
+
+        <nav class="nav-menu" id="nav-menu" role="navigation" aria-label="Navegação principal">
+          <ul class="nav-list">
+            <li><a class="nav-link " href="../index.html" data-i18n="nav_home">Início</a></li>
+            <li><a class="nav-link " href="../research.html" data-i18n="nav_research">Pesquisa</a></li>
+            <li><a class="nav-link " href="../teaching.html" data-i18n="nav_teaching">Ensino</a></li>
+            <li><a class="nav-link " href="../projects.html" data-i18n="nav_projects">Projetos</a></li>
+            <li><a class="nav-link active" href="../blog.html" data-i18n="nav_blog">Blog</a></li>
+            <li><a class="nav-link " href="../cv.html" data-i18n="nav_cv">CV</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-controls">
+          <!-- Multilingual Switcher (5 Languages: PT / EN / ES / DE / ZH) -->
+          <div class="lang-switch-wrap" role="group" aria-label="Idioma / Language">
+            <button class="lang-switch-btn active" type="button" data-lang="pt" aria-label="Português">PT</button>
+            <span class="lang-sep">/</span>
+            <button class="lang-switch-btn" type="button" data-lang="en" aria-label="English">EN</button>
+            <span class="lang-sep">/</span>
+            <button class="lang-switch-btn" type="button" data-lang="es" aria-label="Español">ES</button>
+            <span class="lang-sep">/</span>
+            <button class="lang-switch-btn" type="button" data-lang="de" aria-label="Deutsch">DE</button>
+            <span class="lang-sep">/</span>
+            <button class="lang-switch-btn" type="button" data-lang="zh" aria-label="中文">ZH</button>
+          </div>
+
+          <!-- Light/Dark Mode Switcher -->
+          <button class="control-btn theme-toggle" id="theme-toggle" type="button" aria-label="Alternar tema" title="Alternar tema">
+            <svg class="icon icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg class="icon icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+
+          <!-- Search Trigger -->
+          <button class="control-btn search-trigger" id="search-trigger" type="button" aria-label="Buscar" title="Buscar (Ctrl+K)">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+
+          <!-- Hamburger -->
+          <button class="control-btn hamburger" id="hamburger-btn" type="button" aria-label="Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+  
+    <main class="site-main" id="main-content">
+      
+      <article class="single-post-wrap">
+        <header style="margin-bottom: 32px;">
+          <div class="single-post-meta">
+            <span>2026-10-03</span> &bull;
+            <span>16 min de leitura</span> &bull;
+            <span>Macroeconomia</span>
+          </div>
+          <h1 class="single-post-title">Análise textual das atas do Copom: comunicação e política monetária</h1>
+          <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por Bruno Castro Alves</p>
+        </header>
+
+        <div class="single-post-body">
+          <h2>Comunicação do Banco Central e Política Monetária</h2>
+
+<p>A comunicação oficial das autoridades monetárias consolidou-se nas últimas décadas como um instrumento indispensável de política econômica. No Brasil, as atas do Comitê de Política Monetária (Copom), divulgadas após cada decisão sobre a taxa básica de juros (Selic), sintetizam a leitura da autoridade sobre o balanço de riscos para a inflação, o cenário internacional e a atividade doméstica.</p>
+
+<p>Neste projeto de análise de dados textuais (<em>text analysis</em>), investigamos a evolução vocabular e o tom predominante dos comunicados por meio de técnicas de Processamento de Linguagem Natural (NLP) e mineração de texto.</p>
+
+<h2>Metodologia de Mineração de Texto</h2>
+
+<p>A base de dados compreende a totalidade das atas publicadas no período recente. O pré-processamento seguiu etapas rigorosas:</p>
+
+<p>1. <strong>Extração automatizada:</strong> Web scraping das atas diretamente do portal do Banco Central do Brasil;<br>2. <strong>Normalização linguística:</strong> Remoção de stopwords econômicas neutras, pontuação e lematização;<br>3. <strong>Mapeamento de polaridade:</strong> Construção de léxico econômico categorizado em tons contracionistas (<em>hawkish</em>) e expansionistas (<em>dovish</em>);<br>4. <strong>Análise de tópicos:</strong> Modelagem não supervisionada via <em>Latent Dirichlet Allocation</em> (LDA) para identificação dos temas mais recorrentes em cada conjuntura.</p>
+
+<h2>Modelagem e Equação de Taylor Expandida</h2>
+
+<p>Para avaliar a transmissão do tom da comunicação para as expectativas de mercado, incorporamos o índice de sentimento textual (<span class="math-inline">$S_t$</span>) em uma regra de reação monetária inspirada em Taylor:</p>
+
+<div class="math-display">$
+i_t = \rho i_{t-1} + (1 - \rho) \left[ r^* + \pi_t^* + \beta (\pi_{t+k}^e - \pi_t^*) + \gamma y_t + \theta S_t \right] + \epsilon_t
+$</div>
+
+<p>Onde:<br><ul><li><span class="math-inline">$i_t$</span> representa a meta para a taxa Selic;</li><li><span class="math-inline">$\pi_{t+k}^e - \pi_t^*$</span> representa o desvio da expectativa de inflação em relação à meta;</li><li><span class="math-inline">$y_t$</span> denota o hiato do produto;</li><li><span class="math-inline">$S_t$</span> capta o tom textual da ata divulgada no período <span class="math-inline">$t$</span>.</li></ul></p>
+
+<h2>Principais Resultados e Considerações</h2>
+
+<p>Os resultados indicam uma forte correlação contemporânea entre a ênfase lexical em riscos inflacionários e os ajustes subsequentes na trajetória dos juros futuros (DI). A precisão na comunicação atua como uma âncora complementar para as expectativas do mercado financeiro, mitigando ruídos e volatilidade excessiva.</p>
+
+<p>Os scripts em Python e notebooks interativos para replicação deste pipeline de dados estão disponíveis na página de <a href="../projects.html">Projetos</a>.</p>
+        </div>
+
+        <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
+          <a href="../blog.html" style="font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;">&larr; Voltar para todos os textos</a>
+        </footer>
+      </article>
+    
+    </main>
+    
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer-inner">
+        <div class="footer-institutional">
+          <span class="footer-name">Bruno Castro Alves</span>
+          <span data-i18n-pt="Pesquisador em Economia &bull; Universidade Federal do Delta do Parnaíba (UFDPar) / Universidade de São Paulo (USP)" data-i18n-en="Economics Researcher &bull; Federal University of Delta do Parnaíba (UFDPar) / University of São Paulo (USP)" data-i18n-es="Investigador en Economía &bull; Universidad Federal del Delta del Parnaíba (UFDPar) / Universidad de São Paulo (USP)" data-i18n-de="Wirtschaftsforscher &bull; Bundesuniversität Delta do Parnaíba (UFDPar) / Universität São Paulo (USP)" data-i18n-zh="经济学研究员 &bull; 帕尔纳伊巴三角洲联邦大学 (UFDPar) / 圣保罗大学 (USP)">Pesquisador em Economia &bull; Universidade Federal do Delta do Parnaíba (UFDPar) / Universidade de São Paulo (USP)</span>
+          <span data-i18n-pt="Parnaíba, Piauí — Brasil" data-i18n-en="Parnaíba, Piauí — Brazil" data-i18n-es="Parnaíba, Piauí — Brasil" data-i18n-de="Parnaíba, Piauí — Brasilien" data-i18n-zh="巴西皮奥伊州帕尔纳伊巴">Parnaíba, Piauí — Brasil</span>
+        </div>
+        <div class="footer-links-bar">
+          <a href="https://lattes.cnpq.br/4936269417036697" target="_blank" rel="noreferrer">Lattes</a>
+          <a href="https://scholar.google.com.br/citations?user=G48yrGsAAAAJ&hl=pt-BR&oi=ao" target="_blank" rel="noreferrer">Google Scholar</a>
+          <a href="https://orcid.org/0009-0004-9469-8239" target="_blank" rel="noreferrer">ORCID</a>
+          <a href="https://github.com/brunocastroal" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/brunocastroalves" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href="https://www.instagram.com/brun0_castr0/" target="_blank" rel="noreferrer">Instagram</a>
+          <a href="mailto:brunocastr0@usp.br">E-mail</a>
+        </div>
+      </div>
+      <div class="site-footer-inner" style="margin-top: 18px; font-size: 0.82rem;">
+        <span data-i18n="footer_static_note">Página acadêmica pessoal de Bruno Castro Alves.</span>
+        <span>&copy; 2026 Bruno Castro Alves.</span>
+      </div>
+    </footer>
+  
+  </div>
+
+  
+    <!-- Citation Modal -->
+    <div class="cite-modal-backdrop" id="cite-modal" aria-hidden="true">
+      <div class="cite-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cite-modal-title">
+        <div class="cite-modal-header">
+          <h3 class="cite-modal-title" id="cite-modal-title" data-i18n="cite">Citar publicação</h3>
+          <button class="cite-close-btn" id="cite-modal-close" type="button">&times;</button>
+        </div>
+        <div class="cite-modal-tabs">
+          <button class="cite-tab-btn active" data-cite-format="bibtex">BibTeX</button>
+          <button class="cite-tab-btn" data-cite-format="abnt">ABNT</button>
+          <button class="cite-tab-btn" data-cite-format="apa">APA 7</button>
+          <button class="cite-tab-btn" data-cite-format="chicago">Chicago</button>
+          <button class="cite-tab-btn" data-cite-format="mla">MLA 9</button>
+          <button class="cite-tab-btn" data-cite-format="ieee">IEEE</button>
+        </div>
+        <div class="cite-modal-content">
+          <div class="cite-box">
+            <pre class="cite-code" id="cite-formatted-text"></pre>
+          </div>
+          <div class="cite-modal-actions">
+            <button class="cite-action-btn copy-btn" id="cite-copy-btn" type="button">
+              <span id="copy-btn-label" data-i18n="copy">Copiar</span>
+            </button>
+            <button class="cite-action-btn download-btn" id="cite-download-btn" type="button" data-i18n="download_bib">Baixar .bib</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="search-modal-backdrop" id="search-modal" aria-hidden="true">
+      <div class="search-modal-dialog" role="dialog" aria-modal="true">
+        <div class="search-modal-header">
+          <input type="search" class="search-input" id="global-search-input" placeholder="Buscar textos, publicações, projetos, disciplinas..." data-i18n-ph="search_placeholder" autocomplete="off">
+          <button class="search-close-btn" id="search-modal-close" type="button">&times;</button>
+        </div>
+        <div class="search-modal-body" id="search-results-container">
+          <p class="search-hint" data-i18n="search_tip">Pressione ESC para fechar ou digite para pesquisar.</p>
+        </div>
+      </div>
+    </div>
+  
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>
