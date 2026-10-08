@@ -14,7 +14,7 @@ courses:
     period: "2024.2 / 2025.1"
     role: "Monitor Bolsista"
     description: >
-      Fundamentos da contabilidade social, determinação do produto e emprego no curto prazo, modelo clássico, modelo keynesiano simples, equilíbrio conjunto IS-LM e introdução à economia aberta (Mundell-Fleming).
+      Estudo da macroeconomia aberta, do balanço de pagamentos e dos modelos Mundell-Fleming e OA-DA, além das teorias da Curva de Phillips, expectativas adaptativas e racionais, monetarismo e inconsistência temporal.
     syllabus:
       - "1. Apresentação da disciplina e o Balanço de Pagamentos"
       - "2. Aspectos de uma economia aberta"
@@ -40,14 +40,20 @@ courses:
     period: "2024.1"
     role: "Monitor auxiliar"
     description: >
-      Modelos de médio e longo prazo: Modelo de Oferta e Demanda Agregada (OA-DA), curva de Phillips, expectativas racionais, microfundamentos do consumo e teoria do crescimento neoclássico (Solow-Swan).
+      Estudo dos ciclos econômicos, dos modelos novo-keynesianos e reais de negócios, e das teorias de crescimento econômico, incluindo os modelos de Solow, capital humano, progresso tecnológico, convergência de renda e crescimento endógeno.
     syllabus:
-      - "1. O Modelo de Oferta e Demanda Agregada (OA-DA) e Choques de Oferta"
-      - "2. A Curva de Phillips: Inflação, Desemprego e Formação de Expectativas"
-      - "3. Microfundamentação do Consumo: Renda Permanente e Ciclo de Vida"
-      - "4. Teoria do Investimento: Custo de Ajuste e q de Tobin"
-      - "5. Teoria do Crescimento Neoclássico: Modelo de Solow-Swan e Regra de Ouro"
-      - "6. Contabilidade do Crescimento e Resíduo de Solow"
+     - "1. Introdução à Macroeconomia e aos Ciclos Econômicos"
+     - "2. Ciclos Econômicos: Conceitos, Características e Flutuações da Atividade Econômica"
+     - "3. O Ciclo dos Estoques"
+     - "4. Teoria dos Ciclos Econômicos Reais (RBC)"
+     - "5. O Modelo Novo-Keynesiano de Ciclos Econômicos"
+     - "6. Fatos Estilizados sobre o Crescimento Econômico"
+     - "7. O Modelo Básico de Solow: Acumulação de Capital e Estado Estacionário"
+     - "8. Progresso Tecnológico e o Modelo de Solow"
+     - "9. Decomposição do Crescimento Econômico e Resíduo de Solow"
+     - "10. O Modelo de Solow com Capital Humano"
+     - "11. Convergência de Renda: Convergência Absoluta, Condicional e Divergência entre Economias"
+     - "12. Modelos de Crescimento Endógeno"
     materials:
       - title: "Notas de Monitoria — Completo"
         type: "PDF"
