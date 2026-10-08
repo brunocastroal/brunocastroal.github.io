@@ -16,12 +16,16 @@ courses:
     description: >
       Fundamentos da contabilidade social, determinação do produto e emprego no curto prazo, modelo clássico, modelo keynesiano simples, equilíbrio conjunto IS-LM e introdução à economia aberta (Mundell-Fleming).
     syllabus:
-      - "1. Contabilidade Social e Agregados Macroeconômicos (PIB, RNB, Poupança e Investimento)"
-      - "2. O Modelo Clássico: Mercado de Trabalho, Lei de Say e Teoria Quantitativa da Moeda"
-      - "3. O Modelo Keynesiano Simples e o Multiplicador de Gastos Autônomos"
-      - "4. O Modelo IS-LM: Equilíbrio Conjunto dos Mercados de Bens e Monetário"
-      - "5. Políticas Fiscais e Monetárias sob Diferentes Sensibilidades dos Juros"
-      - "6. Introdução à Macroeconomia Aberta: O Modelo Mundell-Fleming"
+      - "1. Apresentação da disciplina e o Balanço de Pagamentos"
+      - "2. Aspectos de uma economia aberta"
+      - "3. Modelo Mundell-Fleming"
+      - "4. Modelo de OA-DA"
+      - "5. Curva de Phillips original"
+      - "6. Taxa natural de desemprego e Curva de Phillips tradicional"
+      - "7. Expectativas adaptativas"
+      - "8. A visão monetarista da Curva de Phillips"
+      - "9. Expectativas Racionais"
+      - "10. Inconsistência temporal"
     materials:
       - title: "Notas de Monitoria — Completo"
         type: "PDF"
@@ -34,7 +38,7 @@ courses:
     institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
     level: "Graduação em Ciências Econômicas"
     period: "2024.1"
-    role: "Monitor Bolsista"
+    role: "Monitor auxiliar"
     description: >
       Modelos de médio e longo prazo: Modelo de Oferta e Demanda Agregada (OA-DA), curva de Phillips, expectativas racionais, microfundamentos do consumo e teoria do crescimento neoclássico (Solow-Swan).
     syllabus:
