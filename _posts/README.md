@@ -1,6 +1,6 @@
 # Como criar ou editar postagens no Blog
 
-O blog deste site foi projetado para que você possa publicar textos novos apenas criando ou editando arquivos em formato **Markdown (`.md`)**, sem precisar mexer em nenhum código HTML ou JavaScript.
+O blog deste site foi projetado para que você possa publicar textos novos apenas criando ou editando arquivos em formato **Markdown (`.md`)**, sem precisar mexer em nenhum código HTML ou JavaScript
 
 ---
 
