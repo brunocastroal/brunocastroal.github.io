@@ -1,0 +1,4 @@
+Na,Iter_VFI,Iter_DCEGM,Convergencia_DCEGM,Tempo_VFI_s,Tempo_DCEGM_s,Speedup,dif_sup_V,dif_sup_c,dif_sup_ap,Concordancia_Ocup_pct,Dobras_Grade_Endogena_Final
+400,376,1500,Nao,2.914,4.990,0.58,0.3387,0.1776,0.1776,99.27,0
+800,376,376,Sim,10.591,2.530,4.19,0.0682,0.1413,0.1413,99.78,2
+1600,376,376,Sim,39.749,5.199,7.65,0.0156,0.0525,0.0525,99.97,4

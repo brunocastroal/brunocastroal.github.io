@@ -1,74 +1,100 @@
 # ==============================================================================
-# CURRÍCULO ACADÊMICO
+# CURRÍCULO ACADÊMICO (Baseado no Currículo Lattes)
 #
-# Edite este arquivo para atualizar sua formação acadêmica, experiências docentes,
-# habilidades técnicas e idiomas. O site gerará automaticamente a página cv.html.
+# Edite este arquivo para atualizar sua formação, experiências, projetos,
+# atividades técnicas, habilidades e idiomas. Alimenta cv.html automaticamente.
 # ==============================================================================
 
-# ------------------------------------------------------------------------------
-# 1. FORMAÇÃO ACADÊMICA
-# ------------------------------------------------------------------------------
 education:
+  - period: "2026 — Atual"
+    degree: "Doutorado em andamento em Economia"
+    institution: "Faculdade de Economia, Administração e Contabilidade de Ribeirão Preto (FEARP — Universidade de São Paulo, USP)"
+    details: "Orientador: Prof. Dr. Fabio Augusto Reis Gomes. Bolsista CAPES."
+
   - period: "2020 — 2025"
     degree: "Bacharelado em Ciências Econômicas"
-    degree_en: "Bachelor of Arts in Economics"
     institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
-    institution_en: "Federal University of Delta do Parnaíba (UFDPar)"
+    details: "TCC: \"Mapeamento bibliométrico da evolução do Machine Learning na Economia\". Orientador: Prof. Dr. Fábio Júnior Clemente Gama."
 
-# ------------------------------------------------------------------------------
-# 2. EXPERIÊNCIA ACADÊMICA E ENSINO
-# ------------------------------------------------------------------------------
 experience:
+  - period: "2026 — Atual"
+    role: "Membro de Grupos de Pesquisa (TEA e Macroeconomia Estrutural)"
+    institution: "LEMC-FEARP / Universidade de São Paulo (USP)"
+    details: "Integrante do grupo de estudos TEA (Teoria Econômica Avançada) e do Grupo de Pesquisa em Macroeconomia Estrutural."
+
   - period: "2025.1"
     role: "Monitor Bolsista de Macroeconomia I"
-    role_en: "Teaching Assistant for Macroeconomics I"
     institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
-    institution_en: "Federal University of Delta do Parnaíba (UFDPar)"
+    details: "Disciplina DCEQUANT/CMRV021 (16h semanais). Plantões de dúvidas e resolução de exercícios em contabilidade social e equilíbrio IS-LM."
 
   - period: "2024.1"
     role: "Monitor Bolsista de Macroeconomia II"
-    role_en: "Teaching Assistant for Macroeconomics II"
     institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
-    institution_en: "Federal University of Delta do Parnaíba (UFDPar)"
+    details: "Disciplina DCEQUANT/CMRV021 (16h semanais). Listas preparatórias e suporte analítico em crescimento neoclássico e dinâmica inflacionária."
 
-  - period: "2023.2 — 2024.1"
+  - period: "2023.2"
     role: "Monitor Bolsista de Macroeconomia I"
-    role_en: "Teaching Assistant for Macroeconomics I"
     institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
-    institution_en: "Federal University of Delta do Parnaíba (UFDPar)"
+    details: "Disciplina DCEQUANT/CMRV021 (16h semanais). Notas de apoio e atendimento discente sobre determinação do produto e mercado de trabalho."
+
+  - period: "05/2023 — 08/2023"
+    role: "Monitor de Introdução à Economia"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
 
   - period: "2022 — 2023"
-    role: "Presidente do Centro Acadêmico de Economia XIII de Agosto"
-    role_en: "President of the Economics Student Academic Center (CAECO)"
+    role: "Presidente do Centro Acadêmico de Economia XIII de Agosto (CAECO)"
     institution: "Representação Estudantil — UFDPar"
-    institution_en: "Student Body Representation — UFDPar"
 
-# ------------------------------------------------------------------------------
-# 3. HABILIDADES E FERRAMENTAS
-# ------------------------------------------------------------------------------
+research_and_extension:
+  - period: "2023 — 2024"
+    role: "Pesquisa e Desenvolvimento (PREX) — Papel da Moeda e Econometria Espacial"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
+    details: "Uma análise espacial do papel da moeda no desempenho econômico dos municípios da Região Nordeste do Brasil a partir do modelo de Regressão Geograficamente Ponderada."
+
+  - period: "2023 — 2024"
+    role: "Projeto de Extensão — ENTRELAÇOS"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
+    details: "Promoção da cidadania e solidariedade por meio da produção, comercialização e consumo responsável (incubadora de negócios sustentáveis e feira agroecológica)."
+
+  - period: "2022 — 2023"
+    role: "Projeto de Extensão — Laços de Solidariedade"
+    institution: "Universidade Federal do Delta do Parnaíba (UFDPar)"
+    details: "Produção e comercialização nas feiras agroecológicas do Território Planície Litorânea."
+
+technical_and_events:
+  - period: "2026"
+    role: "Curso de curta duração ministrado (Extensão)"
+    institution: "\"O Planejador Central não existe...!!! Desafios em operacionalizar escolhas coletivas eficientes\""
+
+  - period: "2022"
+    role: "Produção Técnica — Website Institucional"
+    institution: "Site institucional do Centro Acadêmico de Economia da UFDPar"
+
+  - period: "2022 — 2023"
+    role: "Organização de Eventos Acadêmicos e de Extensão"
+    institution: "IV Semana de Economia (IV SEMECO, 2023); Curso de Extensão \"Formação Econômica do Brasil\" (2023); III Semana de Economia (III SEMECO, 2022)."
+
+conference_highlights:
+  - "Gama, F. J. C.; Azevedo, C. O.; Alves, B. C.; Nascimento, A. E. S.; Bastos, S. Q. A. (2025). Integração da econometria espacial nos estudos em economia regional e urbana. XXVIII ANPEC Sul / XXII ENABER (2024)."
+  - "Alves, B. C.; Costa, J. K. Q.; Crespo, M. F. V.; Carvalho, J. N. F. (2024). Tecnologias e Empoderamento na Economia Solidária em Feira Agroecológica. 62º Congresso da SOBER."
+  - "Gama, F. J. C. et al.; Alves, B. C. (2024). Crescimento econômico e mudanças climáticas: uma análise bibliométrica. XXIX ANPEC Nordeste / XXII ENABER."
+  - "Azevedo, C. O.; Alves, B. C.; Gama, F. J. C.; Costa, J. K. Q. (2023). Avanço da Ciência de Dados nos estudos de Economia: machine learning. XXVIII ANPEC Nordeste."
+  - "Alves, B. C.; Azevedo, C. O.; Gama, F. J. C.; Feitoza, K. M. N. (2024). Avanço da ciência de dados nos estudos de economia. II SICONFINPA (UFDPar)."
+  - "Gama, F. J. C.; Azevedo, C. O.; Feitoza, K. M. N.; Alves, B. C. (2023). Advancement of Data Science in Economics Studies. IV Seven International Multidisciplinary Congress."
+
 skills:
   - category: "Métodos Quantitativos"
-    category_en: "Quantitative Methods"
-    items: "Econometria Espacial, Análise Bibliométrica, Processamento de Linguagem Natural (NLP), Séries Temporais."
+    items: "Macroeconomia Estrutural, Modelos de Agentes Heterogêneos (VFI, DC-EGM), Econometria Espacial, Análise Bibliométrica, Processamento de Linguagem Natural (NLP), Séries Temporais."
 
-  - category: "Linguagens e Softwares"
-    category_en: "Languages & Tools"
-    items: "Python (Pandas, spaCy, Transformers), R (tidyverse, bibliometrix, spdep), Stata, LaTeX."
+  - category: "Linguagens e Ferramentas"
+    items: "MATLAB, Python, R (tidyverse, bibliometrix, spdep), Stata, LaTeX, Git / GitHub."
 
-  - category: "Desenvolvimento e Controle de Versão"
-    category_en: "Development & Version Control"
-    items: "Git, GitHub, GitHub Pages, HTML5/CSS3."
-
-# ------------------------------------------------------------------------------
-# 4. IDIOMAS
-# ------------------------------------------------------------------------------
 languages:
   - language: "Português"
-    language_en: "Portuguese"
-    level: "Nativo"
-    level_en: "Native"
+    level: "Nativo (compreensão, fala, leitura e escrita)"
+
+  - language: "Espanhol"
+    level: "Intermediário / Razoável (compreensão, fala, leitura e escrita)"
 
   - language: "Inglês"
-    language_en: "English"
-    level: "Intermediário / Leitura Acadêmica"
-    level_en: "Intermediate / Academic Reading"
+    level: "Básico (leitura acadêmica, escrita e compreensão básica)"

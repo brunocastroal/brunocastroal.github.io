@@ -1,70 +1,21 @@
 [
   {
-    "id": "2026-10-03-analise-textual-atas-copom",
-    "title": "Análise textual das atas do Copom: comunicação e política monetária",
-    "date": "2026-10-03",
-    "category": "Macroeconomia",
+    "id": "2026-11-12-dc-egm-vfi",
+    "title": "Modelo de Agentes Heterogêneos com Escolhas Ocupacionais e Custos de Transição: Uma Comparação entre VFI e DC-EGM",
+    "date": "2026-11-12",
+    "category": "Economia Computacional",
     "tags": [
-      "Copom",
-      "Política Monetária",
-      "Text Mining",
-      "NLP"
+      "DC-EGM",
+      "VFI",
+      "Agentes Heterogêneos",
+      "Macroeconomia Quantitativa",
+      "Upper Envelope",
+      "MATLAB"
     ],
-    "summary": "Análise multidimensional das atas publicadas sobre as reuniões do Comitê de Política Monetária do Banco Central do Brasil, examinando sentimento, tom de comunicação e expectativas inflacionárias.",
-    "reading_time": 16,
+    "summary": "Implementação e comparação rigorosa entre a Iteração da Função Valor (VFI) e o Discrete-Continuous Endogenous Grid Method (DC-EGM) com Upper Envelope em modelo com escolhas ocupacionais discretas e custos fixos de transição.",
+    "reading_time": 15,
     "featured": true,
-    "slug": "2026-10-03-analise-textual-atas-copom",
-    "url": "posts/2026-10-03-analise-textual-atas-copom.html"
-  },
-  {
-    "id": "2025-11-04-machine-learning-economia",
-    "title": "Machine learning na economia: por onde começar uma revisão bibliométrica?",
-    "date": "2025-11-04",
-    "category": "Ciência de Dados",
-    "tags": [
-      "Ciência de Dados",
-      "Bibliometria",
-      "Métodos Quantitativos",
-      "Machine Learning"
-    ],
-    "summary": "Um guia metodológico e reflexão bibliométrica sobre a incorporação de técnicas de aprendizado de máquina na literatura econômica internacional e nacional.",
-    "reading_time": 5,
-    "featured": true,
-    "slug": "2025-11-04-machine-learning-economia",
-    "url": "posts/2025-11-04-machine-learning-economia.html"
-  },
-  {
-    "id": "2024-08-15-moeda-nordeste",
-    "title": "Moeda, bancos e desempenho econômico dos municípios nordestinos",
-    "date": "2024-08-15",
-    "category": "Economia Regional",
-    "tags": [
-      "Macroeconomia",
-      "Economia Regional",
-      "Bancos",
-      "Desenvolvimento Regional"
-    ],
-    "summary": "Notas de pesquisa investigando a preferência pela liquidez do sistema bancário e seus impactos no nível de atividade dos municípios do Nordeste brasileiro.",
-    "reading_time": 4,
-    "featured": false,
-    "slug": "2024-08-15-moeda-nordeste",
-    "url": "posts/2024-08-15-moeda-nordeste.html"
-  },
-  {
-    "id": "2024-06-22-economia-solidaria",
-    "title": "Economia solidária na prática: tecnologia simples e finanças populares no litoral do Piauí",
-    "date": "2024-06-22",
-    "category": "Economia Regional",
-    "tags": [
-      "Economia Solidária",
-      "Extensão Universitária",
-      "Desenvolvimento Regional",
-      "Tecnologia Social"
-    ],
-    "summary": "Relato analítico sobre o desenvolvimento de tecnologias sociais de gestão financeira com mais de 45 feirantes agroecológicas em Parnaíba (PI), abordando precificação justa e fundos rotativos.",
-    "reading_time": 4,
-    "featured": false,
-    "slug": "2024-06-22-economia-solidaria",
-    "url": "posts/2024-06-22-economia-solidaria.html"
+    "slug": "2026-11-12-dc-egm-vfi",
+    "url": "posts/2026-11-12-dc-egm-vfi.html"
   }
 ]

@@ -114,6 +114,10 @@ const publications = (Array.isArray(rawPubs) ? rawPubs : []).map(p => {
   };
 });
 
+// Sort publications: year desc, journal_article before conference_paper
+const categoryRank = { journal_article: 1, monograph: 2, working_paper: 3, conference_paper: 4, work_in_progress: 5 };
+publications.sort((a, b) => (b.year - a.year) || ((categoryRank[a.category] || 9) - (categoryRank[b.category] || 9)));
+
 const coursesData = Array.isArray(rawCourses) ? { courses: rawCourses, assistantships: [] } : {
   courses: rawCourses.courses || [],
   assistantships: rawCourses.assistantships || []
@@ -136,62 +140,163 @@ function parseFrontMatter(fileContent) {
   }
 }
 
-// Helper: Convert Markdown to HTML
+// Helper: Apply inline Markdown rules (after math & code protection)
+function applyInlineMarkdown(text) {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code class="notranslate" translate="no">$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+}
+
+// Helper: Convert Markdown to HTML (supports math, code, tables, lists, hrs)
 function markdownToHtml(md) {
   if (!md) return '';
-  let html = md;
+  let src = md.replace(/\r\n/g, '\n');
 
-  // Math blocks
-  const mathBlocks = [];
-  html = html.replace(/\$\$([\s\S]*?)\$\$/g, (m, eq) => {
-    mathBlocks.push(`<div class="math-display">$$${eq}$$</div>`);
-    return `<!--MATH_${mathBlocks.length - 1}-->`;
-  });
-  html = html.replace(/\$([^\$\n]+?)\$/g, (m, eq) => {
-    mathBlocks.push(`<span class="math-inline">$${eq}$</span>`);
-    return `<!--MATH_${mathBlocks.length - 1}-->`;
-  });
+  // Protect code blocks first so math inside code isn't touched
+  const placeholders = [];
+  const pushPlaceholder = (html) => {
+    const token = `<!--BLOCK_PH_${placeholders.length}-->`;
+    placeholders.push(html);
+    return token;
+  };
 
-  // Code blocks
-  html = html.replace(/```([a-zA-Z0-9_-]*)\r?\n([\s\S]*?)```/g, (m, lang, code) => {
+  src = src.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (m, lang, code) => {
     const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return `<pre class="code-block"><code>${escaped}</code></pre>`;
+    return pushPlaceholder(`<pre class="code-block notranslate" translate="no"><code>${escaped}</code></pre>`);
   });
 
-  // Headings
-  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-  html = html.replace(/^# (.*$)/gim, '<h2>$1</h2>'); // Avoid accidental second h1
+  // Protect display & inline math with notranslate for Google Translate safety
+  src = src.replace(/\$\$([\s\S]*?)\$\$/g, (m, eq) =>
+    pushPlaceholder(`<div class="math-display notranslate" translate="no">$$${eq.trim()}$$</div>`)
+  );
+  src = src.replace(/\$([^\$\n]+?)\$/g, (m, eq) =>
+    pushPlaceholder(`<span class="math-inline notranslate" translate="no">$${eq}$</span>`)
+  );
 
-  // Blockquotes
-  html = html.replace(/^\> (.*$)/gim, '<blockquote><p>$1</p></blockquote>');
+  const lines = src.split('\n');
+  const out = [];
+  let i = 0;
 
-  // Bold & Italic
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
 
-  // Lists
-  html = html.replace(/^\s*-\s+(.*)$/gim, '<li>$1</li>');
-  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, (m) => `<ul>${m}</ul>`);
-  html = html.replace(/<\/ul>\s*<ul>/g, '');
+    if (!trimmed) { i++; continue; }
 
-  // Paragraphs
-  const blocks = html.split(/\r?\n\r?\n/);
-  html = blocks.map(block => {
-    const trimmed = block.trim();
-    if (!trimmed) return '';
-    if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<pre') ||
-        trimmed.startsWith('<blockquote') || trimmed.startsWith('<div') || trimmed.startsWith('<!--MATH_')) {
-      return trimmed;
+    // Standalone protected block or raw HTML block
+    if (/^<!--BLOCK_PH_\d+-->$/.test(trimmed) || trimmed.startsWith('<div') || trimmed.startsWith('</div')) {
+      if (trimmed.startsWith('<div')) {
+        const htmlBuf = [line];
+        let depth = (line.match(/<div\b/g) || []).length - (line.match(/<\/div>/g) || []).length;
+        while (depth > 0 && i + 1 < lines.length) {
+          i++;
+          htmlBuf.push(lines[i]);
+          depth += (lines[i].match(/<div\b/g) || []).length - (lines[i].match(/<\/div>/g) || []).length;
+        }
+        out.push(htmlBuf.join('\n'));
+      } else {
+        out.push(trimmed);
+      }
+      i++;
+      continue;
     }
-    return `<p>${trimmed.replace(/\r?\n/g, '<br>')}</p>`;
-  }).join('\n\n');
 
-  // Restore Math
-  mathBlocks.forEach((mHtml, idx) => {
-    html = html.replace(new RegExp(`<!--MATH_${idx}-->`, 'g'), mHtml);
+    // Horizontal rule
+    if (/^(---|\*\*\*|___)\s*$/.test(trimmed)) {
+      out.push('<hr>');
+      i++;
+      continue;
+    }
+
+    // Headings
+    const hMatch = trimmed.match(/^(#{1,3})\s+(.*)$/);
+    if (hMatch) {
+      const level = Math.max(2, hMatch[1].length); // Keep h1 unique for post title
+      out.push(`<h${level}>${applyInlineMarkdown(hMatch[2])}</h${level}>`);
+      i++;
+      continue;
+    }
+
+    // Blockquotes
+    if (trimmed.startsWith('> ')) {
+      const bqLines = [];
+      while (i < lines.length && lines[i].trim().startsWith('> ')) {
+        bqLines.push(applyInlineMarkdown(lines[i].trim().slice(2)));
+        i++;
+      }
+      out.push(`<blockquote><p>${bqLines.join('<br>')}</p></blockquote>`);
+      continue;
+    }
+
+    // Markdown Table (| ... | followed by | :--- |)
+    if (trimmed.startsWith('|') && i + 1 < lines.length && /^\|[\s:|-]+\|/.test(lines[i + 1].trim())) {
+      const splitCells = (row) => row.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+      const headers = splitCells(lines[i]);
+      const aligns = splitCells(lines[i + 1]).map(s => {
+        if (s.startsWith(':') && s.endsWith(':')) return 'center';
+        if (s.endsWith(':')) return 'right';
+        return 'left';
+      });
+      i += 2;
+      const bodyRows = [];
+      while (i < lines.length && lines[i].trim().startsWith('|')) {
+        bodyRows.push(splitCells(lines[i]));
+        i++;
+      }
+      const thHtml = headers.map((h, idx) => `<th style="text-align:${aligns[idx] || 'left'}">${applyInlineMarkdown(h)}</th>`).join('');
+      const trHtml = bodyRows.map(r => `<tr>${r.map((c, idx) => `<td style="text-align:${aligns[idx] || 'left'}">${applyInlineMarkdown(c)}</td>`).join('')}</tr>`).join('');
+      out.push(`<div class="table-wrap"><table><thead><tr>${thHtml}</tr></thead><tbody>${trHtml}</tbody></table></div>`);
+      continue;
+    }
+
+    // Unordered list
+    if (/^\s*-\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\s*-\s+/.test(lines[i])) {
+        const isNested = /^\s{2,}-\s+/.test(lines[i]);
+        const itemText = applyInlineMarkdown(lines[i].replace(/^\s*-\s+/, ''));
+        items.push(`<li${isNested ? ' class="nested-li"' : ''}>${itemText}</li>`);
+        i++;
+      }
+      out.push(`<ul>\n${items.join('\n')}\n</ul>`);
+      continue;
+    }
+
+    // Ordered list
+    if (/^\d+\.\s+/.test(trimmed)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+        items.push(`<li>${applyInlineMarkdown(lines[i].trim().replace(/^\d+\.\s+/, ''))}</li>`);
+        i++;
+      }
+      out.push(`<ol>\n${items.join('\n')}\n</ol>`);
+      continue;
+    }
+
+    // Paragraph (stop before blank lines or special block starts)
+    const pLines = [];
+    while (i < lines.length) {
+      const cur = lines[i];
+      const curTrim = cur.trim();
+      if (!curTrim) break;
+      if (/^(#{1,3}\s+|>\s+|---+\s*$|\s*-\s+|\d+\.\s+|<div\b|<!--BLOCK_PH_\d+-->$)/.test(curTrim) ||
+          (curTrim.startsWith('|') && i + 1 < lines.length && /^\|[\s:|-]+\|/.test(lines[i + 1].trim()))) {
+        break;
+      }
+      pLines.push(applyInlineMarkdown(curTrim));
+      i++;
+    }
+    if (pLines.length) {
+      out.push(`<p>${pLines.join('<br>')}</p>`);
+    }
+  }
+
+  let html = out.join('\n\n');
+  // IMPORTANT: pass arrow function so '$$' in LaTeX is NOT collapsed to single '$'
+  placeholders.forEach((content, idx) => {
+    html = html.replace(new RegExp(`<!--BLOCK_PH_${idx}-->`, 'g'), () => content);
   });
 
   return html;
@@ -476,33 +581,27 @@ function renderHeader(activePage = 'home', depth = 0) {
       <div class="site-header-inner">
         <div class="brand">
           <a class="brand-link" href="${prefix}index.html">
-            <span class="brand-name">${siteConfig.name}</span>
+            <span class="brand-name notranslate" translate="no">${siteConfig.name}</span>
           </a>
         </div>
 
         <nav class="nav-menu" id="nav-menu" role="navigation" aria-label="Navegação principal">
           <ul class="nav-list">
-            <li><a class="nav-link ${activePage === 'home' ? 'active' : ''}" href="${prefix}index.html" data-i18n="nav_home">Início</a></li>
-            <li><a class="nav-link ${activePage === 'research' ? 'active' : ''}" href="${prefix}research.html" data-i18n="nav_research">Pesquisa</a></li>
-            <li><a class="nav-link ${activePage === 'teaching' ? 'active' : ''}" href="${prefix}teaching.html" data-i18n="nav_teaching">Ensino</a></li>
-            <li><a class="nav-link ${activePage === 'projects' ? 'active' : ''}" href="${prefix}projects.html" data-i18n="nav_projects">Projetos</a></li>
-            <li><a class="nav-link ${activePage === 'blog' ? 'active' : ''}" href="${prefix}blog.html" data-i18n="nav_blog">Blog</a></li>
-            <li><a class="nav-link ${activePage === 'cv' ? 'active' : ''}" href="${prefix}cv.html" data-i18n="nav_cv">CV</a></li>
+            <li><a class="nav-link ${activePage === 'home' ? 'active' : ''}" href="${prefix}index.html">Início</a></li>
+            <li><a class="nav-link ${activePage === 'research' ? 'active' : ''}" href="${prefix}research.html">Pesquisa</a></li>
+            <li><a class="nav-link ${activePage === 'teaching' ? 'active' : ''}" href="${prefix}teaching.html">Ensino</a></li>
+            <li><a class="nav-link ${activePage === 'projects' ? 'active' : ''}" href="${prefix}projects.html">Projetos</a></li>
+            <li><a class="nav-link ${activePage === 'blog' ? 'active' : ''}" href="${prefix}blog.html">Blog</a></li>
+            <li><a class="nav-link ${activePage === 'cv' ? 'active' : ''}" href="${prefix}cv.html">CV</a></li>
           </ul>
         </nav>
 
         <div class="header-controls">
-          <!-- Multilingual Switcher (5 Languages: PT / EN / ES / DE / ZH) -->
-          <div class="lang-switch-wrap" role="group" aria-label="Idioma / Language">
-            <button class="lang-switch-btn active" type="button" data-lang="pt" aria-label="Português">PT</button>
+          <!-- Google Translate PT / EN Switcher -->
+          <div class="lang-switch-wrap notranslate" translate="no" role="group" aria-label="Idioma / Language">
+            <button class="lang-switch-btn active" type="button" data-lang="pt" aria-label="Português" title="Português">PT</button>
             <span class="lang-sep">/</span>
-            <button class="lang-switch-btn" type="button" data-lang="en" aria-label="English">EN</button>
-            <span class="lang-sep">/</span>
-            <button class="lang-switch-btn" type="button" data-lang="es" aria-label="Español">ES</button>
-            <span class="lang-sep">/</span>
-            <button class="lang-switch-btn" type="button" data-lang="de" aria-label="Deutsch">DE</button>
-            <span class="lang-sep">/</span>
-            <button class="lang-switch-btn" type="button" data-lang="zh" aria-label="中文">ZH</button>
+            <button class="lang-switch-btn" type="button" data-lang="en" aria-label="English (Google Translate)" title="Translate to English via Google Translate">EN</button>
           </div>
 
           <!-- Light/Dark Mode Switcher -->
@@ -517,7 +616,7 @@ function renderHeader(activePage = 'home', depth = 0) {
           </button>
 
           <!-- Hamburger -->
-          <button class="control-btn hamburger" id="hamburger-btn" type="button" aria-label="Menu">
+          <button class="control-btn hamburger" id="hamburger-btn" type="button" aria-label="Menu" aria-expanded="false">
             <span class="bar"></span>
             <span class="bar"></span>
             <span class="bar"></span>
@@ -533,11 +632,11 @@ function renderFooter() {
     <footer class="site-footer" role="contentinfo">
       <div class="site-footer-inner">
         <div class="footer-institutional">
-          <span class="footer-name">${siteConfig.name}</span>
-          <span data-i18n-pt="${siteConfig.title} &bull; ${siteConfig.institution}" data-i18n-en="${siteConfig.title_en} &bull; ${siteConfig.institution_en}" data-i18n-es="${siteConfig.title_es || siteConfig.title} &bull; ${siteConfig.institution_es || siteConfig.institution}" data-i18n-de="${siteConfig.title_de || siteConfig.title} &bull; ${siteConfig.institution_de || siteConfig.institution}" data-i18n-zh="${siteConfig.title_zh || siteConfig.title} &bull; ${siteConfig.institution_zh || siteConfig.institution}">${siteConfig.title} &bull; ${siteConfig.institution}</span>
-          <span data-i18n-pt="${siteConfig.location}" data-i18n-en="${siteConfig.location_en}" data-i18n-es="${siteConfig.location_es || siteConfig.location}" data-i18n-de="${siteConfig.location_de || siteConfig.location}" data-i18n-zh="${siteConfig.location_zh || siteConfig.location}">${siteConfig.location}</span>
+          <span class="footer-name notranslate" translate="no">${siteConfig.name}</span>
+          <span>${siteConfig.title} &bull; ${siteConfig.institution}</span>
+          <span>${siteConfig.location}</span>
         </div>
-        <div class="footer-links-bar">
+        <div class="footer-links-bar notranslate" translate="no">
           ${siteConfig.social && siteConfig.social.lattes ? `<a href="${siteConfig.social.lattes}" target="_blank" rel="noreferrer">Lattes</a>` : ''}
           ${siteConfig.social && siteConfig.social.google_scholar ? `<a href="${siteConfig.social.google_scholar}" target="_blank" rel="noreferrer">Google Scholar</a>` : ''}
           ${siteConfig.social && siteConfig.social.orcid ? `<a href="${siteConfig.social.orcid}" target="_blank" rel="noreferrer">ORCID</a>` : ''}
@@ -548,8 +647,8 @@ function renderFooter() {
         </div>
       </div>
       <div class="site-footer-inner" style="margin-top: 18px; font-size: 0.82rem;">
-        <span data-i18n="footer_static_note">Página acadêmica pessoal de Bruno Castro Alves.</span>
-        <span>&copy; ${new Date().getFullYear()} ${siteConfig.name}.</span>
+        <span>Página acadêmica pessoal de <span class="notranslate" translate="no">${siteConfig.name}</span>.</span>
+        <span>&copy; ${new Date().getFullYear()} <span class="notranslate" translate="no">${siteConfig.name}</span>.</span>
       </div>
     </footer>
   `;
@@ -561,10 +660,10 @@ function renderModals() {
     <div class="cite-modal-backdrop" id="cite-modal" aria-hidden="true">
       <div class="cite-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cite-modal-title">
         <div class="cite-modal-header">
-          <h3 class="cite-modal-title" id="cite-modal-title" data-i18n="cite">Citar publicação</h3>
+          <h3 class="cite-modal-title" id="cite-modal-title">Citar publicação</h3>
           <button class="cite-close-btn" id="cite-modal-close" type="button">&times;</button>
         </div>
-        <div class="cite-modal-tabs">
+        <div class="cite-modal-tabs notranslate" translate="no">
           <button class="cite-tab-btn active" data-cite-format="bibtex">BibTeX</button>
           <button class="cite-tab-btn" data-cite-format="abnt">ABNT</button>
           <button class="cite-tab-btn" data-cite-format="apa">APA 7</button>
@@ -573,14 +672,14 @@ function renderModals() {
           <button class="cite-tab-btn" data-cite-format="ieee">IEEE</button>
         </div>
         <div class="cite-modal-content">
-          <div class="cite-box">
+          <div class="cite-box notranslate" translate="no">
             <pre class="cite-code" id="cite-formatted-text"></pre>
           </div>
           <div class="cite-modal-actions">
             <button class="cite-action-btn copy-btn" id="cite-copy-btn" type="button">
-              <span id="copy-btn-label" data-i18n="copy">Copiar</span>
+              <span id="copy-btn-label">Copiar</span>
             </button>
-            <button class="cite-action-btn download-btn" id="cite-download-btn" type="button" data-i18n="download_bib">Baixar .bib</button>
+            <button class="cite-action-btn download-btn" id="cite-download-btn" type="button">Baixar .bib</button>
           </div>
         </div>
       </div>
@@ -590,14 +689,17 @@ function renderModals() {
     <div class="search-modal-backdrop" id="search-modal" aria-hidden="true">
       <div class="search-modal-dialog" role="dialog" aria-modal="true">
         <div class="search-modal-header">
-          <input type="search" class="search-input" id="global-search-input" placeholder="Buscar textos, publicações, projetos, disciplinas..." data-i18n-ph="search_placeholder" autocomplete="off">
+          <input type="search" class="search-input" id="global-search-input" placeholder="Buscar textos, publicações, disciplinas..." autocomplete="off">
           <button class="search-close-btn" id="search-modal-close" type="button">&times;</button>
         </div>
         <div class="search-modal-body" id="search-results-container">
-          <p class="search-hint" data-i18n="search_tip">Pressione ESC para fechar ou digite para pesquisar.</p>
+          <p class="search-hint">Pressione ESC para fechar ou digite para pesquisar.</p>
         </div>
       </div>
     </div>
+
+    <!-- Hidden mount target for Google Translate Element -->
+    <div id="google_translate_element" class="notranslate" translate="no" aria-hidden="true"></div>
   `;
 }
 
@@ -619,7 +721,7 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
   const avatarUrl = siteConfig.avatar ? (siteConfig.avatar.startsWith('http') ? siteConfig.avatar : `${rawBase}/${siteConfig.avatar.replace(/^\//, '')}`) : '';
 
   return `<!doctype html>
-<html lang="${siteConfig.default_lang || 'pt'}">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -669,11 +771,12 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
 
   ${renderModals()}
   <script src="${prefix}assets/js/main.js" defer></script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 </body>
 </html>`;
 }
 
-// Publication Entry Renderer (Discreet monochromatic pills, collapsed abstract, PT rendered by default)
+// Publication Entry Renderer
 function renderPubEntry(pub) {
   const jsonCite = JSON.stringify(pub.citations).replace(/"/g, '&quot;');
   const venueDisplay = pub.journal || pub.venue || 'Working Paper';
@@ -684,19 +787,19 @@ function renderPubEntry(pub) {
         ${pub.url ? `<a href="${pub.url}" target="_blank" rel="noreferrer">${pub.title}</a>` : pub.title}
       </h3>
       <p class="pub-entry-meta">
-        <span class="pub-entry-authors">${pub.authors.join(', ')}</span> &bull;
-        <em class="pub-entry-journal">${venueDisplay}</em> &bull;
-        <span class="pub-entry-year">${pub.year}</span>
+        <span class="pub-entry-authors notranslate" translate="no">${pub.authors.join(', ')}</span> &bull;
+        <em class="pub-entry-journal notranslate" translate="no">${venueDisplay}</em> &bull;
+        <span class="pub-entry-year notranslate" translate="no">${pub.year}</span>
       </p>
       <div class="pub-actions-row">
-        ${pub.pdf ? `<a class="pub-pill-link" href="${pub.pdf}" target="_blank" rel="noreferrer" data-i18n="pdf">PDF</a>` : ''}
-        ${pub.doi ? `<a class="pub-pill-link" href="https://doi.org/${pub.doi}" target="_blank" rel="noreferrer" data-i18n="doi">DOI</a>` : ''}
-        ${pub.url && !pub.pdf ? `<a class="pub-pill-link" href="${pub.url}" target="_blank" rel="noreferrer" data-i18n="read_online">Ler online</a>` : ''}
-        ${pub.code ? `<a class="pub-pill-link" href="${pub.code}" target="_blank" rel="noreferrer" data-i18n="code">Código</a>` : ''}
-        ${pub.data ? `<a class="pub-pill-link" href="${pub.data}" target="_blank" rel="noreferrer" data-i18n="data">Dados</a>` : ''}
-        ${pub.replication ? `<a class="pub-pill-link" href="${pub.replication}" target="_blank" rel="noreferrer" data-i18n="replication">Replicação</a>` : ''}
-        <button class="pub-pill-btn cite-trigger-btn" type="button" data-cite-info="${jsonCite}" data-i18n="cite">Citar</button>
-        ${pub.abstract ? `<button class="pub-pill-btn abstract-toggle-btn" type="button" aria-expanded="false" data-i18n="abstract">+ Resumo</button>` : ''}
+        ${pub.pdf ? `<a class="pub-pill-link notranslate" translate="no" href="${pub.pdf}" target="_blank" rel="noreferrer">PDF</a>` : ''}
+        ${pub.doi ? `<a class="pub-pill-link notranslate" translate="no" href="https://doi.org/${pub.doi}" target="_blank" rel="noreferrer">DOI</a>` : ''}
+        ${pub.url ? `<a class="pub-pill-link" href="${pub.url}" target="_blank" rel="noreferrer">Ler online</a>` : ''}
+        ${pub.code ? `<a class="pub-pill-link" href="${pub.code}" target="_blank" rel="noreferrer">Código</a>` : ''}
+        ${pub.data ? `<a class="pub-pill-link" href="${pub.data}" target="_blank" rel="noreferrer">Dados</a>` : ''}
+        ${pub.replication ? `<a class="pub-pill-link" href="${pub.replication}" target="_blank" rel="noreferrer">Replicação</a>` : ''}
+        <button class="pub-pill-btn cite-trigger-btn" type="button" data-cite-info="${jsonCite}">Citar</button>
+        ${pub.abstract ? `<button class="pub-pill-btn abstract-toggle-btn" type="button" aria-expanded="false">+ Resumo</button>` : ''}
       </div>
       ${pub.abstract ? `
         <div class="pub-abstract-text-block" hidden>
@@ -716,69 +819,70 @@ function buildHome() {
   const sampleProjects = projects.slice(0, 2);
 
   const content = `
-    <!-- Single Hero Profile (No duplicates!) -->
+    <!-- Single Hero Profile -->
     <section class="profile-hero">
       <div class="profile-avatar-wrap">
         <img class="profile-avatar" src="${siteConfig.avatar}" alt="${siteConfig.name}" width="120" height="120">
       </div>
       <div class="profile-intro">
-        <h1 class="profile-name">${siteConfig.name}</h1>
-        <p class="profile-title" data-i18n-pt="${siteConfig.title} &bull; ${siteConfig.institution}" data-i18n-en="${siteConfig.title_en} &bull; ${siteConfig.institution_en}" data-i18n-es="${siteConfig.title_es || siteConfig.title} &bull; ${siteConfig.institution_es || siteConfig.institution}" data-i18n-de="${siteConfig.title_de || siteConfig.title} &bull; ${siteConfig.institution_de || siteConfig.institution}" data-i18n-zh="${siteConfig.title_zh || siteConfig.title} &bull; ${siteConfig.institution_zh || siteConfig.institution}">${siteConfig.title} &bull; ${siteConfig.institution}</p>
-        <p class="profile-areas" data-i18n-pt="Macroeconomia &bull; Economia Monetária &bull; Economia Regional &bull; Ciência de Dados" data-i18n-en="Macroeconomics &bull; Monetary Economics &bull; Regional Economics &bull; Data Science" data-i18n-es="Macroeconomía &bull; Economía Monetaria &bull; Economía Regional &bull; Ciencia de Datos" data-i18n-de="Makroökonomie &bull; Geldpolitik &bull; Regionalökonomie &bull; Data Science" data-i18n-zh="宏观经济学 &bull; 货币经济学 &bull; 区域经济学 &bull; 数据科学">Macroeconomia &bull; Economia Monetária &bull; Economia Regional &bull; Ciência de Dados</p>
+        <h1 class="profile-name notranslate" translate="no">${siteConfig.name}</h1>
+        <p class="profile-title">${siteConfig.title} &bull; ${siteConfig.institution}</p>
+        <p class="profile-areas">${siteConfig.areas || 'Macroeconomia &bull; Consumo e Poupança &bull; Economia Regional &bull; Ciência de Dados'}</p>
         <p class="profile-location">
           <svg class="inline-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          <span data-i18n-pt="${siteConfig.location}" data-i18n-en="${siteConfig.location_en}" data-i18n-es="${siteConfig.location_es || siteConfig.location}" data-i18n-de="${siteConfig.location_de || siteConfig.location}" data-i18n-zh="${siteConfig.location_zh || siteConfig.location}">${siteConfig.location}</span>
+          <span class="notranslate" translate="no">${siteConfig.location}</span>
         </p>
-        <p class="profile-bio" data-i18n-pt="${(siteConfig.bio || '').trim()}" data-i18n-en="${(siteConfig.bio_en || '').trim()}" data-i18n-es="${(siteConfig.bio_es || siteConfig.bio || '').trim()}" data-i18n-de="${(siteConfig.bio_de || siteConfig.bio || '').trim()}" data-i18n-zh="${(siteConfig.bio_zh || siteConfig.bio || '').trim()}">${(siteConfig.bio || '').trim()}</p>
+        <p class="profile-bio">${(siteConfig.bio || '').trim()}</p>
 
         <div class="profile-links-bar">
-          ${siteConfig.social && siteConfig.social.lattes ? `<a class="prof-link" href="${siteConfig.social.lattes}" target="_blank" rel="noreferrer">Lattes</a> <span>&bull;</span>` : ''}
-          ${siteConfig.social && siteConfig.social.google_scholar ? `<a class="prof-link" href="${siteConfig.social.google_scholar}" target="_blank" rel="noreferrer">Google Scholar</a> <span>&bull;</span>` : ''}
-          ${siteConfig.social && siteConfig.social.orcid ? `<a class="prof-link" href="${siteConfig.social.orcid}" target="_blank" rel="noreferrer">ORCID</a> <span>&bull;</span>` : ''}
-          ${siteConfig.social && siteConfig.social.github ? `<a class="prof-link" href="${siteConfig.social.github}" target="_blank" rel="noreferrer">GitHub</a> <span>&bull;</span>` : ''}
-          ${siteConfig.social && siteConfig.social.linkedin ? `<a class="prof-link" href="${siteConfig.social.linkedin}" target="_blank" rel="noreferrer">LinkedIn</a> <span>&bull;</span>` : ''}
-          ${siteConfig.social && siteConfig.social.instagram ? `<a class="prof-link" href="${siteConfig.social.instagram}" target="_blank" rel="noreferrer">Instagram</a> <span>&bull;</span>` : ''}
+          ${siteConfig.social && siteConfig.social.lattes ? `<a class="prof-link notranslate" translate="no" href="${siteConfig.social.lattes}" target="_blank" rel="noreferrer">Lattes</a> <span>&bull;</span>` : ''}
+          ${siteConfig.social && siteConfig.social.google_scholar ? `<a class="prof-link notranslate" translate="no" href="${siteConfig.social.google_scholar}" target="_blank" rel="noreferrer">Google Scholar</a> <span>&bull;</span>` : ''}
+          ${siteConfig.social && siteConfig.social.orcid ? `<a class="prof-link notranslate" translate="no" href="${siteConfig.social.orcid}" target="_blank" rel="noreferrer">ORCID</a> <span>&bull;</span>` : ''}
+          ${siteConfig.social && siteConfig.social.github ? `<a class="prof-link notranslate" translate="no" href="${siteConfig.social.github}" target="_blank" rel="noreferrer">GitHub</a> <span>&bull;</span>` : ''}
+          ${siteConfig.social && siteConfig.social.linkedin ? `<a class="prof-link notranslate" translate="no" href="${siteConfig.social.linkedin}" target="_blank" rel="noreferrer">LinkedIn</a> <span>&bull;</span>` : ''}
+          ${siteConfig.social && siteConfig.social.instagram ? `<a class="prof-link notranslate" translate="no" href="${siteConfig.social.instagram}" target="_blank" rel="noreferrer">Instagram</a> <span>&bull;</span>` : ''}
           ${siteConfig.social && siteConfig.social.email ? `<a class="prof-link" href="${siteConfig.social.email}">E-mail</a>` : ''}
-          <a class="cv-download-pill" href="${siteConfig.cv_pdf}" target="_blank" rel="noreferrer" data-i18n="cv_download_btn">&darr; Baixar CV (PDF)</a>
+          <a class="cv-download-pill" href="${siteConfig.cv_pdf}" target="_blank" rel="noreferrer">&darr; Baixar CV (PDF)</a>
         </div>
       </div>
     </section>
 
-    <!-- Selected Publications (Strictly research papers) -->
+    <!-- Selected Publications -->
     <section class="academic-section">
       <div class="section-header-row">
-        <h2 class="section-title" data-i18n="selected_publications">Publicações selecionadas</h2>
-        <a class="section-more-link" href="publications.html" data-i18n="view_all_pubs">Todas as publicações &rarr;</a>
+        <h2 class="section-title">Publicações selecionadas</h2>
+        <a class="section-more-link" href="publications.html">Todas as publicações &rarr;</a>
       </div>
       <div class="publications-stream">
         ${selectedPubs.map(p => renderPubEntry(p)).join('\n')}
       </div>
     </section>
 
-    <!-- Research Agenda (Compact and placed AFTER publications) -->
+    <!-- Research Agenda (Placed AFTER publications) -->
     <section class="academic-section">
       <div class="section-header-row">
-        <h2 class="section-title" data-i18n="research_agenda">Agenda de Pesquisa</h2>
-        <a class="section-more-link" href="research.html" data-i18n="nav_research">Ver mais &rarr;</a>
+        <h2 class="section-title">Agenda de Pesquisa</h2>
+        <a class="section-more-link" href="research.html">Ver mais &rarr;</a>
       </div>
       <div class="research-agenda-compact">
-        ${siteConfig.research_areas.map(area => `
+        ${(siteConfig.research_areas || []).map(area => `
           <div class="agenda-compact-item">
             <div class="agenda-compact-header">
               <span class="agenda-compact-num">${area.number}.</span>
-              <h3 class="agenda-compact-title" data-i18n-pt="${area.name}" data-i18n-en="${area.name_en}" data-i18n-es="${area.name_es || area.name}" data-i18n-de="${area.name_de || area.name}" data-i18n-zh="${area.name_zh || area.name}">${area.name}</h3>
+              <h3 class="agenda-compact-title">${area.name}</h3>
             </div>
-            <p class="agenda-compact-desc" data-i18n-pt="${area.description}" data-i18n-en="${area.description_en}" data-i18n-es="${area.description_es || area.description}" data-i18n-de="${area.description_de || area.description}" data-i18n-zh="${area.description_zh || area.description}">${area.description}</p>
+            <p class="agenda-compact-desc">${area.description}</p>
           </div>
         `).join('\n')}
       </div>
     </section>
 
     <!-- Recent Posts -->
+    ${recentPosts.length ? `
     <section class="academic-section">
       <div class="section-header-row">
-        <h2 class="section-title" data-i18n="recent_posts">Últimos textos</h2>
-        <a class="section-more-link" href="blog.html" data-i18n="view_all_posts">Ver todos os textos &rarr;</a>
+        <h2 class="section-title">Últimos textos</h2>
+        <a class="section-more-link" href="blog.html">Ver todos os textos &rarr;</a>
       </div>
       <div class="posts-stream">
         ${recentPosts.map(post => `
@@ -792,17 +896,18 @@ function buildHome() {
               <a href="${post.url}">${post.title}</a>
             </h3>
             <p class="post-stream-summary">${post.summary}</p>
-            <a class="post-read-link" href="${post.url}" data-i18n="read_more">Ler texto &rarr;</a>
+            <a class="post-read-link" href="${post.url}">Ler texto &rarr;</a>
           </article>
         `).join('\n')}
       </div>
-    </section>
+    </section>` : ''}
 
+    ${sampleProjects.length ? `
     <!-- Featured Applied Projects -->
     <section class="academic-section">
       <div class="section-header-row">
-        <h2 class="section-title" data-i18n="nav_projects">Projetos em destaque</h2>
-        <a class="section-more-link" href="projects.html" data-i18n="nav_projects">Todos os projetos &rarr;</a>
+        <h2 class="section-title">Projetos em destaque</h2>
+        <a class="section-more-link" href="projects.html">Todos os projetos &rarr;</a>
       </div>
       <div class="projects-stream">
         ${sampleProjects.map(proj => `
@@ -813,7 +918,7 @@ function buildHome() {
           </div>
         `).join('\n')}
       </div>
-    </section>
+    </section>` : ''}
   `;
 
   fs.writeFileSync(path.join(ROOT_DIR, 'index.html'), renderHtmlDocument({
@@ -829,44 +934,37 @@ function buildHome() {
 function buildResearch() {
   const content = `
     <header style="margin-bottom: 40px;">
-      <h1 style="font-size: 2.2rem; margin-bottom: 8px;" data-i18n="nav_research">Pesquisa</h1>
-      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;" data-i18n-pt="Produção científica, artigos publicados e agenda de investigação acadêmica." data-i18n-en="Scientific production, published articles, and academic research agenda." data-i18n-es="Producción científica, artículos publicados y agenda de investigación académica." data-i18n-de="Wissenschaftliche Produktion, publizierte Artikel und akademische Forschungsagenda." data-i18n-zh="学术产出、已发表论文及学术研究议程。">Produção científica, artigos publicados e agenda de investigação acadêmica.</p>
+      <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Pesquisa</h1>
+      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Produção científica, artigos publicados e agenda de investigação acadêmica.</p>
     </header>
 
     <!-- Publicações Científicas (FIRST!) -->
     <section class="academic-section">
       <div class="section-header-row">
-        <h2 class="section-title" data-i18n="all_publications">Publicações Científicas</h2>
-        <a class="section-more-link" href="publications.html" data-i18n="view_all_pubs">Visão detalhada &rarr;</a>
+        <h2 class="section-title">Publicações Científicas</h2>
+        <a class="section-more-link" href="publications.html">Visão detalhada &rarr;</a>
       </div>
       <div class="publications-stream">
         ${publications.map(p => renderPubEntry(p)).join('\n')}
       </div>
     </section>
 
-    <!-- Agenda de Pesquisa (AFTER publications, space-efficient compact layout) -->
+    <!-- Agenda de Pesquisa (AFTER publications) -->
     <section class="academic-section">
       <div class="section-header-row">
-        <h2 class="section-title" data-i18n="research_agenda">Agenda de Pesquisa</h2>
+        <h2 class="section-title">Agenda de Pesquisa</h2>
       </div>
       <div class="research-agenda-compact">
-        ${siteConfig.research_areas.map(area => `
+        ${(siteConfig.research_areas || []).map(area => `
           <div class="agenda-compact-item" id="area-${area.number}">
             <div class="agenda-compact-header">
               <span class="agenda-compact-num">${area.number}.</span>
-              <h3 class="agenda-compact-title" data-i18n-pt="${area.name}" data-i18n-en="${area.name_en}" data-i18n-es="${area.name_es || area.name}" data-i18n-de="${area.name_de || area.name}" data-i18n-zh="${area.name_zh || area.name}">${area.name}</h3>
+              <h3 class="agenda-compact-title">${area.name}</h3>
             </div>
-            <p class="agenda-compact-desc" data-i18n-pt="${area.description}" data-i18n-en="${area.description_en}" data-i18n-es="${area.description_es || area.description}" data-i18n-de="${area.description_de || area.description}" data-i18n-zh="${area.description_zh || area.description}">${area.description}</p>
+            <p class="agenda-compact-desc">${area.description}</p>
           </div>
         `).join('\n')}
       </div>
-    </section>
-
-    <!-- Nota para Projetos Aplicados -->
-    <section class="academic-section" style="border-top: 1px solid var(--line); padding-top: 24px;">
-      <p style="font-size: 0.95rem; color: var(--muted);">
-        Para pipelines de software, rotinas de dados e tecnologia social / extensão comunitária, consulte <a href="projects.html" style="font-weight: 600;">Projetos &rarr;</a>
-      </p>
     </section>
   `;
 
@@ -881,17 +979,17 @@ function buildResearch() {
 // --- 6.3 PUBLICATIONS PAGE (publications.html) ---
 function buildPublications() {
   const groups = [
-    { cat: 'journal_article', labelKey: 'pub_journal_articles', label: 'Artigos em periódicos' },
-    { cat: 'conference_paper', labelKey: 'pub_conference_papers', label: 'Trabalhos em anais de congressos' },
-    { cat: 'working_paper', labelKey: 'pub_working_papers', label: 'Working Papers' },
-    { cat: 'work_in_progress', labelKey: 'pub_work_in_progress', label: 'Trabalhos em elaboração' },
-    { cat: 'monograph', labelKey: 'pub_monographs', label: 'Monografias e Trabalhos de Conclusão de Curso (TCC)' }
+    { cat: 'journal_article', label: 'Artigos em periódicos' },
+    { cat: 'conference_paper', label: 'Trabalhos em anais de congressos' },
+    { cat: 'working_paper', label: 'Working Papers' },
+    { cat: 'work_in_progress', label: 'Trabalhos em elaboração' },
+    { cat: 'monograph', label: 'Monografias e Trabalhos de Conclusão de Curso (TCC)' }
   ];
 
   const content = `
     <header style="margin-bottom: 40px;">
-      <h1 style="font-size: 2.2rem; margin-bottom: 8px;" data-i18n="all_publications">Publicações &amp; Working Papers</h1>
-      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;" data-i18n-pt="Produção científica, artigos em periódicos, apresentações em congressos e textos para discussão." data-i18n-en="Scientific production, journal articles, conference papers, and working papers.">Produção científica, artigos em periódicos, apresentações em congressos e textos para discussão.</p>
+      <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Publicações &amp; Working Papers</h1>
+      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Produção científica, artigos em periódicos, apresentações em congressos e textos para discussão.</p>
     </header>
 
     ${groups.map(group => {
@@ -899,7 +997,7 @@ function buildPublications() {
       if (!items.length) return '';
       return `
         <section class="publications-group">
-          <h2 class="pub-group-heading" data-i18n="${group.labelKey}">${group.label}</h2>
+          <h2 class="pub-group-heading">${group.label}</h2>
           <div class="publications-stream">
             ${items.map(p => renderPubEntry(p)).join('\n')}
           </div>
@@ -923,13 +1021,13 @@ function buildTeaching() {
 
   const content = `
     <header style="margin-bottom: 40px;">
-      <h1 style="font-size: 2.2rem; margin-bottom: 8px;" data-i18n="nav_teaching">Ensino</h1>
-      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;" data-i18n-pt="Disciplinas de graduação, materiais didáticos, listas de exercícios e atividades de monitoria docente." data-i18n-en="Undergraduate courses, teaching materials, problem sets, and teaching assistantships.">Disciplinas de graduação, materiais didáticos, listas de exercícios e atividades de monitoria docente.</p>
+      <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Ensino</h1>
+      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Disciplinas de graduação, materiais didáticos e atividades de monitoria docente.</p>
     </header>
 
     <!-- Disciplinas -->
     <section class="academic-section">
-      <h2 class="section-title" style="margin-bottom: 24px;" data-i18n="teaching_courses">Disciplinas</h2>
+      <h2 class="section-title" style="margin-bottom: 24px;">Disciplinas</h2>
       <div class="courses-container">
         ${courses.map(course => `
           <article class="course-entry" id="${course.id}">
@@ -938,18 +1036,18 @@ function buildTeaching() {
             <p class="course-desc-p">${course.description}</p>
 
             ${course.syllabus && course.syllabus.length ? `
-              <h4 class="course-subheading" data-i18n="syllabus">Ementa:</h4>
+              <h4 class="course-subheading">Ementa:</h4>
               <ul class="course-syllabus-list">
                 ${course.syllabus.map(s => `<li>${s}</li>`).join('')}
               </ul>
             ` : ''}
 
             ${course.materials && course.materials.length ? `
-              <h4 class="course-subheading" data-i18n="materials">Materiais Didáticos &amp; Downloads:</h4>
+              <h4 class="course-subheading">Materiais Didáticos &amp; Downloads:</h4>
               <div class="course-materials-grid">
                 ${course.materials.map(m => `
                   <a class="material-link-item" href="${m.url}" target="_blank" rel="noreferrer">
-                    <span class="material-type-pill">${m.type || 'PDF'}</span>
+                    <span class="material-type-pill notranslate" translate="no">${m.type || 'PDF'}</span>
                     <span>${m.title}</span>
                   </a>
                 `).join('\n')}
@@ -962,7 +1060,7 @@ function buildTeaching() {
 
     <!-- Atividades de Monitoria -->
     <section class="academic-section" style="margin-top: 48px;">
-      <h2 class="section-title" style="margin-bottom: 24px;" data-i18n="teaching_assistant">Atividades de Monitoria Docente</h2>
+      <h2 class="section-title" style="margin-bottom: 24px;">Atividades de Monitoria Docente</h2>
       <div class="teaching-timeline">
         ${assistantships.map(item => `
           <div class="assistantship-row">
@@ -985,32 +1083,42 @@ function buildTeaching() {
   }));
 }
 
-// --- 6.5 PROJECTS PAGE (projects.html - Applied, Tools, Extension) ---
+// --- 6.5 PROJECTS PAGE (projects.html) ---
 function buildProjects() {
+  const projectsHtml = projects.length
+    ? `
+      <div class="projects-stream">
+        ${projects.map(proj => `
+          <article class="project-entry" id="${proj.id}">
+            <h2 class="project-entry-title">${proj.title}</h2>
+            <p class="project-entry-meta">${proj.category} &bull; <strong>Status:</strong> ${proj.status}</p>
+            <p class="project-entry-desc">${proj.description}</p>
+            <div class="project-tech-line">
+              <strong>Tecnologias:</strong> ${(proj.technologies || []).join(', ')}
+            </div>
+            <div class="pub-actions-row">
+              ${proj.github ? `<a class="pub-pill-link" href="${proj.github}" target="_blank" rel="noreferrer">Código GitHub</a>` : ''}
+              ${proj.demo ? `<a class="pub-pill-link" href="${proj.demo}" target="_blank" rel="noreferrer">Demonstração / Aplicação</a>` : ''}
+              ${proj.paper ? `<a class="pub-pill-link" href="${proj.paper}">Paper Relacionado</a>` : ''}
+              ${proj.blog ? `<a class="pub-pill-link" href="${proj.blog}">Texto no Blog</a>` : ''}
+            </div>
+          </article>
+        `).join('\n')}
+      </div>
+    `
+    : `
+      <div class="under-construction-box">
+        <h2 class="under-construction-title">Em construção</h2>
+        <p class="under-construction-desc">Esta página está em construção. Novos projetos serão publicados em breve.</p>
+      </div>
+    `;
+
   const content = `
     <header style="margin-bottom: 40px;">
-      <h1 style="font-size: 2.2rem; margin-bottom: 8px;" data-i18n="nav_projects">Projetos</h1>
-      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;" data-i18n-pt="Projetos aplicados, rotinas de ciência de dados, pipelines estatísticos e tecnologia social / extensão." data-i18n-en="Applied projects, data science routines, statistical pipelines, and social technology / university extension.">Projetos aplicados, rotinas de ciência de dados, pipelines estatísticos e tecnologia social / extensão.</p>
+      <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Projetos</h1>
+      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Projetos aplicados, rotinas de economia computacional e ciência de dados.</p>
     </header>
-
-    <div class="projects-stream">
-      ${projects.map(proj => `
-        <article class="project-entry" id="${proj.id}">
-          <h2 class="project-entry-title">${proj.title}</h2>
-          <p class="project-entry-meta">${proj.category} &bull; <strong>Status:</strong> ${proj.status}</p>
-          <p class="project-entry-desc">${proj.description}</p>
-          <div class="project-tech-line">
-            <strong>Tecnologias:</strong> ${proj.technologies.join(', ')}
-          </div>
-          <div class="pub-actions-row">
-            ${proj.github ? `<a class="pub-pill-link" href="${proj.github}" target="_blank" rel="noreferrer" data-i18n="code">Código GitHub</a>` : ''}
-            ${proj.demo ? `<a class="pub-pill-link" href="${proj.demo}" target="_blank" rel="noreferrer">Demonstração / Aplicação</a>` : ''}
-            ${proj.paper ? `<a class="pub-pill-link" href="${proj.paper}">Paper Relacionado</a>` : ''}
-            ${proj.blog ? `<a class="pub-pill-link" href="${proj.blog}">Texto no Blog</a>` : ''}
-          </div>
-        </article>
-      `).join('\n')}
-    </div>
+    ${projectsHtml}
   `;
 
   fs.writeFileSync(path.join(ROOT_DIR, 'projects.html'), renderHtmlDocument({
@@ -1023,21 +1131,25 @@ function buildProjects() {
 
 // --- 6.6 BLOG PAGE (blog.html) & POSTS ---
 function buildBlog() {
-  const categories = siteConfig.blog_categories || [...new Set(compiledPosts.map(p => p.category).filter(Boolean))];
+  const categories = [...new Set(compiledPosts.map(p => p.category).filter(Boolean))];
 
-  const content = `
-    <header style="margin-bottom: 30px;">
-      <h1 style="font-size: 2.2rem; margin-bottom: 8px;" data-i18n="nav_blog">Blog Acadêmico</h1>
-      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;" data-i18n-pt="Textos, notas de pesquisa, tutoriais de programação em Python/R e análises de conjuntura econômica." data-i18n-en="Essays, research notes, Python/R programming tutorials, and macroeconomic analysis.">Textos, notas de pesquisa, tutoriais de programação em Python/R e análises de conjuntura econômica.</p>
-    </header>
-
+  const filtersHtml = compiledPosts.length > 1 ? `
     <div class="blog-filters-bar">
-      <input type="search" id="blog-search-field" class="blog-search-field" placeholder="Buscar textos..." data-i18n-ph="search_placeholder">
+      <input type="search" id="blog-search-field" class="blog-search-field" placeholder="Buscar textos...">
       <div class="filter-pills-list">
-        <button class="filter-tag-pill active" data-category="all" data-i18n="all">Todos</button>
+        <button class="filter-tag-pill active" data-category="all">Todos</button>
         ${categories.map(c => `<button class="filter-tag-pill" data-category="${c}">${c}</button>`).join('\n')}
       </div>
     </div>
+  ` : '';
+
+  const content = `
+    <header style="margin-bottom: 30px;">
+      <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Blog Acadêmico</h1>
+      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Notas técnicas, materiais computacionais e estudos em macroeconomia quantitativa.</p>
+    </header>
+
+    ${filtersHtml}
 
     <div class="posts-stream" id="blog-stream">
       ${compiledPosts.map(post => `
@@ -1051,7 +1163,7 @@ function buildBlog() {
             <a href="${post.url}">${post.title}</a>
           </h2>
           <p class="post-stream-summary">${post.summary}</p>
-          <a class="post-read-link" href="${post.url}" data-i18n="read_more">Ler texto &rarr;</a>
+          <a class="post-read-link" href="${post.url}">Ler texto &rarr;</a>
         </article>
       `).join('\n')}
     </div>
@@ -1075,7 +1187,7 @@ function buildBlog() {
             <span>${post.category}</span>
           </div>
           <h1 class="single-post-title">${post.title}</h1>
-          <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por ${siteConfig.name}</p>
+          <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por <span class="notranslate" translate="no">${siteConfig.name}</span></p>
         </header>
 
         <div class="single-post-body">
@@ -1085,7 +1197,7 @@ function buildBlog() {
         </div>
 
         <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
-          <a href="../blog.html" style="font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;">&larr; Voltar para todos os textos</a>
+          <a href="../blog.html" style="font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;">&larr; Voltar para o Blog</a>
         </footer>
       </article>
     `;
@@ -1105,6 +1217,9 @@ function buildBlog() {
 function buildCv() {
   const education = Array.isArray(cvData.education) ? cvData.education : [];
   const experience = Array.isArray(cvData.experience) ? cvData.experience : [];
+  const researchExtension = Array.isArray(cvData.research_and_extension) ? cvData.research_and_extension : [];
+  const technicalEvents = Array.isArray(cvData.technical_and_events) ? cvData.technical_and_events : [];
+  const conferenceHighlights = Array.isArray(cvData.conference_highlights) ? cvData.conference_highlights : [];
   const skills = Array.isArray(cvData.skills) ? cvData.skills : [];
   const languages = Array.isArray(cvData.languages) ? cvData.languages : [];
 
@@ -1112,73 +1227,116 @@ function buildCv() {
     <div class="cv-wrap">
       <header class="cv-hero-bar">
         <div>
-          <h1 style="font-size: 2.2rem; margin-bottom: 4px;" data-i18n="nav_cv">Currículo</h1>
+          <h1 style="font-size: 2.2rem; margin-bottom: 4px;">Currículo Vitae</h1>
           <p style="font-size: 1.05rem; font-family: var(--font-sans); color: var(--ink); margin-bottom: 2px;">
-            ${siteConfig.name} &bull;
-            <span data-i18n-pt="${siteConfig.title}" data-i18n-en="${siteConfig.title_en}" data-i18n-es="${siteConfig.title_es || siteConfig.title}" data-i18n-de="${siteConfig.title_de || siteConfig.title}" data-i18n-zh="${siteConfig.title_zh || siteConfig.title}">${siteConfig.title}</span>
+            <span class="notranslate" translate="no">${siteConfig.name}</span> &bull;
+            <span>${siteConfig.title}</span>
           </p>
           <p style="font-size: 0.9rem; font-family: var(--font-sans); color: var(--muted); margin: 0;">
-            <span data-i18n-pt="${siteConfig.institution}" data-i18n-en="${siteConfig.institution_en}" data-i18n-es="${siteConfig.institution_es || siteConfig.institution}" data-i18n-de="${siteConfig.institution_de || siteConfig.institution}" data-i18n-zh="${siteConfig.institution_zh || siteConfig.institution}">${siteConfig.institution}</span> &bull;
-            <span data-i18n-pt="${siteConfig.location}" data-i18n-en="${siteConfig.location_en}" data-i18n-es="${siteConfig.location_es || siteConfig.location}" data-i18n-de="${siteConfig.location_de || siteConfig.location}" data-i18n-zh="${siteConfig.location_zh || siteConfig.location}">${siteConfig.location}</span>
+            <span>${siteConfig.institution}</span> &bull;
+            <span class="notranslate" translate="no">${siteConfig.location}</span>
           </p>
         </div>
         <div>
-          <a class="cv-download-pill" href="${siteConfig.cv_pdf}" target="_blank" rel="noreferrer" data-i18n="cv_download_btn">&darr; Baixar CV (PDF)</a>
+          <a class="cv-download-pill" href="${siteConfig.cv_pdf}" target="_blank" rel="noreferrer">&darr; Baixar CV (PDF)</a>
         </div>
       </header>
 
       <!-- Formação Acadêmica -->
       <section class="cv-section-block">
-        <h2 class="cv-section-heading" data-i18n="cv_education">Formação Acadêmica</h2>
+        <h2 class="cv-section-heading">Formação Acadêmica</h2>
         <div class="cv-timeline-grid">
           ${education.map(ed => `
             <div class="cv-entry-row">
               <span class="cv-date-col">${ed.period}</span>
               <div class="cv-detail-col">
-                <strong data-i18n-pt="${ed.degree}" data-i18n-en="${ed.degree_en || ed.degree}">${ed.degree}</strong>
-                <span data-i18n-pt="${ed.institution}" data-i18n-en="${ed.institution_en || ed.institution}">${ed.institution}</span>
+                <strong>${ed.degree}</strong>
+                <span>${ed.institution}</span>
+                ${ed.details ? `<p>${ed.details}</p>` : ''}
               </div>
             </div>
           `).join('\n')}
         </div>
       </section>
 
-      <!-- Experiência Acadêmica e Ensino -->
+      <!-- Atuação Acadêmica, Ensino e Pesquisa -->
       <section class="cv-section-block">
-        <h2 class="cv-section-heading" data-i18n="cv_experience">Experiência Acadêmica e Ensino</h2>
+        <h2 class="cv-section-heading">Atuação Acadêmica, Ensino e Grupos de Pesquisa</h2>
         <div class="cv-timeline-grid">
           ${experience.map(exp => `
             <div class="cv-entry-row">
               <span class="cv-date-col">${exp.period}</span>
               <div class="cv-detail-col">
-                <strong data-i18n-pt="${exp.role}" data-i18n-en="${exp.role_en || exp.role}">${exp.role}</strong>
-                <span data-i18n-pt="${exp.institution}" data-i18n-en="${exp.institution_en || exp.institution}">${exp.institution}</span>
+                <strong>${exp.role}</strong>
+                <span>${exp.institution}</span>
+                ${exp.details ? `<p>${exp.details}</p>` : ''}
               </div>
             </div>
           `).join('\n')}
         </div>
       </section>
 
-      <!-- Produção Científica -->
+      ${researchExtension.length ? `
+      <!-- Projetos de Pesquisa e Extensão -->
       <section class="cv-section-block">
-        <h2 class="cv-section-heading" data-i18n="all_publications">Publicações Científicas</h2>
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-          ${publications.map(p => `
+        <h2 class="cv-section-heading">Projetos de Pesquisa e Extensão (Lattes)</h2>
+        <div class="cv-timeline-grid">
+          ${researchExtension.map(item => `
+            <div class="cv-entry-row">
+              <span class="cv-date-col">${item.period}</span>
+              <div class="cv-detail-col">
+                <strong>${item.role}</strong>
+                <span>${item.institution}</span>
+                ${item.details ? `<p>${item.details}</p>` : ''}
+              </div>
+            </div>
+          `).join('\n')}
+        </div>
+      </section>` : ''}
+
+      <!-- Produção Bibliográfica -->
+      <section class="cv-section-block">
+        <h2 class="cv-section-heading">Artigos em Periódicos</h2>
+        <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
+          ${publications.filter(p => p.category === 'journal_article').map(p => `
             <div>
-              <strong>${p.title}</strong> (${p.year}). <em>${p.journal || p.venue}</em>.
+              <strong>${p.title}</strong> (${p.year}). <em>${p.journal}</em>${p.volume ? `, v. ${p.volume}` : ''}${p.pages ? `, p. ${p.pages}` : ''}.
               <a href="publications.html#${p.id}">[Ver detalhes]</a>
             </div>
           `).join('\n')}
         </div>
+        ${conferenceHighlights.length ? `
+          <h3 style="font-size: 1.05rem; margin-bottom: 10px;">Trabalhos completos em anais de congressos</h3>
+          <ul style="font-family: var(--font-sans); font-size: 0.9rem; line-height: 1.65; color: var(--ink-secondary); padding-left: 18px; margin: 0;">
+            ${conferenceHighlights.map(c => `<li style="margin-bottom: 6px;">${c}</li>`).join('\n')}
+          </ul>
+        ` : ''}
       </section>
+
+      ${technicalEvents.length ? `
+      <!-- Produção Técnica e Eventos -->
+      <section class="cv-section-block">
+        <h2 class="cv-section-heading">Produção Técnica, Cursos e Organização de Eventos</h2>
+        <div class="cv-timeline-grid">
+          ${technicalEvents.map(item => `
+            <div class="cv-entry-row">
+              <span class="cv-date-col">${item.period}</span>
+              <div class="cv-detail-col">
+                <strong>${item.role}</strong>
+                <span>${item.institution}</span>
+              </div>
+            </div>
+          `).join('\n')}
+        </div>
+      </section>` : ''}
 
       <!-- Habilidades e Ferramentas -->
       <section class="cv-section-block">
-        <h2 class="cv-section-heading" data-i18n="cv_skills">Habilidades e Ferramentas</h2>
+        <h2 class="cv-section-heading">Habilidades e Ferramentas</h2>
         <div style="font-family: var(--font-sans); font-size: 0.94rem; line-height: 1.8; color: var(--ink-secondary);">
           ${skills.map(s => `
             <p style="margin-bottom: 8px;">
-              <strong data-i18n-pt="${s.category}" data-i18n-en="${s.category_en || s.category}">${s.category}:</strong> ${s.items}
+              <strong>${s.category}:</strong> <span class="notranslate" translate="no">${s.items}</span>
             </p>
           `).join('\n')}
         </div>
@@ -1187,13 +1345,13 @@ function buildCv() {
       <!-- Idiomas -->
       ${languages.length ? `
         <section class="cv-section-block">
-          <h2 class="cv-section-heading" data-i18n="cv_languages">Idiomas</h2>
+          <h2 class="cv-section-heading">Idiomas</h2>
           <div class="cv-timeline-grid">
             ${languages.map(lang => `
               <div class="cv-entry-row">
-                <span class="cv-date-col"><strong data-i18n-pt="${lang.language}" data-i18n-en="${lang.language_en || lang.language}">${lang.language}</strong></span>
+                <span class="cv-date-col"><strong>${lang.language}</strong></span>
                 <div class="cv-detail-col">
-                  <span data-i18n-pt="${lang.level}" data-i18n-en="${lang.level_en || lang.level}">${lang.level}</span>
+                  <span>${lang.level}</span>
                 </div>
               </div>
             `).join('\n')}
@@ -1204,7 +1362,7 @@ function buildCv() {
       <!-- Perfis Acadêmicos -->
       <section class="cv-section-block">
         <h2 class="cv-section-heading">Perfis Acadêmicos &amp; Redes</h2>
-        <p style="font-family: var(--font-sans); font-size: 0.94rem; line-height: 1.8;">
+        <p class="notranslate" translate="no" style="font-family: var(--font-sans); font-size: 0.94rem; line-height: 1.8;">
           ${siteConfig.social && siteConfig.social.lattes ? `<a href="${siteConfig.social.lattes}" target="_blank" rel="noreferrer">&bull; Currículo Lattes (CNPq)</a><br>` : ''}
           ${siteConfig.social && siteConfig.social.google_scholar ? `<a href="${siteConfig.social.google_scholar}" target="_blank" rel="noreferrer">&bull; Perfil no Google Scholar</a><br>` : ''}
           ${siteConfig.social && siteConfig.social.orcid ? `<a href="${siteConfig.social.orcid}" target="_blank" rel="noreferrer">&bull; ORCID</a><br>` : ''}

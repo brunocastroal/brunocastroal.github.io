@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modelo de Agentes Heterogêneos com Escolhas Ocupacionais e Custos de Transição: Uma Comparação entre VFI e DC-EGM | Bruno Castro Alves</title>
+  <meta name="description" content="Implementação e comparação rigorosa entre a Iteração da Função Valor (VFI) e o Discrete-Continuous Endogenous Grid Method (DC-EGM) com Upper Envelope em modelo com escolhas ocupacionais discretas e custos fixos de transição.">
+  <meta name="author" content="Bruno Castro Alves">
+  <link rel="canonical" href="https://brunocastroal.github.io/posts/2026-11-12-dc-egm-vfi.html">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Modelo de Agentes Heterogêneos com Escolhas Ocupacionais e Custos de Transição: Uma Comparação entre VFI e DC-EGM | Bruno Castro Alves">
+  <meta property="og:description" content="Implementação e comparação rigorosa entre a Iteração da Função Valor (VFI) e o Discrete-Continuous Endogenous Grid Method (DC-EGM) com Upper Envelope em modelo com escolhas ocupacionais discretas e custos fixos de transição.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://brunocastroal.github.io/posts/2026-11-12-dc-egm-vfi.html">
+  <meta property="og:image" content="https://brunocastroal.github.io/assets/images/avatar.jpeg">
+  <meta name="twitter:card" content="summary">
+
+  <!-- JSON-LD Structured Data for Academic Person -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Bruno Castro Alves",
+    "jobTitle": "Doutorando em Economia",
+    "worksFor": {
+      "@type": "CollegeOrUniversity",
+      "name": "FEARP — Universidade de São Paulo (USP)"
+    },
+    "url": "https://brunocastroal.github.io",
+    "sameAs": [
+      "https://lattes.cnpq.br/4936269417036697",
+      "https://scholar.google.com.br/citations?user=G48yrGsAAAAJ&hl=pt-BR&oi=ao",
+      "https://orcid.org/0009-0009-0801-1218",
+      "https://github.com/brunocastroal",
+      "https://www.linkedin.com/in/brunocastroalves",
+      "https://www.instagram.com/brun0_castr0/"
+]
+  }
+  </script>
+
+  <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="site-wrapper">
+    
+    <header class="site-header" role="banner">
+      <div class="site-header-inner">
+        <div class="brand">
+          <a class="brand-link" href="../index.html">
+            <span class="brand-name notranslate" translate="no">Bruno Castro Alves</span>
+          </a>
+        </div>
+
+        <nav class="nav-menu" id="nav-menu" role="navigation" aria-label="Navegação principal">
+          <ul class="nav-list">
+            <li><a class="nav-link " href="../index.html">Início</a></li>
+            <li><a class="nav-link " href="../research.html">Pesquisa</a></li>
+            <li><a class="nav-link " href="../teaching.html">Ensino</a></li>
+            <li><a class="nav-link " href="../projects.html">Projetos</a></li>
+            <li><a class="nav-link active" href="../blog.html">Blog</a></li>
+            <li><a class="nav-link " href="../cv.html">CV</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-controls">
+          <!-- Google Translate PT / EN Switcher -->
+          <div class="lang-switch-wrap notranslate" translate="no" role="group" aria-label="Idioma / Language">
+            <button class="lang-switch-btn active" type="button" data-lang="pt" aria-label="Português" title="Português">PT</button>
+            <span class="lang-sep">/</span>
+            <button class="lang-switch-btn" type="button" data-lang="en" aria-label="English (Google Translate)" title="Translate to English via Google Translate">EN</button>
+          </div>
+
+          <!-- Light/Dark Mode Switcher -->
+          <button class="control-btn theme-toggle" id="theme-toggle" type="button" aria-label="Alternar tema" title="Alternar tema">
+            <svg class="icon icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg class="icon icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+
+          <!-- Search Trigger -->
+          <button class="control-btn search-trigger" id="search-trigger" type="button" aria-label="Buscar" title="Buscar (Ctrl+K)">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+
+          <!-- Hamburger -->
+          <button class="control-btn hamburger" id="hamburger-btn" type="button" aria-label="Menu" aria-expanded="false">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+  
+    <main class="site-main" id="main-content">
+      
+      <article class="single-post-wrap">
+        <header style="margin-bottom: 32px;">
+          <div class="single-post-meta">
+            <span>2026-11-12</span> &bull;
+            <span>15 min de leitura</span> &bull;
+            <span>Economia Computacional</span>
+          </div>
+          <h1 class="single-post-title">Modelo de Agentes Heterogêneos com Escolhas Ocupacionais e Custos de Transição: Uma Comparação entre VFI e DC-EGM</h1>
+          <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por <span class="notranslate" translate="no">Bruno Castro Alves</span></p>
+        </header>
+
+        <div class="single-post-body">
+          <h2>Introdução e Motivação</h2>
+
+<p>A macroeconomia quantitativa com modelos de agentes heterogêneos e mercados incompletos (na tradição de Bewley, Huggett e Aiyagari) defronta-se frequentemente com uma barreira computacional severa: a maldição da dimensionalidade. Quando os modelos incorporam escolhas discretas (como participação no mercado de trabalho, formalidade versus informalidade ou aposentadoria) juntamente com acumulação contínua de riqueza, a função valor deixa de ser globalmente côncava e suave.</p>
+
+<p>Tradicionalmente, a literatura recorre à <strong>Iteração da Função Valor (VFI)</strong> com busca exaustiva sobre grades discretas em <span class="math-inline notranslate" translate="no">$(a, a')$</span>, cujo custo cresce rapidamente com a resolução da malha e onera a busca do equilíbrio geral de preços de fatores.</p>
+
+<p>Neste projeto de pesquisa, desenvolvemos, implementamos e comparamos de forma rigorosa dois métodos numéricos em um modelo canônico:</p>
+
+<ol>
+<li><strong>Value Function Iteration (VFI)</strong> vetorizada clássica;</li>
+<li><strong>Discrete-Continuous Endogenous Grid Method (DC-EGM)</strong> estendido com poda geométrica por <strong>Upper Envelope</strong> (Iskhakov et al., 2017).</li>
+</ol>
+
+<p>Investigamos empiricamente o comportamento do DC-EGM sob escolhas ocupacionais puramente <strong>determinísticas</strong> (<span class="math-inline notranslate" translate="no">$s_\varepsilon = 0$</span>) e <strong>custos fixos de transição ocupacional</strong> (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>), comprovando a persistência de dobras interiores, acelerações de até 7,65x em equilíbrio parcial (<span class="math-inline notranslate" translate="no">$N_a=1600$</span>) e 3,49x em equilíbrio geral (<span class="math-inline notranslate" translate="no">$N_a=400$</span>), além de resíduos da Equação de Euler inferiores a <span class="math-inline notranslate" translate="no">$10^{-6}$</span> no benchmark histórico preliminar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>).</p>
+
+<hr>
+
+<h2>O Modelo Econômico</h2>
+
+<p>O modelo é composto por um contínuo de famílias heterogêneas e uma firma representativa com tecnologia Cobb-Douglas em equilíbrio competitivo estacionário:</p>
+
+<ul>
+<li><strong>Decisão Contínua:</strong> Poupança ótima em ativos líquidos <span class="math-inline notranslate" translate="no">$a' \ge 0$</span>, sujeita à restrição estrita de endividamento (<em>borrowing constraint</em>).</li>
+<li><strong>Decisão Discreta Ocupacional (<span class="math-inline notranslate" translate="no">$d \in \{N, I, F\}$</span>):</strong></li>
+<li class="nested-li"><span class="math-inline notranslate" translate="no">$d = N$</span>: Inatividade (<span class="math-inline notranslate" translate="no">$y_N = 0$</span>, desutilidade <span class="math-inline notranslate" translate="no">$\psi_N = 0{,}00$</span>);</li>
+<li class="nested-li"><span class="math-inline notranslate" translate="no">$d = I$</span>: Setor Informal (<span class="math-inline notranslate" translate="no">$y_I = \kappa w z$</span>, com <span class="math-inline notranslate" translate="no">$\kappa = 0{,}72$</span>, sem tributação, desutilidade <span class="math-inline notranslate" translate="no">$\psi_I = 0{,}05$</span>);</li>
+<li class="nested-li"><span class="math-inline notranslate" translate="no">$d = F$</span>: Setor Formal (<span class="math-inline notranslate" translate="no">$y_F = (1 - \tau) w z$</span>, com <span class="math-inline notranslate" translate="no">$\tau = 0{,}20$</span>, desutilidade <span class="math-inline notranslate" translate="no">$\psi_F = 0{,}08$</span>).</li>
+<li><strong>Fricção de Mercado:</strong> Custo fixo de transição <span class="math-inline notranslate" translate="no">$\chi(d, d_{-1}) = \bar\chi \cdot \mathbf{1}_{\{d \neq d_{-1}\}}$</span> com <span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span> em utilidade.</li>
+<li><strong>Risco Idiossincrático:</strong> Produtividade <span class="math-inline notranslate" translate="no">$z$</span> governada por processo AR(1) em log discretizado por Rouwenhorst com persistência <span class="math-inline notranslate" translate="no">$\rho = 0{,}90$</span> e dispersão <span class="math-inline notranslate" translate="no">$\sigma_\varepsilon = 0{,}20$</span>.</li>
+<li><strong>Tecnologia Agregada:</strong> <span class="math-inline notranslate" translate="no">$Y = K^\alpha L^{1-\alpha}$</span> (<span class="math-inline notranslate" translate="no">$\alpha = 0{,}36$</span>, <span class="math-inline notranslate" translate="no">$\delta = 8\%$</span>).</li>
+</ul>
+
+<hr>
+
+<h2>O Desafio da Não-Concavidade e o Upper Envelope</h2>
+
+<p>A presença do custo de transição <span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span> e das escolhas discretas gera cruzamentos entre as funções valor condicionais <span class="math-inline notranslate" translate="no">$v_d(a)$</span>. A função valor global:</p>
+
+<div class="math-display notranslate" translate="no">$$V(a, z, d_{-1}) = \max_{d \in \{N, I, F\}} v(a, z, d, d_{-1})$$</div>
+
+<p>apresenta pontos de quina (<em>kinks</em>) e regiões locais de convexidade (<span class="math-inline notranslate" translate="no">$\Delta^2 V > 0$</span>).</p>
+
+<p>Ao inverter analiticamente a Equação de Euler via EGM para cada escolha <span class="math-inline notranslate" translate="no">$d$</span>:</p>
+
+<div class="math-display notranslate" translate="no">$$a_{\text{endog}}(a') = \frac{(u')^{-1}(\beta (1+r) \mathbb{E}[V_a']) + a' - y_d(z)}{1+r}$$</div>
+
+<p>a não-monotonicidade de <span class="math-inline notranslate" translate="no">$\mathbb{E}[V_a']$</span> provoca <strong>dobras na grade endógena</strong> (<em>folds</em>), tornando a correspondência multi-valorada.</p>
+
+<div style="text-align: center; margin: 1.5rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura1_funcoes_valor_envelope.png" alt="Funções Valor Condicionais e Envelope Superior" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 1: Funções valor condicionais e o envelope superior exibindo quinas nos pontos de indiferença setorial.</em></p>
+</div>
+
+<p>O algoritmo de <strong>Upper Envelope</strong> detecta as regiões onde a grade endógena inverte de sentido (<span class="math-inline notranslate" translate="no">$d a_{\text{endog}} / d a' < 0$</span>), identifica geometricamente os pontos de corte e descarta os ramos subótimos, preservando a fronteira eficiente global.</p>
+
+<div style="text-align: center; margin: 1.5rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura3_grades_endogenas.png" alt="Grades Endógenas e Dobras no DC-EGM" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 3: Diagnóstico das dobras na grade endógena decorrentes dos custos fixos de transição ocupacional.</em></p>
+</div>
+
+<hr>
+
+<h2>Resultados Comparativos Principais</h2>
+
+<h3>1. Equilíbrio Geral Estacionário Competitivo (<span class="math-inline notranslate" translate="no">$N_a = 400$</span>)</h3>
+
+<p>A convergência macroeconômica dos dois métodos é praticamente perfeita, com discrepâncias relativas inferiores a <span class="math-inline notranslate" translate="no">$0{,}3\%$</span> nas principais variáveis e fechamento contábil exato da Lei de Walras:</p>
+
+<div class="table-wrap"><table><thead><tr><th style="text-align:left">Variável Macroeconômica</th><th style="text-align:center">DC-EGM com Envelope</th><th style="text-align:center">VFI Vetorizada</th><th style="text-align:center">Discrepância Relativa</th></tr></thead><tbody><tr><td style="text-align:left">Razão Capital-Trabalho (<span class="math-inline notranslate" translate="no">$k^*$</span>)</td><td style="text-align:center">6,564697</td><td style="text-align:center">6,547806</td><td style="text-align:center">0,258 %</td></tr><tr><td style="text-align:left">Taxa Real de Juros (<span class="math-inline notranslate" translate="no">$r^*$</span>)</td><td style="text-align:center">2,7966 %</td><td style="text-align:center">2,8144 %</td><td style="text-align:center">0,633 % (1,8 pb)</td></tr><tr><td style="text-align:left">Salário Real Competitivo (<span class="math-inline notranslate" translate="no">$w^*$</span>)</td><td style="text-align:center">1,260020</td><td style="text-align:center">1,258851</td><td style="text-align:center">0,093 %</td></tr><tr><td style="text-align:left">Estoque Agregado de Capital (<span class="math-inline notranslate" translate="no">$K^*$</span>)</td><td style="text-align:center">6,5349</td><td style="text-align:center">6,5147</td><td style="text-align:center">0,310 %</td></tr><tr><td style="text-align:left">Trabalho Efetivo Agregado (<span class="math-inline notranslate" translate="no">$L^*$</span>)</td><td style="text-align:center">0,9956</td><td style="text-align:center">0,9947</td><td style="text-align:center">0,090 %</td></tr><tr><td style="text-align:left">Produto Agregado (<span class="math-inline notranslate" translate="no">$Y^*$</span>)</td><td style="text-align:center">1,9600</td><td style="text-align:center">1,9567</td><td style="text-align:center">0,169 %</td></tr><tr><td style="text-align:left">Consumo Agregado (<span class="math-inline notranslate" translate="no">$C^*$</span>)</td><td style="text-align:center">1,1892</td><td style="text-align:center">1,1885</td><td style="text-align:center">0,055 %</td></tr><tr><td style="text-align:left">Investimento Agregado (<span class="math-inline notranslate" translate="no">$I^*$</span>)</td><td style="text-align:center">0,5228</td><td style="text-align:center">0,5212</td><td style="text-align:center">0,309 %</td></tr><tr><td style="text-align:left"><strong>Resíduo Contábil de Walras</strong></td><td style="text-align:center"><strong><span class="math-inline notranslate" translate="no">$-1{,}68 \times 10^{-8}$</span></strong></td><td style="text-align:center"><strong><span class="math-inline notranslate" translate="no">$-2{,}47 \times 10^{-8}$</span></strong></td><td style="text-align:center"><strong>Fechamento Exato</strong></td></tr><tr><td style="text-align:left">Coeficiente de Gini de Riqueza</td><td style="text-align:center">0,4948</td><td style="text-align:center">0,5115</td><td style="text-align:center">3,38 %</td></tr><tr><td style="text-align:left">Participação no Setor Formal (<span class="math-inline notranslate" translate="no">$M_F$</span>)</td><td style="text-align:center">98,28 %</td><td style="text-align:center">97,96 %</td><td style="text-align:center">0,32 pp</td></tr><tr><td style="text-align:left"><strong>Tempo de Execução em Equilíbrio Geral</strong></td><td style="text-align:center"><strong>7,61 s</strong></td><td style="text-align:center"><strong>26,60 s</strong></td><td style="text-align:center"><strong>3,49x mais rápido</strong></td></tr></tbody></table></div>
+
+<h3>2. Escalabilidade Multigrade e Acurácia de Euler</h3>
+
+<p>O experimento de refinamento de malha mostra os ganhos empíricos do DC-EGM nas grades convergidas:</p>
+
+<ul>
+<li>Em malha fina de 1.600 pontos (24.000 estados discretos), o DC-EGM resolve a política em <strong>5,20 segundos</strong>, enquanto a VFI necessita de <strong>39,75 segundos</strong> (<strong>speedup de 7,65x</strong>).</li>
+<li>Na malha de 800 pontos, o tempo cai de 10,59 s para <strong>2,53 s (speedup de 4,19x)</strong>. Na malha básica (<span class="math-inline notranslate" translate="no">$N_a=400$</span>), o DC-EGM leva <strong>4,99 s</strong> (vs 2,91 s da VFI, <strong>0,58x</strong>) por atingir o teto de 1.500 iterações com resíduo de Cauchy <span class="math-inline notranslate" translate="no">$2{,}09 \times 10^{-6}$</span> (tolerância <span class="math-inline notranslate" translate="no">$10^{-7}$</span>).</li>
+<li>No <strong>benchmark histórico complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, modelo preliminar)</strong>, o resíduo médio da Equação de Euler atinge <strong><span class="math-inline notranslate" translate="no">$7{,}18 \times 10^{-7}$</span></strong> no DC-EGM Otimizado, contra <strong><span class="math-inline notranslate" translate="no">$1{,}88 \times 10^{-3}$</span></strong> na VFI-3200 (~4 ordens de grandeza menor); no <strong>modelo canônico (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>)</strong>, a comparação individual concentra-se na convergência conjunta e concordância de políticas (<span class="math-inline notranslate" translate="no">$\|\Delta V\|_\infty = 0{,}0156$</span>, <span class="math-inline notranslate" translate="no">$\|\Delta c\|_\infty = 0{,}0525$</span> e concordância ocupacional de 99,97% em <span class="math-inline notranslate" translate="no">$N_a=1600$</span>), observando que <span class="math-inline notranslate" translate="no">$N_a=400$</span> atingiu o teto de 1.500 iterações com diferença final de <span class="math-inline notranslate" translate="no">$2{,}09 \times 10^{-6} > 10^{-7}$</span>, enquanto <span class="math-inline notranslate" translate="no">$N_a \in \{800, 1600\}$</span> convergiram estritamente em 376 iterações.</li>
+</ul>
+
+<div style="text-align: center; margin: 1.5rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura4_comparacao_vfi_dcegm.png" alt="Comparação das Políticas de Poupança" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 4: Comparação entre VFI e DC-EGM na função valor <span class="math-inline notranslate" translate="no">$V(a,z,d^-)$</span> e na política de poupança <span class="math-inline notranslate" translate="no">$a'(a,z,d^-)$</span> em equilíbrio geral (malha uniforme <span class="math-inline notranslate" translate="no">$a \in [0, 80]$</span>).</em></p>
+</div>
+
+<div style="text-align: center; margin: 2rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura11_politicas_consumo_poupanca.png" alt="Políticas de Consumo e Poupança Líquida" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 11: Políticas ótimas de consumo <span class="math-inline notranslate" translate="no">$c^*(a)$</span> e poupança líquida <span class="math-inline notranslate" translate="no">$a'(a)-a$</span> (<span class="math-inline notranslate" translate="no">$N_a=1600$</span>), evidenciando suavização precaucional e restrição de liquidez.</em></p>
+</div>
+
+<div style="text-align: center; margin: 2rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura14_upper_envelope_dobras.png" alt="Anatomia do Upper Envelope na Dobra Interior" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 14: Anatomia do algoritmo Upper Envelope na dobra interior (<span class="math-inline notranslate" translate="no">$z_2, d=I$</span>, <span class="math-inline notranslate" translate="no">$N_a=1600$</span>), destacando o descarte de ramos subótimos.</em></p>
+</div>
+
+<div style="text-align: center; margin: 2rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura12_mapa_escolhas_ocupacionais.png" alt="Mapa Espacial de Ocupação Ótima e Histerese" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 12: Mapa espacial de escolha ocupacional ótima <span class="math-inline notranslate" translate="no">$d^*(a,z,d^-)$</span> e regiões de histerese (<span class="math-inline notranslate" translate="no">$N_a=1600$</span>, concordância ocupacional de 99,97% com a VFI).</em></p>
+</div>
+
+<div style="text-align: center; margin: 2rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura16_fronteira_tempo_precisao_historico.png" alt="Fronteira Tempo vs Precisão no Benchmark Histórico" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 16: Benchmark histórico complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, modelo preliminar): fronteira tempo de execução versus erro médio de Euler entre 9 implementações.</em></p>
+</div>
+
+<hr>
+
+<h2>Distribuição Estacionária e Estrutura Ocupacional</h2>
+
+<p>A integração conjunta da cadeia de Markov ergódica via método de Young (2010) revela os fatos distributivos canônicos:</p>
+
+<div style="text-align: center; margin: 1.5rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura6_distribuicao_estacionaria.png" alt="Distribuição Estacionária de Riqueza" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 6: Densidade marginal estacionária de ativos exibindo a massa de trabalhadores restritos em <span class="math-inline notranslate" translate="no">$a=0$</span>.</em></p>
+</div>
+
+<ul>
+<li><strong>Concentração na Base:</strong> Existe uma massa de trabalhadores no limite de crédito <span class="math-inline notranslate" translate="no">$a = 0$</span> que não conseguem acumular reservas precaucórias suficientes em decorrência de choques sucessivos de baixa produtividade (<span class="math-inline notranslate" translate="no">$14{,}09\%$</span> na VFI e <span class="math-inline notranslate" translate="no">$5{,}03\%$</span> no DC-EGM em EG).</li>
+<li><strong>Transição Ocupacional (EP <span class="math-inline notranslate" translate="no">$\to$</span> EG):</strong> Sob preços iniciais de equilíbrio parcial (<span class="math-inline notranslate" translate="no">$r=4{,}1667\%, w=1{,}1781$</span>), a informalidade domina com <span class="math-inline notranslate" translate="no">$86{,}99\%$</span>. No equilíbrio geral competitivo (<span class="math-inline notranslate" translate="no">$w^*=1{,}2600, r^*=2{,}80\%$</span>), o prêmio salarial líquido formal sobrepõe a desutilidade adicional e eleva o setor formal para <span class="math-inline notranslate" translate="no">$98{,}28\%$</span> no DC-EGM (<span class="math-inline notranslate" translate="no">$97{,}96\%$</span> na VFI).</li>
+</ul>
+
+<hr>
+
+<h2>Materiais Didáticos, Relatórios e Downloads</h2>
+
+<p>Todos os materiais, dados e códigos-fonte do projeto estão disponíveis publicamente para fins de ensino, pesquisa e auditoria:</p>
+
+<ul>
+<li>📄 <strong><a href="../materials/dc_egm_vfi/APRESENTACAO_DO_PROJETO_DC_EGM_VFI.pdf">Caderno Pedagógico de Apresentação (PDF)</a></strong>: Síntese executiva e conceitual (6 páginas).</li>
+<li>📘 <strong><a href="../materials/dc_egm_vfi/EBOOK_DC_EGM_VFI_FINAL.pdf">E-Book Didático Consolidado (PDF)</a></strong>: Exposição integral da teoria, derivação KKT, exemplos numéricos, arquitetura detalhada e códigos MATLAB, validação formal e guia em 7 pontos das 16 figuras (53 páginas).</li>
+<li>📑 <strong><a href="../materials/dc_egm_vfi/RELATORIO_FINAL.pdf">Artigo / Relatório Científico Completo (PDF)</a></strong>: Formulação analítica integral, equações de Bellman e comparação empírica (7 páginas).</li>
+<li>📊 <strong><a href="../materials/dc_egm_vfi/APRESENTACAO_FINAL.pdf">Slides de Apresentação Executiva Beamer 16:9 (PDF)</a></strong>: Lâminas executivas para defesa e conferências (18 slides).</li>
+<li>🖥️ <strong><a href="../materials/dc_egm_vfi/APRESENTACAO_COMPLETA.pdf">Apresentação Completa Expandida Beamer 16:9 (PDF)</a></strong>: Versão integral para seminários e bancas cobrindo teoria, KKT, exemplo numérico, MATLAB, 16 figuras e limitações (45 slides).</li>
+<li>🎨 <strong><a href="../materials/dc_egm_vfi/COLETANEA_FIGURAS.pdf">Coletânea Completa de Figuras (PDF)</a></strong>: Caderno com todas as 16 figuras vetoriais e notas técnicas (17 páginas).</li>
+<li>🗺️ <strong><a href="../materials/dc_egm_vfi/MAPA_CODIGOS.pdf">Mapa Didático dos Códigos MATLAB (PDF)</a></strong>: Referência rápida de arquitetura, dependências e assinaturas de <code class="notranslate" translate="no">ENTREGA_PROFESSOR/</code> (2 páginas).</li>
+<li>📦 <strong><a href="../materials/dc_egm_vfi/CODIGOS_ENTREGA_PROFESSOR.zip">Pacote de Entrega com Códigos MATLAB (.zip)</a></strong>: Estrutura modular simplificada com ponto de entrada único <code class="notranslate" translate="no">executar_projeto.m</code> na raiz e subpastas temáticas (<code class="notranslate" translate="no">parametros/</code> e <code class="notranslate" translate="no">codigos/</code>).</li>
+<li>📈 <strong><a href="../materials/dc_egm_vfi/TABELAS_RESULTADOS_FINAIS.xlsx">Planilha Excel Consolidada (.xlsx)</a></strong>: Pasta de trabalho auditada com 8 abas, 207 fórmulas verificadas (zero erros/truncamentos), checagem de fechamento <span class="math-inline notranslate" translate="no">$|f(k)|/k < 10^{-4}$</span>, separação <span class="math-inline notranslate" translate="no">$c_{\exp} > 0$</span> e tratamento explícito <code class="notranslate" translate="no">N/A — massa desprezível</code>.</li>
+<li>🎧 <strong>Audiolivro Didático Completo em Português Brasileiro (<code class="notranslate" translate="no">02:30:46</code>, 12 capítulos em MP3 <code class="notranslate" translate="no">128 kb/s</code>):</strong></li>
+<li class="nested-li">📝 <a href="../materials/dc_egm_vfi/audiolivro/ROTEIRO_COMPLETO.md">Roteiro Completo Consolidado (Markdown)</a> e <a href="../materials/dc_egm_vfi/audiolivro/README.md">Guia de Geração (README)</a></li>
+<li class="nested-li">🔊 Capítulos individuais em MP3: <a href="../materials/dc_egm_vfi/audiolivro/01_Introducao.mp3">01 Introdução</a> (11m12s) · <a href="../materials/dc_egm_vfi/audiolivro/02_Ambiente_Economico.mp3">02 Ambiente Econômico</a> (17m08s) · <a href="../materials/dc_egm_vfi/audiolivro/03_Problema_Intertemporal.mp3">03 Problema Intertemporal</a> (12m48s) · <a href="../materials/dc_egm_vfi/audiolivro/04_VFI.mp3">04 VFI</a> (13m52s) · <a href="../materials/dc_egm_vfi/audiolivro/05_EGM.mp3">05 EGM</a> (11m21s) · <a href="../materials/dc_egm_vfi/audiolivro/06_DC_EGM.mp3">06 DC-EGM</a> (18m59s) · <a href="../materials/dc_egm_vfi/audiolivro/07_Implementacao_MATLAB.mp3">07 Implementação MATLAB</a> (13m30s) · <a href="../materials/dc_egm_vfi/audiolivro/08_Distribuicao_Estacionaria.mp3">08 Distribuição Estacionária</a> (11m23s) · <a href="../materials/dc_egm_vfi/audiolivro/09_Equilibrio_Geral.mp3">09 Equilíbrio Geral</a> (10m31s) · <a href="../materials/dc_egm_vfi/audiolivro/10_Resultados_Computacionais.mp3">10 Resultados Computacionais</a> (12m18s) · <a href="../materials/dc_egm_vfi/audiolivro/11_Resultados_Economicos.mp3">11 Resultados Econômicos</a> (10m21s) · <a href="../materials/dc_egm_vfi/audiolivro/12_Conclusao.mp3">12 Conclusão</a> (7m01s)</li>
+<li>📋 <strong>Tabelas Científicas (CSV):</strong></li>
+<li class="nested-li"><a href="../materials/dc_egm_vfi/tabela1_multigrade_modelo_transicao.csv">Tabela 1 - Refinamento Multigrade (CSV)</a></li>
+<li class="nested-li"><a href="../materials/dc_egm_vfi/tabela2_comparacao_equilibrio_geral.csv">Tabela 2 - Equilíbrio Geral Estacionário (CSV)</a></li>
+<li class="nested-li"><a href="../materials/dc_egm_vfi/tabela3_benchmark_historico_9implementacoes.csv">Tabela 3 - Benchmark Histórico de 9 Implementações (<span class="math-inline notranslate" translate="no">$\bar\chi=0$</span>, CSV)</a></li>
+</ul>
+
+<hr>
+
+<h2>Referências Bibliográficas</h2>
+
+<ol>
+<li><strong>Aiyagari, S. R. (1994).</strong> Uninsured Idiosyncratic Risk and Aggregate Saving. <em>Quarterly Journal of Economics</em>, 109(3), 659–684.</li>
+<li><strong>Carroll, C. D. (2006).</strong> The Method of Endogenously Constrained Grids for Solving Dynamic Stochastic Optimization Problems. <em>Economics Letters</em>, 91(3), 312–320.</li>
+<li><strong>Huggett, M. (1993).</strong> The Risk-Free Rate in Heterogeneous-Agent Incomplete-Insurance Economies. <em>Journal of Economic Dynamics and Control</em>, 17(5-6), 953–969.</li>
+<li><strong>Iskhakov, F., Jørgensen, T. H., Rust, J., & Schjerning, B. (2017).</strong> The Endogenous Grid Method for Discrete-Continuous Dynamic Choice Models with (or without) Taste Shocks. <em>Quantitative Economics</em>, 8(2), 317–365.</li>
+<li><strong>Young, E. R. (2010).</strong> Solving the Incomplete Markets Model with Aggregate Uncertainty Using the Krusell-Smith Algorithm and Non-Stochastic Simulations. <em>Journal of Economic Dynamics and Control</em>, 34(1), 36–41.</li>
+</ol>
+        </div>
+
+        <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
+          <a href="../blog.html" style="font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;">&larr; Voltar para o Blog</a>
+        </footer>
+      </article>
+    
+    </main>
+    
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer-inner">
+        <div class="footer-institutional">
+          <span class="footer-name notranslate" translate="no">Bruno Castro Alves</span>
+          <span>Doutorando em Economia &bull; FEARP — Universidade de São Paulo (USP)</span>
+          <span>Ribeirão Preto - SP — Brasil</span>
+        </div>
+        <div class="footer-links-bar notranslate" translate="no">
+          <a href="https://lattes.cnpq.br/4936269417036697" target="_blank" rel="noreferrer">Lattes</a>
+          <a href="https://scholar.google.com.br/citations?user=G48yrGsAAAAJ&hl=pt-BR&oi=ao" target="_blank" rel="noreferrer">Google Scholar</a>
+          <a href="https://orcid.org/0009-0009-0801-1218" target="_blank" rel="noreferrer">ORCID</a>
+          <a href="https://github.com/brunocastroal" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/brunocastroalves" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href="https://www.instagram.com/brun0_castr0/" target="_blank" rel="noreferrer">Instagram</a>
+          <a href="mailto:brunocastr0@usp.br">E-mail</a>
+        </div>
+      </div>
+      <div class="site-footer-inner" style="margin-top: 18px; font-size: 0.82rem;">
+        <span>Página acadêmica pessoal de <span class="notranslate" translate="no">Bruno Castro Alves</span>.</span>
+        <span>&copy; 2026 <span class="notranslate" translate="no">Bruno Castro Alves</span>.</span>
+      </div>
+    </footer>
+  
+  </div>
+
+  
+    <!-- Citation Modal -->
+    <div class="cite-modal-backdrop" id="cite-modal" aria-hidden="true">
+      <div class="cite-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cite-modal-title">
+        <div class="cite-modal-header">
+          <h3 class="cite-modal-title" id="cite-modal-title">Citar publicação</h3>
+          <button class="cite-close-btn" id="cite-modal-close" type="button">&times;</button>
+        </div>
+        <div class="cite-modal-tabs notranslate" translate="no">
+          <button class="cite-tab-btn active" data-cite-format="bibtex">BibTeX</button>
+          <button class="cite-tab-btn" data-cite-format="abnt">ABNT</button>
+          <button class="cite-tab-btn" data-cite-format="apa">APA 7</button>
+          <button class="cite-tab-btn" data-cite-format="chicago">Chicago</button>
+          <button class="cite-tab-btn" data-cite-format="mla">MLA 9</button>
+          <button class="cite-tab-btn" data-cite-format="ieee">IEEE</button>
+        </div>
+        <div class="cite-modal-content">
+          <div class="cite-box notranslate" translate="no">
+            <pre class="cite-code" id="cite-formatted-text"></pre>
+          </div>
+          <div class="cite-modal-actions">
+            <button class="cite-action-btn copy-btn" id="cite-copy-btn" type="button">
+              <span id="copy-btn-label">Copiar</span>
+            </button>
+            <button class="cite-action-btn download-btn" id="cite-download-btn" type="button">Baixar .bib</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="search-modal-backdrop" id="search-modal" aria-hidden="true">
+      <div class="search-modal-dialog" role="dialog" aria-modal="true">
+        <div class="search-modal-header">
+          <input type="search" class="search-input" id="global-search-input" placeholder="Buscar textos, publicações, disciplinas..." autocomplete="off">
+          <button class="search-close-btn" id="search-modal-close" type="button">&times;</button>
+        </div>
+        <div class="search-modal-body" id="search-results-container">
+          <p class="search-hint">Pressione ESC para fechar ou digite para pesquisar.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden mount target for Google Translate Element -->
+    <div id="google_translate_element" class="notranslate" translate="no" aria-hidden="true"></div>
+  
+  <script src="../assets/js/main.js" defer></script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+</body>
+</html>

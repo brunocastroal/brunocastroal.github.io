@@ -1,19 +1,38 @@
 # ==============================================================================
 # PUBLICAÇÕES CIENTÍFICAS E TRABALHOS ACADÊMICOS
-# 
-# Para adicionar uma nova publicação, copie um dos blocos abaixo e preencha.
-# O site irá organizar automaticamente as seções e gerar botões de Citação
-# nos formatos ABNT, BibTeX, APA, Chicago, IEEE e MLA.
 #
-# Categorias disponíveis (category):
-#   - journal_article     (Artigos em periódicos)
-#   - conference_paper    (Trabalhos em anais de congressos)
-#   - working_paper       (Working Papers / Textos para Discussão)
-#   - monograph           (Monografias / Dissertações / Teses)
+# Para adicionar uma nova publicação, copie um dos blocos abaixo e preencha.
+# Categorias: journal_article | conference_paper | working_paper | work_in_progress | monograph
 # ==============================================================================
 
+- id: "gama-2026-spatial-econometrics-drd"
+  title: "Integration of spatial econometrics into studies on regional and urban economics: a bibliometric analysis"
+  authors:
+    - "Fábio Júnior Clemente Gama"
+    - "Caio Oliveira Azevedo"
+    - "Bruno Castro Alves"
+    - "Ana Échilei Santiago do Nascimento"
+    - "Suzana Quinet de Andrade Bastos"
+  year: 2026
+  category: "journal_article"
+  journal: "DRd – Desenvolvimento Regional em debate"
+  volume: "16"
+  pages: "691-714"
+  publisher: "Universidade do Contestado (UnC)"
+  doi: "10.24302/drd.v16.5822"
+  url: "https://periodicos.unc.br/index.php/drd/article/view/5822"
+  selected: true
+  abstract: >
+    A econometria espacial constitui ferramenta essencial para modelagem de fenômenos econômicos regionais e urbanos geograficamente referenciados. Com base em registros da Clarivate Web of Science e Elsevier Scopus (1959–2024) analisados no pacote Bibliometrix (software R), o estudo mapeia a integração progressiva dos métodos de econometria espacial nas pesquisas em economia regional e urbana, identificando tendências de publicação, evolução temática e redes de colaboração científica.
+  keywords:
+    - "Spatial Econometrics"
+    - "Regional Economics"
+    - "Urban Economics"
+    - "Bibliometrics"
+    - "R"
+
 - id: "gama-2026-economic-growth-climate-change"
-  title: "TRENDS IN RESEARCH ON ECONOMIC GROWTH AND CLIMATE CHANGE"
+  title: "Trends in research on Economic Growth and Climate Change"
   authors:
     - "Fabio Junior Clemente Gama"
     - "Antonio Vinicius Pereira Melo"

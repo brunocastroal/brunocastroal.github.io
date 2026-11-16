@@ -1,0 +1,17 @@
+Variavel,DC_EGM_Envelope,VFI_Vetorizada,Discrepancia_Absoluta,Discrepancia_Relativa_pct
+Razao Capital-Trabalho (k*),6.564697,6.547806,0.016891,0.258
+Taxa de Juros Real (r* pct),2.7966,2.8144,0.0178,0.633
+Salario Real (w*),1.260020,1.258851,0.001168,0.093
+Estoque de Capital (K*),6.5349,6.5147,0.0202,0.310
+Trabalho Efetivo (L*),0.9956,0.9947,0.0009,0.090
+Produto Total (Y*),1.9600,1.9567,0.0033,0.169
+Consumo Privado (C*),1.1892,1.1885,0.0007,0.055
+Investimento (I*),0.5228,0.5212,0.0016,0.309
+Gasto Governo (G*),0.2480,0.2470,0.0010,0.418
+Residuo de Walras,-1.68e-08,-2.47e-08,-,-
+Gini de Riqueza,0.4948,0.5115,0.0167,3.38
+Participacao Inativos (pct),0.00,0.00,0.00,-
+Participacao Informais (pct),1.72,2.04,0.31,-
+Participacao Formais (pct),98.28,97.96,0.31,-
+Iteracoes Bisseccao,11,15,-,-
+Tempo Total EG (s),7.61,26.60,-,3.49x mais rapido

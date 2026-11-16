@@ -1,6 +1,6 @@
 /**
  * assets/js/main.js - Academic Website Runtime
- * Light Mode Default, Zero Dashboard Bloat, Robust Academic Tools
+ * Light Mode Default, Google Translate (PT <-> EN), Robust Academic Tools
  */
 
 (function () {
@@ -12,7 +12,6 @@
   const themeToggleBtn = document.getElementById('theme-toggle');
   const savedTheme = localStorage.getItem('site_theme');
 
-  // Light mode is default! Only enable dark if user explicitly chose it
   if (savedTheme === 'dark') {
     document.body.classList.add('dark');
   } else {
@@ -28,110 +27,110 @@
   }
 
   // ========================================================
-  // 2. MULTILINGUAL ENGINE (PT & EN SPECIALIZED)
+  // 2. GOOGLE TRANSLATE ENGINE (PT <-> EN ONLY)
   // ========================================================
-  let translationsCache = null;
-  const currentLangCodeEl = document.getElementById('current-lang-code');
-  const langBtn = document.getElementById('lang-btn');
-  const langDropdown = document.getElementById('lang-dropdown');
-  const savedLang = localStorage.getItem('site_lang') || 'pt';
-
-  if (langBtn && langDropdown) {
-    langBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = langDropdown.classList.contains('open');
-      langDropdown.classList.toggle('open', !isOpen);
-      langBtn.setAttribute('aria-expanded', (!isOpen).toString());
-    });
-
-    document.addEventListener('click', () => {
-      langDropdown.classList.remove('open');
-      langBtn.setAttribute('aria-expanded', 'false');
-    });
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : '';
   }
 
-  async function loadTranslations() {
-    if (translationsCache) return translationsCache;
-    try {
-      const isPost = window.location.pathname.includes('/posts/');
-      const translationsPath = isPost ? '../config/translations.json' : 'config/translations.json';
-      const res = await fetch(translationsPath);
-      if (res.ok) {
-        translationsCache = await res.json();
+  function setGoogTransCookie(value) {
+    const host = window.location.hostname;
+    if (!value) {
+      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      if (host) {
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=.${host}; path=/;`;
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=${host}; path=/;`;
       }
-    } catch (err) {
-      console.warn('Erro ao carregar traduções:', err);
+      return;
     }
-    return translationsCache;
+    document.cookie = `googtrans=${value}; path=/`;
+    if (host && host !== 'localhost' && host !== '127.0.0.1') {
+      document.cookie = `googtrans=${value}; domain=.${host}; path=/`;
+    }
   }
 
-  async function applyLanguage(lang) {
-    const dicts = await loadTranslations();
-    if (!dicts || !dicts[lang]) return;
+  function isEnglishActive() {
+    return (
+      getCookie('googtrans') === '/pt/en' ||
+      document.documentElement.classList.contains('translated-ltr') ||
+      localStorage.getItem('site_lang') === 'en'
+    );
+  }
 
-    const dict = dicts[lang];
-    localStorage.setItem('site_lang', lang);
-    if (currentLangCodeEl) {
-      currentLangCodeEl.textContent = lang.toUpperCase();
+  function updateLangButtons(lang) {
+    document.querySelectorAll('.lang-switch-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+  }
+
+  function triggerGoogleTranslate(targetLang) {
+    let attempts = 0;
+    const maxAttempts = 20;
+
+    function trySelect() {
+      const combo = document.querySelector('.goog-te-combo');
+      if (combo) {
+        combo.value = targetLang;
+        combo.dispatchEvent(new Event('change'));
+        return true;
+      }
+      return false;
     }
 
-    // Update active button state
-    document.querySelectorAll('.lang-switch-btn').forEach((b) => {
-      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
-    });
+    if (trySelect()) return;
 
-    // Translate standard UI text
-    document.querySelectorAll('[data-i18n]').forEach((el) => {
-      const key = el.getAttribute('data-i18n');
-      if (dict[key]) {
-        el.textContent = dict[key];
+    const timer = setInterval(() => {
+      attempts++;
+      if (trySelect()) {
+        clearInterval(timer);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(timer);
+        if (targetLang === 'en' && window.location.protocol.startsWith('http') && window.location.hostname !== 'localhost') {
+          window.location.href = `https://translate.google.com/translate?sl=pt&tl=en&u=${encodeURIComponent(window.location.href)}`;
+        }
       }
-    });
-
-    // Translate input placeholders
-    document.querySelectorAll('[data-i18n-ph]').forEach((el) => {
-      const key = el.getAttribute('data-i18n-ph');
-      if (dict[key]) {
-        el.setAttribute('placeholder', dict[key]);
-      }
-    });
-
-    // Update html lang attribute
-    document.documentElement.lang = lang;
-
-    // Translate rich content (bio, titles, agenda descriptions) across all 5 languages
-    document.querySelectorAll('[data-i18n-pt]').forEach((el) => {
-      const specificText = el.getAttribute(`data-i18n-${lang}`);
-      const enText = el.getAttribute('data-i18n-en');
-      const ptText = el.getAttribute('data-i18n-pt');
-      if (specificText) {
-        el.textContent = specificText;
-      } else if (enText && lang !== 'pt') {
-        el.textContent = enText;
-      } else if (ptText) {
-        el.textContent = ptText;
-      }
-    });
-
-    // Update abstract toggle buttons label using dictionary
-    document.querySelectorAll('.abstract-toggle-btn').forEach((btn) => {
-      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-      const abstractWord = dict.abstract || 'Resumo';
-      btn.textContent = (isExpanded ? '- ' : '+ ') + abstractWord;
-    });
+    }, 120);
   }
 
-  document.querySelectorAll('.lang-opt, .lang-switch-btn').forEach((btn) => {
+  window.googleTranslateElementInit = function () {
+    if (window.google && window.google.translate && window.google.translate.TranslateElement) {
+      new window.google.translate.TranslateElement(
+        {
+          pageLanguage: 'pt',
+          includedLanguages: 'en',
+          autoDisplay: false
+        },
+        'google_translate_element'
+      );
+
+      if (localStorage.getItem('site_lang') === 'en' && getCookie('googtrans') !== '/pt/en') {
+        setGoogTransCookie('/pt/en');
+        triggerGoogleTranslate('en');
+      }
+    }
+  };
+
+  updateLangButtons(isEnglishActive() ? 'en' : 'pt');
+
+  document.querySelectorAll('.lang-switch-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       const lang = btn.getAttribute('data-lang');
-      applyLanguage(lang);
-      if (langDropdown) langDropdown.classList.remove('open');
+      if (lang === 'en') {
+        localStorage.setItem('site_lang', 'en');
+        setGoogTransCookie('/pt/en');
+        updateLangButtons('en');
+        triggerGoogleTranslate('en');
+      } else {
+        localStorage.setItem('site_lang', 'pt');
+        setGoogTransCookie('');
+        updateLangButtons('pt');
+        if (document.documentElement.classList.contains('translated-ltr') || getCookie('googtrans')) {
+          window.location.reload();
+        }
+      }
     });
   });
-
-  if (savedLang && savedLang !== 'pt') {
-    applyLanguage(savedLang);
-  }
 
   // ========================================================
   // 3. MOBILE HAMBURGER MENU
@@ -140,7 +139,8 @@
   const navMenu = document.getElementById('nav-menu');
 
   if (hamburgerBtn && navMenu) {
-    hamburgerBtn.addEventListener('click', () => {
+    hamburgerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const isOpen = navMenu.classList.contains('open');
       navMenu.classList.toggle('open', !isOpen);
       hamburgerBtn.setAttribute('aria-expanded', (!isOpen).toString());
@@ -151,6 +151,13 @@
         navMenu.classList.remove('open');
         hamburgerBtn.setAttribute('aria-expanded', 'false');
       });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (navMenu.classList.contains('open') && !navMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+        navMenu.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      }
     });
   }
 
@@ -197,8 +204,7 @@
     citeFormattedText.textContent = text;
 
     if (copyBtnLabel) {
-      const currentLang = localStorage.getItem('site_lang') || 'pt';
-      copyBtnLabel.textContent = currentLang === 'en' ? 'Copy' : 'Copiar';
+      copyBtnLabel.textContent = isEnglishActive() ? 'Copy' : 'Copiar';
     }
   }
 
@@ -219,10 +225,10 @@
       if (!text) return;
       try {
         await navigator.clipboard.writeText(text);
-        const currentLang = localStorage.getItem('site_lang') || 'pt';
-        copyBtnLabel.textContent = currentLang === 'en' ? 'Copied!' : 'Copiado!';
+        const en = isEnglishActive();
+        copyBtnLabel.textContent = en ? 'Copied!' : 'Copiado!';
         setTimeout(() => {
-          copyBtnLabel.textContent = currentLang === 'en' ? 'Copy' : 'Copiar';
+          copyBtnLabel.textContent = en ? 'Copy' : 'Copiar';
         }, 2000);
       } catch (err) {
         console.error('Falha ao copiar:', err);
@@ -270,16 +276,16 @@
       if (!block) return;
 
       const isHidden = block.hasAttribute('hidden');
-      const currentLang = localStorage.getItem('site_lang') || 'pt';
+      const en = isEnglishActive();
 
       if (isHidden) {
         block.removeAttribute('hidden');
         btn.setAttribute('aria-expanded', 'true');
-        btn.textContent = currentLang === 'en' ? '- Abstract' : '- Resumo';
+        btn.textContent = en ? '- Abstract' : '- Resumo';
       } else {
         block.setAttribute('hidden', '');
         btn.setAttribute('aria-expanded', 'false');
-        btn.textContent = currentLang === 'en' ? '+ Abstract' : '+ Resumo';
+        btn.textContent = en ? '+ Abstract' : '+ Resumo';
       }
     });
   });
@@ -342,6 +348,10 @@
     if (e.key === 'Escape') {
       closeSearchModal();
       closeCitationModal();
+      if (navMenu && navMenu.classList.contains('open')) {
+        navMenu.classList.remove('open');
+        if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', 'false');
+      }
     }
   });
 
@@ -426,7 +436,7 @@
   }
 
   // ========================================================
-  // 7. KATEX MATH FORMULA AUTO-RENDERER
+  // 8. KATEX MATH FORMULA AUTO-RENDERER
   // ========================================================
   function renderAllMath() {
     if (typeof renderMathInElement === 'function') {

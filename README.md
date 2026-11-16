@@ -233,8 +233,8 @@ languages:
 Ao compilar ou fazer commit, a página `cv.html` é atualizada automaticamente em todos os idiomas.
 
 ### Como atualizar o arquivo PDF para download:
-1. Exporte seu novo currículo em formato PDF com o nome `curriculo.pdf`.
-2. Cole o arquivo na pasta `assets/cv/curriculo.pdf`, substituindo o arquivo anterior.
+1. O código-fonte em LaTeX do currículo está em `assets/cv/curriculo.tex` (compilado para `assets/cv/curriculo.pdf`).
+2. Você pode editar `assets/cv/curriculo.tex` e recompilar com `pdflatex`, ou substituir diretamente `assets/cv/curriculo.pdf`.
 3. O botão de download no topo do site e na página de CV já apontará para o novo documento.
 
 ---
@@ -255,27 +255,11 @@ Ao compilar ou fazer commit, a página `cv.html` é atualizada automaticamente e
 
 ---
 
-## 9. Idiomas e Traduções (Suporte a 5 Idiomas: PT / EN / ES / DE / ZH)
+## 9. Tradução para Inglês (Google Tradutor)
 
-O site conta com um seletor multilíngue instantâneo no cabeçalho: **PT / EN / ES / DE / ZH**.
-
-### Traduções da Interface (botões, menus e rodapé):
-- **Local:** pasta `_i18n/`
-  - `_i18n/pt.yml`: Português
-  - `_i18n/en.yml`: Inglês
-  - `_i18n/es.yml`: Espanhol
-  - `_i18n/de.yml`: Alemão
-  - `_i18n/zh.yml`: Chinês
-
-Abra o arquivo desejado e altere o texto entre aspas correspondente ao botão ou título.
-
-### Traduções do Conteúdo Principal (Biografia, Cargos e Agenda):
-- **Arquivo:** `data/profile.yml`
-Campos multilíngues disponíveis para edição:
-  - `title`, `title_en`, `title_es`, `title_de`, `title_zh`
-  - `institution`, `institution_en`, `institution_es`, `institution_de`, `institution_zh`
-  - `bio`, `bio_en`, `bio_es`, `bio_de`, `bio_zh`
-  - Cada item de `research_areas` possui `name` e `description` traduzidos para os 5 idiomas.
+O cabeçalho conta com o seletor **PT / EN** integrado diretamente ao **Google Tradutor** (`includedLanguages: 'en'`).
+- Ao clicar em **EN**, todo o conteúdo do site (incluindo postagens técnicas, resumos e currículo) é traduzido automaticamente para o inglês, mantendo fórmulas matemáticas KaTeX, códigos e nomes próprios protegidos com `notranslate`.
+- Ao clicar em **PT**, a página retorna ao texto original em português.
 
 ---
 
