@@ -40,7 +40,7 @@
   </script>
 
   <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="stylesheet" href="../assets/css/site.css?v=3adf9dad">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
@@ -342,19 +342,32 @@
           </div>
 
           
-        <section class="post-comments-section" id="comentarios" aria-label="Comentários">
+        <section class="post-comments-section notranslate" id="comentarios" aria-label="Comentários">
           <h2 class="post-comments-heading">Comentários</h2>
-          <div id="giscus-container"
-               data-repo="brunocastroal/brunocastroal.github.io"
-               data-repo-id="R_kgDOVBhLLg"
-               data-category="Announcements"
-               data-category-id="DIC_kwDOVBhLLs4DLYLH"
-               data-mapping="pathname"
-               data-strict="0"
-               data-reactions-enabled="1"
-               data-emit-metadata="0"
-               data-input-position="top"
-               data-lang="pt"></div>
+          <div class="giscus"></div>
+          <script>
+            (function () {
+              var container = document.getElementById('comentarios');
+              if (!container) return;
+              var s = document.createElement('script');
+              s.src = 'https://giscus.app/client.js';
+              s.setAttribute('data-repo', 'brunocastroal/brunocastroal.github.io');
+              s.setAttribute('data-repo-id', 'R_kgDOVBhLLg');
+              s.setAttribute('data-category', 'Announcements');
+              s.setAttribute('data-category-id', 'DIC_kwDOVBhLLs4DLYLH');
+              s.setAttribute('data-mapping', 'pathname');
+              s.setAttribute('data-strict', '0');
+              s.setAttribute('data-reactions-enabled', '1');
+              s.setAttribute('data-emit-metadata', '0');
+              s.setAttribute('data-input-position', 'top');
+              s.setAttribute('data-theme', localStorage.getItem('site_theme') === 'dark' ? 'dark_dimmed' : 'light');
+              s.setAttribute('data-lang', 'pt');
+              s.crossOrigin = 'anonymous';
+              s.async = true;
+              container.appendChild(s);
+            })();
+          </script>
+          <noscript><p>Ative o JavaScript para carregar os comentários via GitHub Discussions.</p></noscript>
         </section>
 
           <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
@@ -482,8 +495,8 @@
     <!-- Hidden mount target for Google Translate Element -->
     <div id="google_translate_element" class="notranslate" translate="no" aria-hidden="true"></div>
   
-  <script src="../assets/js/main.js" defer></script>
-  <script src="../assets/js/dcegm-viewer.js" defer></script>
+  <script src="../assets/js/main.js?v=62705830" defer></script>
+  <script src="../assets/js/dcegm-viewer.js?v=9544ef12" defer></script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 </body>
 </html>

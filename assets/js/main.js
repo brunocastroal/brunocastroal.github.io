@@ -33,22 +33,6 @@
     });
   }
 
-  // Mount Giscus comments lazily matched to active site theme
-  const giscusMount = document.getElementById('giscus-container');
-  if (giscusMount) {
-    const s = document.createElement('script');
-    s.src = 'https://giscus.app/client.js';
-    s.crossOrigin = 'anonymous';
-    s.async = true;
-    ['repo', 'repo-id', 'category', 'category-id', 'mapping', 'strict', 'reactions-enabled', 'emit-metadata', 'input-position', 'lang'].forEach((attr) => {
-      const val = giscusMount.getAttribute('data-' + attr);
-      if (val !== null) s.setAttribute('data-' + attr, val);
-    });
-    s.setAttribute('data-theme', document.body.classList.contains('dark') ? 'dark_dimmed' : 'light');
-    s.setAttribute('data-loading', 'lazy');
-    giscusMount.appendChild(s);
-  }
-
   // ========================================================
   // 2. GOOGLE TRANSLATE ENGINE (PT <-> EN ONLY)
   // ========================================================

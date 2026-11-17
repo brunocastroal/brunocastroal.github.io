@@ -6,9 +6,24 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const yaml = require('./lib/js-yaml.js');
 
 const ROOT_DIR = __dirname;
+const assetHashCache = new Map();
+function assetUrl(prefix, relPath) {
+  let ver = assetHashCache.get(relPath);
+  if (!ver) {
+    try {
+      const buf = fs.readFileSync(path.join(ROOT_DIR, relPath));
+      ver = crypto.createHash('md5').update(buf).digest('hex').slice(0, 8);
+    } catch {
+      ver = '1';
+    }
+    assetHashCache.set(relPath, ver);
+  }
+  return `${prefix}${relPath}?v=${ver}`;
+}
 const CONFIG_DIR = path.join(ROOT_DIR, 'config');
 const DATA_DIR = path.join(ROOT_DIR, 'data');
 const POSTS_DIR = fs.existsSync(path.join(ROOT_DIR, '_posts')) ? path.join(ROOT_DIR, '_posts') : path.join(ROOT_DIR, 'content', 'blog');
@@ -758,7 +773,7 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
   </script>
 
   <link rel="icon" href="${prefix}assets/images/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="${prefix}assets/css/site.css">
+  <link rel="stylesheet" href="${assetUrl(prefix, 'assets/css/site.css')}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
@@ -773,8 +788,8 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
   </div>
 
   ${renderModals()}
-  <script src="${prefix}assets/js/main.js" defer></script>
-  ${content.includes('id="dcegm-explorer"') ? `<script src="${prefix}assets/js/dcegm-viewer.js" defer></script>\n  ` : ''}<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+  <script src="${assetUrl(prefix, 'assets/js/main.js')}" defer></script>
+  ${content.includes('id="dcegm-explorer"') ? `<script src="${assetUrl(prefix, 'assets/js/dcegm-viewer.js')}" defer></script>\n  ` : ''}<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 </body>
 </html>`;
 }
@@ -1214,19 +1229,32 @@ function buildBlog() {
     if (!cfg.enabled) return '';
     if (cfg.provider === 'giscus' && cfg.repo && cfg.repo_id && cfg.category && cfg.category_id) {
       return `
-        <section class="post-comments-section" id="comentarios" aria-label="Comentários">
+        <section class="post-comments-section notranslate" id="comentarios" aria-label="Comentários">
           <h2 class="post-comments-heading">Comentários</h2>
-          <div id="giscus-container"
-               data-repo="${cfg.repo}"
-               data-repo-id="${cfg.repo_id}"
-               data-category="${cfg.category}"
-               data-category-id="${cfg.category_id}"
-               data-mapping="${cfg.mapping || 'pathname'}"
-               data-strict="0"
-               data-reactions-enabled="1"
-               data-emit-metadata="0"
-               data-input-position="top"
-               data-lang="pt"></div>
+          <div class="giscus"></div>
+          <script>
+            (function () {
+              var container = document.getElementById('comentarios');
+              if (!container) return;
+              var s = document.createElement('script');
+              s.src = 'https://giscus.app/client.js';
+              s.setAttribute('data-repo', '${cfg.repo}');
+              s.setAttribute('data-repo-id', '${cfg.repo_id}');
+              s.setAttribute('data-category', '${cfg.category}');
+              s.setAttribute('data-category-id', '${cfg.category_id}');
+              s.setAttribute('data-mapping', '${cfg.mapping || 'pathname'}');
+              s.setAttribute('data-strict', '0');
+              s.setAttribute('data-reactions-enabled', '1');
+              s.setAttribute('data-emit-metadata', '0');
+              s.setAttribute('data-input-position', 'top');
+              s.setAttribute('data-theme', localStorage.getItem('site_theme') === 'dark' ? 'dark_dimmed' : 'light');
+              s.setAttribute('data-lang', 'pt');
+              s.crossOrigin = 'anonymous';
+              s.async = true;
+              container.appendChild(s);
+            })();
+          </script>
+          <noscript><p>Ative o JavaScript para carregar os comentários via GitHub Discussions.</p></noscript>
         </section>`;
     }
     return '';
