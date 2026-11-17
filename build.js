@@ -771,7 +771,7 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
 
   ${renderModals()}
   <script src="${prefix}assets/js/main.js" defer></script>
-  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+  ${content.includes('id="dcegm-explorer"') ? `<script src="${prefix}assets/js/dcegm-viewer.js" defer></script>\n  ` : ''}<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 </body>
 </html>`;
 }
