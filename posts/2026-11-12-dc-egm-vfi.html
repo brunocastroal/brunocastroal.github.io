@@ -102,7 +102,7 @@
         <header style="margin-bottom: 32px;">
           <div class="single-post-meta">
             <span>2026-11-12</span> &bull;
-            <span>15 min de leitura</span> &bull;
+            <span>16 min de leitura</span> &bull;
             <span>Economia Computacional</span>
           </div>
           <h1 class="single-post-title">Modelo de Agentes Heterogêneos com Escolhas Ocupacionais e Custos de Transição: Uma Comparação entre VFI e DC-EGM</h1>
@@ -114,81 +114,120 @@
 
 <p>A macroeconomia quantitativa com modelos de agentes heterogêneos e mercados incompletos (na tradição de Bewley, Huggett e Aiyagari) defronta-se frequentemente com uma barreira computacional severa: a maldição da dimensionalidade. Quando os modelos incorporam escolhas discretas (como participação no mercado de trabalho, formalidade versus informalidade ou aposentadoria) juntamente com acumulação contínua de riqueza, a função valor deixa de ser globalmente côncava e suave.</p>
 
-<p>Tradicionalmente, a literatura recorre à <strong>Iteração da Função Valor (VFI)</strong> com busca exaustiva sobre grades discretas em <span class="math-inline notranslate" translate="no">$(a, a')$</span>, cujo custo cresce rapidamente com a resolução da malha e onera a busca do equilíbrio geral de preços de fatores.</p>
+<p>Tradicionalmente, a literatura recorre à <strong>Iteração da Função Valor (VFI)</strong> com busca exaustiva sobre grades discretas em <span class="math-inline notranslate" translate="no">$(a, a')$</span>, cujo custo cresce rapidamente com a resolução da malha e onera a busca pelo equilíbrio geral dos preços de fatores.</p>
 
-<p>Neste projeto de pesquisa, desenvolvemos, implementamos e comparamos de forma rigorosa dois métodos numéricos em um modelo canônico:</p>
+<p>Neste projeto de pesquisa, implementamos e comparamos dois métodos numéricos em um modelo canônico discreto-contínuo:</p>
 
 <ol>
 <li><strong>Value Function Iteration (VFI)</strong> vetorizada clássica;</li>
 <li><strong>Discrete-Continuous Endogenous Grid Method (DC-EGM)</strong> estendido com poda geométrica por <strong>Upper Envelope</strong> (Iskhakov et al., 2017).</li>
 </ol>
 
-<p>Investigamos empiricamente o comportamento do DC-EGM sob escolhas ocupacionais puramente <strong>determinísticas</strong> (<span class="math-inline notranslate" translate="no">$s_\varepsilon = 0$</span>) e <strong>custos fixos de transição ocupacional</strong> (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>), comprovando a persistência de dobras interiores, acelerações de até 7,65x em equilíbrio parcial (<span class="math-inline notranslate" translate="no">$N_a=1600$</span>) e 3,49x em equilíbrio geral (<span class="math-inline notranslate" translate="no">$N_a=400$</span>), além de resíduos da Equação de Euler inferiores a <span class="math-inline notranslate" translate="no">$10^{-6}$</span> no benchmark histórico preliminar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>).</p>
+<p>Investigamos o comportamento do DC-EGM sob escolhas ocupacionais puramente <strong>determinísticas</strong> (<span class="math-inline notranslate" translate="no">$s_\varepsilon = 0$</span>) e <strong>custos fixos de transição ocupacional</strong> (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>). Os experimentos registram ganhos de desempenho de até <strong>7,65x</strong> em equilíbrio parcial (<span class="math-inline notranslate" translate="no">$N_a = 1600$</span>) e <strong>3,49x</strong> em equilíbrio geral (<span class="math-inline notranslate" translate="no">$N_a = 400$</span>), além da ocorrência de dobras na grade endógena a partir de <span class="math-inline notranslate" translate="no">$N_a = 800$</span> no experimento de equilíbrio parcial.</p>
 
 <hr>
 
-<h2>O Modelo Econômico</h2>
+<h2>Ambiente Econômico e Problema Dinâmico</h2>
 
-<p>O modelo é composto por um contínuo de famílias heterogêneas e uma firma representativa com tecnologia Cobb-Douglas em equilíbrio competitivo estacionário:</p>
+<p>A economia é habitada por um contínuo de famílias heterogêneas e uma firma representativa com tecnologia Cobb-Douglas em equilíbrio competitivo estacionário:</p>
 
 <ul>
-<li><strong>Decisão Contínua:</strong> Poupança ótima em ativos líquidos <span class="math-inline notranslate" translate="no">$a' \ge 0$</span>, sujeita à restrição estrita de endividamento (<em>borrowing constraint</em>).</li>
+<li><strong>Preferências:</strong> Função utilidade CRRA <span class="math-inline notranslate" translate="no">$u(c) = \frac{c^{1-\sigma} - 1}{1 - \sigma}$</span> com aversão relativa ao risco <span class="math-inline notranslate" translate="no">$\sigma = 2{,}00$</span> e fator de desconto intertemporal <span class="math-inline notranslate" translate="no">$\beta = 0{,}96$</span>.</li>
+<li><strong>Decisão Contínua:</strong> Poupança ótima em ativos líquidos <span class="math-inline notranslate" translate="no">$a' \in [0, \bar{a}]$</span> com <span class="math-inline notranslate" translate="no">$\bar{a} = 80{,}00$</span>, sujeita à restrição estrita de endividamento (<em>borrowing constraint</em>).</li>
 <li><strong>Decisão Discreta Ocupacional (<span class="math-inline notranslate" translate="no">$d \in \{N, I, F\}$</span>):</strong></li>
 <li class="nested-li"><span class="math-inline notranslate" translate="no">$d = N$</span>: Inatividade (<span class="math-inline notranslate" translate="no">$y_N = 0$</span>, desutilidade <span class="math-inline notranslate" translate="no">$\psi_N = 0{,}00$</span>);</li>
-<li class="nested-li"><span class="math-inline notranslate" translate="no">$d = I$</span>: Setor Informal (<span class="math-inline notranslate" translate="no">$y_I = \kappa w z$</span>, com <span class="math-inline notranslate" translate="no">$\kappa = 0{,}72$</span>, sem tributação, desutilidade <span class="math-inline notranslate" translate="no">$\psi_I = 0{,}05$</span>);</li>
-<li class="nested-li"><span class="math-inline notranslate" translate="no">$d = F$</span>: Setor Formal (<span class="math-inline notranslate" translate="no">$y_F = (1 - \tau) w z$</span>, com <span class="math-inline notranslate" translate="no">$\tau = 0{,}20$</span>, desutilidade <span class="math-inline notranslate" translate="no">$\psi_F = 0{,}08$</span>).</li>
-<li><strong>Fricção de Mercado:</strong> Custo fixo de transição <span class="math-inline notranslate" translate="no">$\chi(d, d_{-1}) = \bar\chi \cdot \mathbf{1}_{\{d \neq d_{-1}\}}$</span> com <span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span> em utilidade.</li>
-<li><strong>Risco Idiossincrático:</strong> Produtividade <span class="math-inline notranslate" translate="no">$z$</span> governada por processo AR(1) em log discretizado por Rouwenhorst com persistência <span class="math-inline notranslate" translate="no">$\rho = 0{,}90$</span> e dispersão <span class="math-inline notranslate" translate="no">$\sigma_\varepsilon = 0{,}20$</span>.</li>
-<li><strong>Tecnologia Agregada:</strong> <span class="math-inline notranslate" translate="no">$Y = K^\alpha L^{1-\alpha}$</span> (<span class="math-inline notranslate" translate="no">$\alpha = 0{,}36$</span>, <span class="math-inline notranslate" translate="no">$\delta = 8\%$</span>).</li>
+<li class="nested-li"><span class="math-inline notranslate" translate="no">$d = I$</span>: Setor Informal (<span class="math-inline notranslate" translate="no">$y_I(z) = \kappa w z$</span>, com <span class="math-inline notranslate" translate="no">$\kappa = 0{,}72$</span>, sem tributação, desutilidade <span class="math-inline notranslate" translate="no">$\psi_I = 0{,}05$</span>);</li>
+<li class="nested-li"><span class="math-inline notranslate" translate="no">$d = F$</span>: Setor Formal (<span class="math-inline notranslate" translate="no">$y_F(z) = (1 - \tau) w z$</span>, com <span class="math-inline notranslate" translate="no">$\tau = 0{,}20$</span>, desutilidade <span class="math-inline notranslate" translate="no">$\psi_F = 0{,}08$</span>).</li>
+<li><strong>Fricção de Mercado:</strong> Custo fixo de transição <span class="math-inline notranslate" translate="no">$\chi(d, d^-) = \bar\chi \cdot \mathbf{1}_{\{d \neq d^-\}}$</span>, com <span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span> em unidades de utilidade.</li>
+<li><strong>Risco Idiossincrático:</strong> Produtividade <span class="math-inline notranslate" translate="no">$z$</span> governada por processo AR(1) em log discretizado via método de Rouwenhorst com persistência <span class="math-inline notranslate" translate="no">$\rho = 0{,}90$</span>, desvio-padrão da inovação <span class="math-inline notranslate" translate="no">$\sigma_\varepsilon = 0{,}20$</span> e <span class="math-inline notranslate" translate="no">$N_z = 5$</span> estados (normalizados para <span class="math-inline notranslate" translate="no">$\mathbb{E}[z] = 1$</span>).</li>
+<li><strong>Tecnologia Agregada:</strong> Função de produção <span class="math-inline notranslate" translate="no">$Y = A K^\alpha L^{1-\alpha}$</span> com <span class="math-inline notranslate" translate="no">$A = 1{,}00$</span>, <span class="math-inline notranslate" translate="no">$\alpha = 0{,}36$</span> e depreciação anual <span class="math-inline notranslate" translate="no">$\delta = 8\%$</span>.</li>
 </ul>
+
+<h3>O Problema Intertemporal do Agente</h3>
+
+<p>Como a escolha ocupacional corrente implica custo de transição caso difira do estado anterior, a ocupação passada <span class="math-inline notranslate" translate="no">$d^-$</span> integra o vetor de estados individuais <span class="math-inline notranslate" translate="no">$(a, z, d^-)$</span>. O problema recursivo do agente escreve-se como:</p>
+
+<div class="math-display notranslate" translate="no">$$V(a, z, d^-) = \max_{d \in \{N, I, F\}} \left\{ v_d(a, z, d^-) \right\}$$</div>
+
+<p>em que, condicionada a cada alternativa discreta <span class="math-inline notranslate" translate="no">$d$</span>, a função valor contínua satisfaz:</p>
+
+<div class="math-display notranslate" translate="no">$$v_d(a, z, d^-) = \max_{a' \in [0, \bar{a}]} \left\{ u(c) - \psi_d - \chi(d, d^-) + \beta\,\mathbb{E}\left[ V(a', z', d) \mid z \right] \right\}$$</div>
+
+<p>sujeito à restrição orçamentária e à positividade do consumo:</p>
+
+<div class="math-display notranslate" translate="no">$$c + a' = (1 + r)a + y_d(z), \qquad c > 0.$$</div>
 
 <hr>
 
-<h2>O Desafio da Não-Concavidade e o Upper Envelope</h2>
+<h2>Métodos Numéricos e Diagnóstico de Não-Concavidade (EP vs. EG)</h2>
 
-<p>A presença do custo de transição <span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span> e das escolhas discretas gera cruzamentos entre as funções valor condicionais <span class="math-inline notranslate" translate="no">$v_d(a)$</span>. A função valor global:</p>
+<p>Para cada escolha discreta <span class="math-inline notranslate" translate="no">$d \in \{N, I, F\}$</span> e estado exógeno <span class="math-inline notranslate" translate="no">$z$</span>, o método inverte analiticamente a Equação de Euler sobre a grade de ativos futuros <span class="math-inline notranslate" translate="no">$a'$</span>, definindo os pontos endógenos:</p>
 
-<div class="math-display notranslate" translate="no">$$V(a, z, d_{-1}) = \max_{d \in \{N, I, F\}} v(a, z, d, d_{-1})$$</div>
+<div class="math-display notranslate" translate="no">$$a_{\text{endog}}(a') = \frac{(u')^{-1}\!\left(\beta (1+r) \mathbb{E}\left[V_a(a', z', d) \mid z\right]\right) + a' - y_d(z)}{1+r}.$$</div>
 
-<p>apresenta pontos de quina (<em>kinks</em>) e regiões locais de convexidade (<span class="math-inline notranslate" translate="no">$\Delta^2 V > 0$</span>).</p>
+<p>A solução por DC-EGM estrutura-se em três etapas encadeadas:</p>
 
-<p>Ao inverter analiticamente a Equação de Euler via EGM para cada escolha <span class="math-inline notranslate" translate="no">$d$</span>:</p>
-
-<div class="math-display notranslate" translate="no">$$a_{\text{endog}}(a') = \frac{(u')^{-1}(\beta (1+r) \mathbb{E}[V_a']) + a' - y_d(z)}{1+r}$$</div>
-
-<p>a não-monotonicidade de <span class="math-inline notranslate" translate="no">$\mathbb{E}[V_a']$</span> provoca <strong>dobras na grade endógena</strong> (<em>folds</em>), tornando a correspondência multi-valorada.</p>
+<ol>
+<li>Resolve separadamente o problema contínuo condicionado a cada alternativa discreta <span class="math-inline notranslate" translate="no">$d \in \{N, I, F\}$</span>, sem otimização numérica sobre <span class="math-inline notranslate" translate="no">$a'$</span>.</li>
+<li>Os custos fixos de transição <span class="math-inline notranslate" translate="no">$\bar\chi$</span> e o operador <span class="math-inline notranslate" translate="no">$\max_d$</span> geram cruzamentos entre as funções valor condicionais <span class="math-inline notranslate" translate="no">$v_d(a)$</span>, produzindo <strong>pontos de quina</strong> (<em>kinks</em>) nos limiares de indiferença setorial e regiões locais onde <span class="math-inline notranslate" translate="no">$V$</span> perde concavidade (<span class="math-inline notranslate" translate="no">$\Delta^2 V > 0$</span>), como ilustra a Figura 1.</li>
+<li>Quando <span class="math-inline notranslate" translate="no">$\mathbb{E}[V_a']$</span> deixa de ser monotônica, <span class="math-inline notranslate" translate="no">$a_{\text{endog}}(a')$</span> inverte o sentido (<span class="math-inline notranslate" translate="no">$d a_{\text{endog}}/d a' < 0$</span>) e gera múltiplos ramos; o algoritmo de <strong>Upper Envelope</strong> não é apenas uma etapa auxiliar de velocidade, mas uma exigência geométrica para identificar segmentos subótimos, podá-los e preservar a envoltória eficiente global.</li>
+</ol>
 
 <div style="text-align: center; margin: 1.5rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura1_funcoes_valor_envelope.png" alt="Funções Valor Condicionais e Envelope Superior" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 1: Funções valor condicionais e o envelope superior exibindo quinas nos pontos de indiferença setorial.</em></p>
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 1: Funções valor condicionais e envelope superior exibindo quinas nos pontos de indiferença ocupacional.</em></p>
 </div>
-
-<p>O algoritmo de <strong>Upper Envelope</strong> detecta as regiões onde a grade endógena inverte de sentido (<span class="math-inline notranslate" translate="no">$d a_{\text{endog}} / d a' < 0$</span>), identifica geometricamente os pontos de corte e descarta os ramos subótimos, preservando a fronteira eficiente global.</p>
 
 <div style="text-align: center; margin: 1.5rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura3_grades_endogenas.png" alt="Grades Endógenas e Dobras no DC-EGM" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 3: Diagnóstico das dobras na grade endógena decorrentes dos custos fixos de transição ocupacional.</em></p>
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 3: Diagnóstico das grades endógenas em equilíbrio parcial sob custos fixos de transição ocupacional.</em></p>
+</div>
+
+<div style="text-align: center; margin: 2rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura14_upper_envelope_dobras.png" alt="Anatomia do Upper Envelope na Dobra Interior" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 14: Anatomia do algoritmo Upper Envelope na dobra interior (<span class="math-inline notranslate" translate="no">$z_2, d=I, N_a=1600$</span>), destacando o descarte de ramos subótimos.</em></p>
+</div>
+
+<p><strong>Contraste entre Equilíbrio Parcial e Equilíbrio Geral:</strong> Os experimentos de equilíbrio parcial (<span class="math-inline notranslate" translate="no">$r = 4{,}1667\%$</span>, <span class="math-inline notranslate" translate="no">$w = 1{,}1781$</span>) identificam dobras na grade endógena a partir de <span class="math-inline notranslate" translate="no">$N_a = 800$</span>, com aumento de ocorrências sob refinamento da discretização: nenhuma dobra discreta em <span class="math-inline notranslate" translate="no">$N_a = 400$</span>, duas dobras em <span class="math-inline notranslate" translate="no">$N_a = 800$</span> e quatro dobras em <span class="math-inline notranslate" translate="no">$N_a = 1600$</span> (três interiores em torno de <span class="math-inline notranslate" translate="no">$a' \approx 60{,}5$</span>, <span class="math-inline notranslate" translate="no">$64{,}5$</span> e <span class="math-inline notranslate" translate="no">$74{,}4$</span> e uma próxima à fronteira superior em <span class="math-inline notranslate" translate="no">$a' \in [78{,}55;\, 80{,}0]$</span>). Entretanto, essas dobras não são uma propriedade universal da parametrização: na solução de equilíbrio geral examinada com <span class="math-inline notranslate" translate="no">$N_a = 400$</span> (<span class="math-inline notranslate" translate="no">$r^* \approx 2{,}80\%$</span>), todas as grades endógenas permaneceram estritamente monotônicas, com incrementos mínimos positivos de <span class="math-inline notranslate" translate="no">$+0{,}1583$</span> na inatividade, <span class="math-inline notranslate" translate="no">$+0{,}1237$</span> na informalidade e <span class="math-inline notranslate" translate="no">$+0{,}1313$</span> na formalidade.</p>
+
+<hr>
+
+<h2>Resultados Computacionais e Escalabilidade</h2>
+
+<h3>1. Refinamento Multigrade no Modelo Canônico (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>, EP)</h3>
+
+<div class="table-wrap"><table><thead><tr><th style="text-align:center"><span class="math-inline notranslate" translate="no">$N_a$</span></th><th style="text-align:center">Iter. (VFI / DC)</th><th style="text-align:center">Conv. DC (<span class="math-inline notranslate" translate="no">$10^{-7}$</span>)</th><th style="text-align:center">VFI (s)</th><th style="text-align:center">DC-EGM (s)</th><th style="text-align:center">Speedup</th><th style="text-align:center">Conc. <span class="math-inline notranslate" translate="no">$d^*$</span></th><th style="text-align:center">Dobras</th></tr></thead><tbody><tr><td style="text-align:center">400</td><td style="text-align:center">376 / 1.500</td><td style="text-align:center">Não (teto)</td><td style="text-align:center">2,914</td><td style="text-align:center">4,990</td><td style="text-align:center">0,58x</td><td style="text-align:center">99,27 %</td><td style="text-align:center">0</td></tr><tr><td style="text-align:center">800</td><td style="text-align:center">376 / 376</td><td style="text-align:center">Sim</td><td style="text-align:center">10,591</td><td style="text-align:center">2,530</td><td style="text-align:center">4,19x</td><td style="text-align:center">99,78 %</td><td style="text-align:center">2</td></tr><tr><td style="text-align:center">1.600</td><td style="text-align:center">376 / 376</td><td style="text-align:center">Sim</td><td style="text-align:center">39,749</td><td style="text-align:center">5,199</td><td style="text-align:center"><strong>7,65x</strong></td><td style="text-align:center"><strong>99,97 %</strong></td><td style="text-align:center">4</td></tr></tbody></table></div>
+
+<ul>
+<li>Na malha básica (<span class="math-inline notranslate" translate="no">$N_a = 400$</span>), o DC-EGM atinge o teto de 1.500 iterações com resíduo final de Cauchy <span class="math-inline notranslate" translate="no">$\|\Delta V\|_\infty = 2{,}09 \times 10^{-6}$</span> (acima da tolerância de <span class="math-inline notranslate" translate="no">$10^{-7}$</span>, e <span class="math-inline notranslate" translate="no">$\|\Delta c\|_\infty = 5{,}80 \times 10^{-4}$</span>), resultando em tempo superior ao da VFI (<code class="notranslate" translate="no">0,58x</code>).</li>
+<li>A partir de <span class="math-inline notranslate" translate="no">$N_a = 800$</span>, ambos convergem em 376 iterações; em <span class="math-inline notranslate" translate="no">$N_a = 1600$</span> (24.000 pontos no espaço de estados), o DC-EGM cai de <strong>39,75 s</strong> para <strong>5,20 s</strong> (<strong>speedup de 7,65x</strong>), mantendo concordância ocupacional de <strong>99,97%</strong> e diferenças em norma do supremo <span class="math-inline notranslate" translate="no">$\|\Delta V\|_\infty = 0{,}0156$</span> e <span class="math-inline notranslate" translate="no">$\|\Delta c\|_\infty = 0{,}0525$</span>.</li>
+</ul>
+
+<div style="text-align: center; margin: 2rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura12_mapa_escolhas_ocupacionais.png" alt="Mapa Espacial de Ocupação Ótima e Histerese" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 12: Mapa espacial de escolha ocupacional ótima <span class="math-inline notranslate" translate="no">$d^*(a, z, d^-)$</span> e regiões de histerese (<span class="math-inline notranslate" translate="no">$N_a = 1600$</span>, concordância de 99,97% com a VFI).</em></p>
+</div>
+
+<h3>2. Benchmark Histórico Complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, Modelo Preliminar)</h3>
+
+<p>Em experimento complementar separado sobre o modelo preliminar <strong>sem custos de transição</strong> (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, <span class="math-inline notranslate" translate="no">$N_a = 400$</span>), o <strong>DC-EGM Otimizado</strong> obtém mediana de <strong>1,661 s</strong> (<code class="notranslate" translate="no">4,23x</code> mais rápido que a VFI vetorizada de referência) e resíduo médio na Equação de Euler de <strong><span class="math-inline notranslate" translate="no">$7{,}18 \times 10^{-7}$</span></strong>, frente a <strong><span class="math-inline notranslate" translate="no">$1{,}88 \times 10^{-3}$</span></strong> mesmo na VFI refinada com 3.200 pontos candidatos (<code class="notranslate" translate="no">91,149 s</code>).</p>
+
+<blockquote><p><strong>Ressalva metodológica:</strong> Esses valores de erro de Euler pertencem exclusivamente ao benchmark preliminar sem custos de transição (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>) e não devem ser interpretados como medida direta de acurácia do modelo canônico (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>). Na presença de escolhas discretas e não-concavidades locais, a precisão numérica exige avaliação diferenciada nas vizinhanças de restrições de liquidez e limiares de transição ocupacional.</p></blockquote>
+
+<div style="text-align: center; margin: 2rem 0;">
+  <img src="../assets/images/dc_egm_vfi/figura16_fronteira_tempo_precisao_historico.png" alt="Fronteira Tempo vs Precisão no Benchmark Histórico" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 16: Benchmark histórico complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, modelo preliminar): fronteira tempo de execução versus erro médio de Euler entre 9 implementações.</em></p>
 </div>
 
 <hr>
 
-<h2>Resultados Comparativos Principais</h2>
+<h2>Equilíbrio Geral Competitivo e Distribuição Estacionária (<span class="math-inline notranslate" translate="no">$N_a = 400$</span>)</h2>
 
-<h3>1. Equilíbrio Geral Estacionário Competitivo (<span class="math-inline notranslate" translate="no">$N_a = 400$</span>)</h3>
+<p>Os dois métodos produzem agregados macroeconômicos bastante próximos: as diferenças relativas são inferiores a <strong><span class="math-inline notranslate" translate="no">$0{,}5\%$</span></strong> nas variáveis reais analisadas, à exceção da taxa real de juros (<span class="math-inline notranslate" translate="no">$r^*$</span>), cuja discrepância é de <strong><span class="math-inline notranslate" translate="no">$0{,}633\%$</span></strong> (<span class="math-inline notranslate" translate="no">$1{,}8\text{ pb}$</span>). As diferenças distributivas são maiores, destacando-se o coeficiente de Gini da riqueza (<strong><span class="math-inline notranslate" translate="no">$3{,}38\%$</span></strong>) e a fração concentrada na restrição de crédito.</p>
 
-<p>A convergência macroeconômica dos dois métodos é praticamente perfeita, com discrepâncias relativas inferiores a <span class="math-inline notranslate" translate="no">$0{,}3\%$</span> nas principais variáveis e fechamento contábil exato da Lei de Walras:</p>
+<div class="table-wrap"><table><thead><tr><th style="text-align:left">Variável / Critério</th><th style="text-align:center">DC-EGM</th><th style="text-align:center">VFI Vetorizada</th><th style="text-align:center">Discrepância / Status</th></tr></thead><tbody><tr><td style="text-align:left">Razão Capital-Trabalho (<span class="math-inline notranslate" translate="no">$k^*$</span>)</td><td style="text-align:center">6,564697</td><td style="text-align:center">6,547806</td><td style="text-align:center">0,258 %</td></tr><tr><td style="text-align:left">Taxa Real de Juros (<span class="math-inline notranslate" translate="no">$r^*$</span>)</td><td style="text-align:center">2,7966 %</td><td style="text-align:center">2,8144 %</td><td style="text-align:center">0,633 % (1,8 pb)</td></tr><tr><td style="text-align:left">Salário Real Competitivo (<span class="math-inline notranslate" translate="no">$w^*$</span>)</td><td style="text-align:center">1,260020</td><td style="text-align:center">1,258851</td><td style="text-align:center">0,093 %</td></tr><tr><td style="text-align:left">Estoque Agregado de Capital (<span class="math-inline notranslate" translate="no">$K^*$</span>)</td><td style="text-align:center">6,5349</td><td style="text-align:center">6,5147</td><td style="text-align:center">0,310 %</td></tr><tr><td style="text-align:left">Trabalho Efetivo Agregado (<span class="math-inline notranslate" translate="no">$L^*$</span>)</td><td style="text-align:center">0,9956</td><td style="text-align:center">0,9947</td><td style="text-align:center">0,090 %</td></tr><tr><td style="text-align:left">Produto Agregado (<span class="math-inline notranslate" translate="no">$Y^*$</span>)</td><td style="text-align:center">1,9600</td><td style="text-align:center">1,9567</td><td style="text-align:center">0,169 %</td></tr><tr><td style="text-align:left">Consumo Agregado (<span class="math-inline notranslate" translate="no">$C^*$</span>)</td><td style="text-align:center">1,1892</td><td style="text-align:center">1,1885</td><td style="text-align:center">0,055 %</td></tr><tr><td style="text-align:left">Investimento Agregado (<span class="math-inline notranslate" translate="no">$I^*$</span>)</td><td style="text-align:center">0,5228</td><td style="text-align:center">0,5212</td><td style="text-align:center">0,309 %</td></tr><tr><td style="text-align:left">Gasto do Governo (<span class="math-inline notranslate" translate="no">$G^*$</span>)</td><td style="text-align:center">0,2480</td><td style="text-align:center">0,2470</td><td style="text-align:center">0,418 %</td></tr><tr><td style="text-align:left">Coeficiente de Gini de Riqueza</td><td style="text-align:center">0,4948</td><td style="text-align:center">0,5115</td><td style="text-align:center">3,38 %</td></tr><tr><td style="text-align:left">Participação no Setor Formal (<span class="math-inline notranslate" translate="no">$M_F$</span>)</td><td style="text-align:center">98,28 %</td><td style="text-align:center">97,96 %</td><td style="text-align:center">0,32 pp</td></tr><tr><td style="text-align:left">Resíduo Relativo de Mercado (<span class="math-inline notranslate" translate="no">$\lvert f(k)\rvert/k$</span>)</td><td style="text-align:center"><span class="math-inline notranslate" translate="no">$9{,}76 \times 10^{-5}$</span></td><td style="text-align:center"><span class="math-inline notranslate" translate="no">$2{,}88 \times 10^{-4}$</span></td><td style="text-align:center">Tol. <span class="math-inline notranslate" translate="no">$10^{-4}$</span>: Sim (DC) / Não (VFI)</td></tr><tr><td style="text-align:left">Resíduo Contábil de Walras</td><td style="text-align:center"><span class="math-inline notranslate" translate="no">$-1{,}68 \times 10^{-8}$</span></td><td style="text-align:center"><span class="math-inline notranslate" translate="no">$-2{,}47 \times 10^{-8}$</span></td><td style="text-align:center">Consistência contábil</td></tr><tr><td style="text-align:left"><strong>Tempo Total em EG (Iter.)</strong></td><td style="text-align:center"><strong>7,61 s (11 iter.)</strong></td><td style="text-align:center"><strong>26,60 s (15 iter.)</strong></td><td style="text-align:center"><strong>3,49x mais rápido</strong></td></tr></tbody></table></div>
 
-<div class="table-wrap"><table><thead><tr><th style="text-align:left">Variável Macroeconômica</th><th style="text-align:center">DC-EGM com Envelope</th><th style="text-align:center">VFI Vetorizada</th><th style="text-align:center">Discrepância Relativa</th></tr></thead><tbody><tr><td style="text-align:left">Razão Capital-Trabalho (<span class="math-inline notranslate" translate="no">$k^*$</span>)</td><td style="text-align:center">6,564697</td><td style="text-align:center">6,547806</td><td style="text-align:center">0,258 %</td></tr><tr><td style="text-align:left">Taxa Real de Juros (<span class="math-inline notranslate" translate="no">$r^*$</span>)</td><td style="text-align:center">2,7966 %</td><td style="text-align:center">2,8144 %</td><td style="text-align:center">0,633 % (1,8 pb)</td></tr><tr><td style="text-align:left">Salário Real Competitivo (<span class="math-inline notranslate" translate="no">$w^*$</span>)</td><td style="text-align:center">1,260020</td><td style="text-align:center">1,258851</td><td style="text-align:center">0,093 %</td></tr><tr><td style="text-align:left">Estoque Agregado de Capital (<span class="math-inline notranslate" translate="no">$K^*$</span>)</td><td style="text-align:center">6,5349</td><td style="text-align:center">6,5147</td><td style="text-align:center">0,310 %</td></tr><tr><td style="text-align:left">Trabalho Efetivo Agregado (<span class="math-inline notranslate" translate="no">$L^*$</span>)</td><td style="text-align:center">0,9956</td><td style="text-align:center">0,9947</td><td style="text-align:center">0,090 %</td></tr><tr><td style="text-align:left">Produto Agregado (<span class="math-inline notranslate" translate="no">$Y^*$</span>)</td><td style="text-align:center">1,9600</td><td style="text-align:center">1,9567</td><td style="text-align:center">0,169 %</td></tr><tr><td style="text-align:left">Consumo Agregado (<span class="math-inline notranslate" translate="no">$C^*$</span>)</td><td style="text-align:center">1,1892</td><td style="text-align:center">1,1885</td><td style="text-align:center">0,055 %</td></tr><tr><td style="text-align:left">Investimento Agregado (<span class="math-inline notranslate" translate="no">$I^*$</span>)</td><td style="text-align:center">0,5228</td><td style="text-align:center">0,5212</td><td style="text-align:center">0,309 %</td></tr><tr><td style="text-align:left"><strong>Resíduo Contábil de Walras</strong></td><td style="text-align:center"><strong><span class="math-inline notranslate" translate="no">$-1{,}68 \times 10^{-8}$</span></strong></td><td style="text-align:center"><strong><span class="math-inline notranslate" translate="no">$-2{,}47 \times 10^{-8}$</span></strong></td><td style="text-align:center"><strong>Fechamento Exato</strong></td></tr><tr><td style="text-align:left">Coeficiente de Gini de Riqueza</td><td style="text-align:center">0,4948</td><td style="text-align:center">0,5115</td><td style="text-align:center">3,38 %</td></tr><tr><td style="text-align:left">Participação no Setor Formal (<span class="math-inline notranslate" translate="no">$M_F$</span>)</td><td style="text-align:center">98,28 %</td><td style="text-align:center">97,96 %</td><td style="text-align:center">0,32 pp</td></tr><tr><td style="text-align:left"><strong>Tempo de Execução em Equilíbrio Geral</strong></td><td style="text-align:center"><strong>7,61 s</strong></td><td style="text-align:center"><strong>26,60 s</strong></td><td style="text-align:center"><strong>3,49x mais rápido</strong></td></tr></tbody></table></div>
-
-<h3>2. Escalabilidade Multigrade e Acurácia de Euler</h3>
-
-<p>O experimento de refinamento de malha mostra os ganhos empíricos do DC-EGM nas grades convergidas:</p>
-
-<ul>
-<li>Em malha fina de 1.600 pontos (24.000 estados discretos), o DC-EGM resolve a política em <strong>5,20 segundos</strong>, enquanto a VFI necessita de <strong>39,75 segundos</strong> (<strong>speedup de 7,65x</strong>).</li>
-<li>Na malha de 800 pontos, o tempo cai de 10,59 s para <strong>2,53 s (speedup de 4,19x)</strong>. Na malha básica (<span class="math-inline notranslate" translate="no">$N_a=400$</span>), o DC-EGM leva <strong>4,99 s</strong> (vs 2,91 s da VFI, <strong>0,58x</strong>) por atingir o teto de 1.500 iterações com resíduo de Cauchy <span class="math-inline notranslate" translate="no">$2{,}09 \times 10^{-6}$</span> (tolerância <span class="math-inline notranslate" translate="no">$10^{-7}$</span>).</li>
-<li>No <strong>benchmark histórico complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, modelo preliminar)</strong>, o resíduo médio da Equação de Euler atinge <strong><span class="math-inline notranslate" translate="no">$7{,}18 \times 10^{-7}$</span></strong> no DC-EGM Otimizado, contra <strong><span class="math-inline notranslate" translate="no">$1{,}88 \times 10^{-3}$</span></strong> na VFI-3200 (~4 ordens de grandeza menor); no <strong>modelo canônico (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>)</strong>, a comparação individual concentra-se na convergência conjunta e concordância de políticas (<span class="math-inline notranslate" translate="no">$\|\Delta V\|_\infty = 0{,}0156$</span>, <span class="math-inline notranslate" translate="no">$\|\Delta c\|_\infty = 0{,}0525$</span> e concordância ocupacional de 99,97% em <span class="math-inline notranslate" translate="no">$N_a=1600$</span>), observando que <span class="math-inline notranslate" translate="no">$N_a=400$</span> atingiu o teto de 1.500 iterações com diferença final de <span class="math-inline notranslate" translate="no">$2{,}09 \times 10^{-6} > 10^{-7}$</span>, enquanto <span class="math-inline notranslate" translate="no">$N_a \in \{800, 1600\}$</span> convergiram estritamente em 376 iterações.</li>
-</ul>
+<p><strong>Critérios de fechamento do equilíbrio geral:</strong> Embora produzam agregados próximos, os algoritmos não encerram com a mesma precisão no fechamento do mercado de capitais. Em <code class="notranslate" translate="no">equilibrio_geral_dc_egm.m</code>, a bisseção encerra exclusivamente pelo excesso de oferta de capital (<span class="math-inline notranslate" translate="no">$|f(k)|/k < 10^{-4}$</span> ou <span class="math-inline notranslate" translate="no">$|f(k)| < 10^{-4}$</span>), atingindo <span class="math-inline notranslate" translate="no">$9{,}76 \times 10^{-5}$</span> na 11ª iteração. Em <code class="notranslate" translate="no">equilibrio_geral_vfi.m</code>, há uma condição adicional de largura do intervalo (<span class="math-inline notranslate" translate="no">$|k_b - k_a| < 10^{-4}$</span>), o que encerra a busca na 15ª iteração pela contração do intervalo <span class="math-inline notranslate" translate="no">$[k_a, k_b]$</span>, com resíduo relativo de mercado ainda em <span class="math-inline notranslate" translate="no">$2{,}88 \times 10^{-4}$</span> (acima da tolerância de <span class="math-inline notranslate" translate="no">$10^{-4}$</span>). O resíduo de Walras (<span class="math-inline notranslate" translate="no">$Y - C - I - G$</span>) verifica apenas a identidade contábil das restrições orçamentárias e produtivas, não substituindo a condição de equilíbrio do mercado de capitais.</p>
 
 <div style="text-align: center; margin: 1.5rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura4_comparacao_vfi_dcegm.png" alt="Comparação das Políticas de Poupança" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
@@ -200,35 +239,14 @@
   <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 11: Políticas ótimas de consumo <span class="math-inline notranslate" translate="no">$c^*(a)$</span> e poupança líquida <span class="math-inline notranslate" translate="no">$a'(a)-a$</span> (<span class="math-inline notranslate" translate="no">$N_a=1600$</span>), evidenciando suavização precaucional e restrição de liquidez.</em></p>
 </div>
 
-<div style="text-align: center; margin: 2rem 0;">
-  <img src="../assets/images/dc_egm_vfi/figura14_upper_envelope_dobras.png" alt="Anatomia do Upper Envelope na Dobra Interior" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 14: Anatomia do algoritmo Upper Envelope na dobra interior (<span class="math-inline notranslate" translate="no">$z_2, d=I$</span>, <span class="math-inline notranslate" translate="no">$N_a=1600$</span>), destacando o descarte de ramos subótimos.</em></p>
-</div>
-
-<div style="text-align: center; margin: 2rem 0;">
-  <img src="../assets/images/dc_egm_vfi/figura12_mapa_escolhas_ocupacionais.png" alt="Mapa Espacial de Ocupação Ótima e Histerese" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 12: Mapa espacial de escolha ocupacional ótima <span class="math-inline notranslate" translate="no">$d^*(a,z,d^-)$</span> e regiões de histerese (<span class="math-inline notranslate" translate="no">$N_a=1600$</span>, concordância ocupacional de 99,97% com a VFI).</em></p>
-</div>
-
-<div style="text-align: center; margin: 2rem 0;">
-  <img src="../assets/images/dc_egm_vfi/figura16_fronteira_tempo_precisao_historico.png" alt="Fronteira Tempo vs Precisão no Benchmark Histórico" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 16: Benchmark histórico complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, modelo preliminar): fronteira tempo de execução versus erro médio de Euler entre 9 implementações.</em></p>
-</div>
-
-<hr>
-
-<h2>Distribuição Estacionária e Estrutura Ocupacional</h2>
-
-<p>A integração conjunta da cadeia de Markov ergódica via método de Young (2010) revela os fatos distributivos canônicos:</p>
-
 <div style="text-align: center; margin: 1.5rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura6_distribuicao_estacionaria.png" alt="Distribuição Estacionária de Riqueza" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 6: Densidade marginal estacionária de ativos exibindo a massa de trabalhadores restritos em <span class="math-inline notranslate" translate="no">$a=0$</span>.</em></p>
+  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 6: Densidade marginal estacionária de ativos exibindo a concentração de massa na restrição <span class="math-inline notranslate" translate="no">$a=0$</span>.</em></p>
 </div>
 
 <ul>
-<li><strong>Concentração na Base:</strong> Existe uma massa de trabalhadores no limite de crédito <span class="math-inline notranslate" translate="no">$a = 0$</span> que não conseguem acumular reservas precaucórias suficientes em decorrência de choques sucessivos de baixa produtividade (<span class="math-inline notranslate" translate="no">$14{,}09\%$</span> na VFI e <span class="math-inline notranslate" translate="no">$5{,}03\%$</span> no DC-EGM em EG).</li>
-<li><strong>Transição Ocupacional (EP <span class="math-inline notranslate" translate="no">$\to$</span> EG):</strong> Sob preços iniciais de equilíbrio parcial (<span class="math-inline notranslate" translate="no">$r=4{,}1667\%, w=1{,}1781$</span>), a informalidade domina com <span class="math-inline notranslate" translate="no">$86{,}99\%$</span>. No equilíbrio geral competitivo (<span class="math-inline notranslate" translate="no">$w^*=1{,}2600, r^*=2{,}80\%$</span>), o prêmio salarial líquido formal sobrepõe a desutilidade adicional e eleva o setor formal para <span class="math-inline notranslate" translate="no">$98{,}28\%$</span> no DC-EGM (<span class="math-inline notranslate" translate="no">$97{,}96\%$</span> na VFI).</li>
+<li><strong>Concentração na Base:</strong> A distribuição estacionária obtida via método de Young (2010) apresenta massa relevante acumulada na restrição de liquidez <span class="math-inline notranslate" translate="no">$a = 0$</span> (<span class="math-inline notranslate" translate="no">$5{,}03\%$</span> no DC-EGM e <span class="math-inline notranslate" translate="no">$14{,}09\%$</span> na VFI em equilíbrio geral). Essa concentração reflete a interação entre a heterogeneidade de produtividade, as decisões ocupacionais discretas e as políticas ótimas de poupança, explicando também a diferença nos índices de Gini (<span class="math-inline notranslate" translate="no">$0{,}4948$</span> vs. <span class="math-inline notranslate" translate="no">$0{,}5115$</span>).</li>
+<li><strong>Composição Ocupacional (EP <span class="math-inline notranslate" translate="no">$\to$</span> EG):</strong> Sob os preços iniciais de equilíbrio parcial (<span class="math-inline notranslate" translate="no">$r = 4{,}1667\%$</span>, <span class="math-inline notranslate" translate="no">$w = 1{,}1781$</span>), a informalidade concentra <span class="math-inline notranslate" translate="no">$86{,}99\%$</span> dos agentes. Nos preços competitivos de equilíbrio geral (<span class="math-inline notranslate" translate="no">$w^* = 1{,}2600$</span>, <span class="math-inline notranslate" translate="no">$r^* = 2{,}80\%$</span>), a participação formal eleva-se para <span class="math-inline notranslate" translate="no">$98{,}28\%$</span> no DC-EGM (<span class="math-inline notranslate" translate="no">$97{,}96\%$</span> na VFI). Esse percentual próximo de <span class="math-inline notranslate" translate="no">$98\%$</span> é uma propriedade numérica da parametrização e dos preços competitivos adotados no modelo, não devendo ser interpretado como estimativa empírica da composição ocupacional observada no Brasil.</li>
 </ul>
 
 <hr>
@@ -241,9 +259,22 @@
 
 <hr>
 
-<h2>Materiais Didáticos, Relatórios e Downloads</h2>
+<h2>Limitações do Estudo</h2>
 
-<p>Os slides e os códigos-fonte em MATLAB do projeto estão disponíveis abaixo:</p>
+<ol>
+<li><strong>Dependência da discretização em <span class="math-inline notranslate" translate="no">$N_a = 400$</span>:</strong> No experimento de equilíbrio parcial, o DC-EGM atingiu o limite de 1.500 iterações com diferença de <span class="math-inline notranslate" translate="no">$2{,}09 \times 10^{-6} > 10^{-7}$</span>, alcançando convergência estrita apenas a partir de <span class="math-inline notranslate" translate="no">$N_a = 800$</span>.</li>
+<li><strong>Não-concavidade sensível a preços e malha:</strong> A ocorrência de dobras na grade endógena manifestou-se no experimento de EP (<span class="math-inline notranslate" translate="no">$N_a \in \{800, 1600\}$</span>), mas esteve ausente na solução de EG examinada com <span class="math-inline notranslate" translate="no">$N_a = 400$</span>.</li>
+<li><strong>Acurácia não uniforme:</strong> Sob custos de transição (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>), erros numéricos variam pelo espaço de estados e tendem a concentrar-se próximo à restrição <span class="math-inline notranslate" translate="no">$a = 0$</span> e aos limiares de mudança ocupacional.</li>
+<li><strong>Natureza empírica do benchmark:</strong> Os tempos medidos refletem esta implementação vetorizada específica em MATLAB e não constituem prova de complexidade assintótica universal.</li>
+<li><strong>Refinamento conjunto na VFI:</strong> No comparativo multigrade, o aumento de <span class="math-inline notranslate" translate="no">$N_a$</span> refina simultaneamente estado (<span class="math-inline notranslate" translate="no">$a$</span>) e controle (<span class="math-inline notranslate" translate="no">$a'$</span>), acentuando o custo quadrático da busca discreta frente ao custo linear do DC-EGM.</li>
+<li><strong>Calibração ilustrativa:</strong> Os agregados e participações setoriais decorrem da parametrização canônica definida, sem estimação econométrica aplicada à economia brasileira.</li>
+</ol>
+
+<hr>
+
+<h2>Materiais Didáticos, Reprodutibilidade e Downloads</h2>
+
+<p>Projeto validado em <strong>MATLAB R2026b Update 1</strong> (compatível com R2020b+), com ponto de entrada único <code class="notranslate" translate="no">executar_projeto.m</code> na raiz de <code class="notranslate" translate="no">ENTREGA_PROFESSOR/</code> e bateria de <strong>11 testes automatizados</strong> formais aprovados (<code class="notranslate" translate="no">log_execucao_modelo.txt</code>). Os slides e os códigos-fonte do pacote publicado estão disponíveis abaixo:</p>
 
 <ul>
 <li>📊 <strong><a href="../materials/dc_egm_vfi/APRESENTACAO_FINAL.pdf">Slides de Apresentação Executiva Beamer 16:9 (PDF)</a></strong>: Versão executiva (18 slides).</li>
