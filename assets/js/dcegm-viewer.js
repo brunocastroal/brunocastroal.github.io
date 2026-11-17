@@ -361,7 +361,9 @@
         drawLineSeries(ctx, ptsVfi, tx, ty, pal.vfi, { width: 2.0, dashed: true, step: isStep });
       }
 
-      let infoText = `Equilíbrio Geral (Na=400): passe o cursor ou toque no gráfico (z${state.iz + 1}=${fmt(zVals[state.iz], 3)}, d⁻=${occNames[state.dPrev]}).`;
+      let infoText = `Equilíbrio Geral (Na=400, z${state.iz + 1}=${fmt(zVals[state.iz], 3)}, d⁻=${occNames[state.dPrev]}): passe o cursor ou toque no gráfico.` +
+        (isStep ? ' Códigos: <strong>1 = Inatividade (N)</strong> &middot; <strong>2 = Informalidade (I)</strong> &middot; <strong>3 = Formalidade (F)</strong>.' : '') +
+        `<br>Nota: ||&Delta;V||<sub>&infin;</sub> e ||&Delta;c||<sub>&infin;</sub> medem discrepância máxima entre soluções finais DC-EGM e VFI (sob r* distintos por 1,8 pb), e não erro de convergência.`;
       if (hoverState.active && hoverState.px >= pad.l && hoverState.px <= pad.l + plotW) {
         const targetX = ((hoverState.px - pad.l) / plotW) * maxX;
         const pDc = nearestPoint(ptsDc, targetX);
@@ -388,12 +390,13 @@
       }
       readoutEl.innerHTML = infoText;
       legendEl.innerHTML = `<span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM (Upper Envelope)</span>` +
-        (state.compareVfi ? `<span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.vfi}"></i>VFI Vetorizada</span>` : '');
+        (state.compareVfi ? `<span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.vfi}"></i>VFI Vetorizada</span>` : '') +
+        (isStep ? `<span class="dcegm-leg-item">1 = Inatividade (N) &middot; 2 = Informalidade (I) &middot; 3 = Formalidade (F)</span>` : '');
       kpiEl.innerHTML = `
         <div class="dcegm-kpi"><span>r* (DC / VFI)</span><strong>${fmt(dcSol.resumo.r, 4)}% / ${fmt(vfiSol.resumo.r, 4)}%</strong></div>
         <div class="dcegm-kpi"><span>w* (DC-EGM)</span><strong>${fmt(dcSol.resumo.w, 4)}</strong></div>
-        <div class="dcegm-kpi"><span>||&Delta;V||<sub>&infin;</sub> (DC vs VFI, EG)</span><strong>${fmt(eq.discrepancias.dif_sup_V, 4)}</strong></div>
-        <div class="dcegm-kpi"><span>||&Delta;c||<sub>&infin;</sub> (DC vs VFI, EG)</span><strong>${fmt(eq.discrepancias.dif_sup_c, 4)}</strong></div>
+        <div class="dcegm-kpi" title="Diferença máxima entre soluções DC-EGM e VFI no EG (Na=400, r* distintos em 1,8 pb); não é resíduo de convergência"><span>Discrep. ||&Delta;V||<sub>&infin;</sub> (DC vs VFI, EG)</span><strong>${fmt(eq.discrepancias.dif_sup_V, 4)}</strong></div>
+        <div class="dcegm-kpi" title="Diferença máxima entre políticas de consumo DC-EGM e VFI no EG (Na=400, r* distintos em 1,8 pb); não é resíduo de convergência"><span>Discrep. ||&Delta;c||<sub>&infin;</sub> (DC vs VFI, EG)</span><strong>${fmt(eq.discrepancias.dif_sup_c, 4)}</strong></div>
       `;
     }
 
@@ -467,7 +470,7 @@
           return acc;
         }, []).join(' → ');
 
-        let infoText = `Upper Envelope em EG (Na=400, z${state.iz + 1}=${fmt(zVals[state.iz], 3)}, d⁻=${occNames[state.dPrev]}): sequência dominante <strong>${pathSeq || '—'}</strong> · ${crossings.length} cruzamento(s) no trecho.`;
+        let infoText = `Upper Envelope em EG (Na=400, z${state.iz + 1}=${fmt(zVals[state.iz], 3)}, d⁻=${occNames[state.dPrev]}): o algoritmo escolhe d*(a) = argmax_d v_d(a) em cada trecho (<strong>${pathSeq || '—'}</strong>) e descarta os ramos dominados além dos ${crossings.length} cruzamento(s).`;
         if (hoverState.active && hoverState.px >= pad.l && hoverState.px <= pad.l + plotW) {
           const targetX = ((hoverState.px - pad.l) / plotW) * maxX;
           const pEnv = nearestPoint(envPts.map(p => ({ x: p.a, y: p.vEnv, raw: p })), targetX);
@@ -573,7 +576,7 @@
         drawLineSeries(ctx, sDc, tx, ty, pal.dc, { width: 2.2, fillAlpha: 0.12, baseline: 0 });
         drawLineSeries(ctx, sVfi, tx, ty, pal.vfi, { width: 1.9, dashed: true });
 
-        let infoText = `EG (Na=400, Young 2010) &middot; Massa em a=0: DC ${fmt(dcSol.resumo.frac_a_min, 2)}% vs VFI ${fmt(vfiSol.resumo.frac_a_min, 2)}% | Média: ${fmt(dcSol.resumo.media_a, 2)} vs ${fmt(vfiSol.resumo.media_a, 2)} | P25: ${fmt(dcSol.resumo.P25, 2)} · P50: ${fmt(dcSol.resumo.P50, 2)} vs ${fmt(vfiSol.resumo.P50, 2)} · P75: ${fmt(dcSol.resumo.P75, 2)} · P90: ${fmt(dcSol.resumo.P90, 2)} vs ${fmt(vfiSol.resumo.P90, 2)}.`;
+        let infoText = `EG (Na=400, Young 2010) &middot; Massa em a=0: DC ${fmt(dcSol.resumo.frac_a_min, 2)}% vs VFI ${fmt(vfiSol.resumo.frac_a_min, 2)}% | Média: ${fmt(dcSol.resumo.media_a, 2)} vs ${fmt(vfiSol.resumo.media_a, 2)} | P25: ${fmt(dcSol.resumo.P25, 2)} · P50: ${fmt(dcSol.resumo.P50, 2)} vs ${fmt(vfiSol.resumo.P50, 2)} · P75: ${fmt(dcSol.resumo.P75, 2)} · P90: ${fmt(dcSol.resumo.P90, 2)} vs ${fmt(vfiSol.resumo.P90, 2)}.<br>Nota numérica: picos discretos da VFI em &mu;(a) decorrem da restrição de a'(a) aos nós da grade (&omega; = 1 na loteria de Young), enquanto o DC-EGM interpola a'(a) continuamente entre nós adjacentes.`;
         if (hoverState.active && hoverState.px >= pad.l && hoverState.px <= pad.l + plotW) {
           const targetX = ((hoverState.px - pad.l) / plotW) * maxX;
           const idx = nearestIndex(aFull, targetX, maxX);
