@@ -66,33 +66,33 @@
   function getChartMeta() {
     if (state.tab === 'policies') {
       const titles = {
-        ap: "Poupança Ótima a'(a)",
-        c: 'Consumo Ótimo c*(a)',
-        V: 'Função Valor V(a)',
-        net: "Poupança Líquida a'(a) − a",
-        d_star: 'Ocupação Ótima d*(a)'
+        ap: "Poupança ótima a'(a)",
+        c: 'Consumo ótimo c*(a)',
+        V: 'Função valor V(a)',
+        net: "Poupança líquida a'(a) − a",
+        d_star: 'Ocupação ótima d*(a) em degraus'
       };
       return {
-        heading: `${titles[state.policyVar]} · ${state.compareVfi ? 'DC-EGM × VFI' : 'DC-EGM'}`,
+        heading: `${titles[state.policyVar]} — ${state.compareVfi ? 'DC-EGM versus VFI' : 'DC-EGM'}`,
         regime: 'EG · Na = 400 · χ̄ = 0,05'
       };
     }
     if (state.tab === 'folds') {
       return state.foldMode === 'endo'
-        ? { heading: 'Grade Endógena & Poda por Upper Envelope', regime: `EP · Na = 1600 · χ̄ = 0,05 · r = ${fmt(DATA ? DATA.dobras_ep.r_pct : 4.17, 2)}%` }
-        : { heading: 'Seleção de Ramo Dominante em v_d(a)', regime: 'EG · Na = 400 · χ̄ = 0,05 · r* = 2,80%' };
+        ? { heading: 'Seleção do ramo dominante — Upper Envelope', regime: `EP · Na = 1600 · χ̄ = 0,05 · r = ${fmt(DATA ? DATA.dobras_ep.r_pct : 4.17, 2)}%` }
+        : { heading: 'Seleção discreta em v_d(a) — Upper Envelope', regime: 'EG · Na = 400 · χ̄ = 0,05 · r* = 2,80%' };
     }
     if (state.tab === 'dist') {
       const titles = {
-        mu: 'Densidade Estacionária μ(a) com Zoom em a = 0',
-        cdf: 'Distribuição Acumulada de Riqueza CDF F(a)',
-        bisection: 'Trajetória da Taxa de Juros na Bisseção'
+        mu: 'Distribuição estacionária da riqueza — DC-EGM versus VFI',
+        cdf: 'Distribuição acumulada da riqueza F(a) — DC-EGM versus VFI',
+        bisection: 'Convergência da bisseção r* — DC-EGM versus VFI'
       };
       return { heading: titles[state.distView], regime: 'EG · Na = 400 · Young (2010)' };
     }
     return state.benchView === 'multigrade'
-      ? { heading: 'Escalabilidade por Resolução da Malha', regime: 'EP Multigrade · χ̄ = 0,05' }
-      : { heading: 'Fronteira Tempo × Erro Médio de Euler', regime: 'Benchmark Histórico · χ̄ = 0' };
+      ? { heading: 'Escalabilidade por resolução da malha — EP', regime: 'EP Multigrade · χ̄ = 0,05' }
+      : { heading: 'Fronteira Tempo × Erro de Euler — Benchmark Histórico', regime: 'Benchmark Histórico · χ̄ = 0' };
   }
 
   function pairSeries(xs, ys, maxX = Infinity) {
@@ -388,9 +388,15 @@
 
     const isDualEndo = (state.tab === 'folds' && state.foldMode === 'endo');
     const rectW = Math.max(280, Math.floor(canvas.parentElement.getBoundingClientRect().width));
-    const customH = isDualEndo && rectW < 620 ? 500 : null;
+    let customH = null;
+    if (isDualEndo) {
+      customH = rectW < 620 ? 540 : 450;
+    } else if (state.tab === 'folds' || state.tab === 'bench') {
+      customH = rectW < 560 ? 340 : 440;
+    }
     const { ctx, w, h } = setupCanvas(canvas, customH);
     const pad = { l: w < 460 ? 60 : 68, r: 18, t: 18, b: 40 };
+    kpiEl.className = (state.tab === 'policies' || state.tab === 'dist') ? 'dcegm-kpis dcegm-kpi-groups' : 'dcegm-kpis';
 
     // --------------------------------------------------------
     // TAB 1: POLICIES & VALUE FUNCTION (EG Na=400)
@@ -442,7 +448,21 @@
         yFormatter: yFmt
       });
 
-      if (state.policyVar === 'net') {
+      if (isStep) {
+        ctx.save();
+        const bands = [
+          { y0: 0.7, y1: 1.5, c: pal.slate },
+          { y0: 1.5, y1: 2.5, c: pal.green },
+          { y0: 2.5, y1: 3.3, c: pal.dc }
+        ];
+        ctx.globalAlpha = 0.06;
+        bands.forEach((b) => {
+          ctx.fillStyle = b.c;
+          const py1 = ax.ty(b.y1), py0 = ax.ty(b.y0);
+          ctx.fillRect(ax.ox, py1, ax.plotW, Math.max(0, py0 - py1));
+        });
+        ctx.restore();
+      } else if (state.policyVar === 'net') {
         drawLineSeries(ctx, [{ x: 0, y: 0 }, { x: maxX, y: 0 }], ax.tx, ax.ty, pal.muted, { width: 1.2, dashed: true });
       } else if (state.policyVar === 'ap') {
         drawLineSeries(ctx, [{ x: 0, y: 0 }, { x: Math.min(maxX, yMax), y: Math.min(maxX, yMax) }], ax.tx, ax.ty, pal.muted, { width: 1.2, dashed: true });
@@ -453,8 +473,15 @@
         drawLineSeries(ctx, ptsVfi, ax.tx, ax.ty, pal.vfi, { width: 2.2, dashed: true, step: isStep });
       }
 
+      const uniqueStepOccs = isStep ? new Set(ptsDc.map(p => p.y).concat(ptsVfi.map(p => p.y))) : null;
+      const stepHint = isStep
+        ? (uniqueStepOccs.size <= 1
+          ? ` Códigos: <strong>1 = Inatividade (N)</strong> &middot; <strong>2 = Informalidade (I)</strong> &middot; <strong>3 = Formalidade (F)</strong>. Sem transição neste recorte (constante ${occNames[ptsDc[0].y - 1]}) — desmarque o zoom ou escolha z1 para ver degraus.`
+          : ' Códigos: <strong>1 = Inatividade (N)</strong> &middot; <strong>2 = Informalidade (I)</strong> &middot; <strong>3 = Formalidade (F)</strong>.')
+        : '';
+
       let infoText = `Equilíbrio Geral (Na=400, z${state.iz + 1}=${fmt(zVals[state.iz], 3)}, d⁻=${occNames[state.dPrev]}): passe o cursor ou toque no gráfico.` +
-        (isStep ? ' Códigos: <strong>1 = Inatividade (N)</strong> &middot; <strong>2 = Informalidade (I)</strong> &middot; <strong>3 = Formalidade (F)</strong>.' : '') +
+        stepHint +
         `<br>Nota: ||&Delta;V||<sub>&infin;</sub> e ||&Delta;c||<sub>&infin;</sub> medem discrepância máxima entre soluções finais DC-EGM e VFI (sob r* distintos por 1,8 pb), não erro de convergência.`;
 
       if (hoverState.active && hoverState.px >= ax.ox && hoverState.px <= ax.ox + ax.plotW) {
@@ -483,10 +510,20 @@
         (state.compareVfi ? `<span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.vfi}"></i>VFI Vetorizada</span>` : '') +
         (isStep ? `<span class="dcegm-leg-item">1 = Inatividade (N) &middot; 2 = Informalidade (I) &middot; 3 = Formalidade (F)</span>` : '');
       kpiEl.innerHTML = `
-        <div class="dcegm-kpi dcegm-kpi-primary kpi-dc"><span>Preços Competitivos · DC-EGM</span><strong>${nw(`r* = ${fmt(dcSol.resumo.r, 4)}%`)}</strong><small>w* = ${fmt(dcSol.resumo.w, 4)} &middot; k* = ${fmt(dcSol.resumo.k, 4)}</small></div>
-        <div class="dcegm-kpi kpi-vfi"><span>Taxa de Juros · VFI</span><strong>${nw(`${fmt(vfiSol.resumo.r, 4)}%`)}</strong><small>w* = ${fmt(vfiSol.resumo.w, 4)} (+1,8 pb)</small></div>
-        <div class="dcegm-kpi" title="Diferença máxima entre funções valor DC-EGM e VFI no EG (Na=400); não é resíduo de convergência"><span>Discrep. ||&Delta;V||<sub>&infin;</sub> (EG)</span><strong>${fmt(eq.discrepancias.dif_sup_V, 4)}</strong><small>entre soluções (Na=400)</small></div>
-        <div class="dcegm-kpi" title="Diferença máxima entre políticas de consumo DC-EGM e VFI no EG (Na=400); não é resíduo de convergência"><span>Discrep. ||&Delta;c||<sub>&infin;</sub> (EG)</span><strong>${fmt(eq.discrepancias.dif_sup_c, 4)}</strong><small>entre soluções (Na=400)</small></div>
+        <div class="dcegm-kpi-group">
+          <div class="dcegm-group-title">Resultados do equilíbrio (Na=400)</div>
+          <div class="dcegm-group-pair">
+            <div class="dcegm-kpi dcegm-kpi-primary kpi-dc"><span>Taxa de juros r*</span><strong>${nw(`${fmt(dcSol.resumo.r, 4)}%`)}</strong><small>DC-EGM &middot; VFI: ${fmt(vfiSol.resumo.r, 4)}%</small></div>
+            <div class="dcegm-kpi kpi-dc"><span>Salário real w*</span><strong>${nw(fmt(dcSol.resumo.w, 4))}</strong><small>DC-EGM &middot; VFI: ${fmt(vfiSol.resumo.w, 4)}</small></div>
+          </div>
+        </div>
+        <div class="dcegm-kpi-group">
+          <div class="dcegm-group-title">Diagnósticos de comparação (soluções EG)</div>
+          <div class="dcegm-group-pair">
+            <div class="dcegm-kpi" title="Diferença máxima entre funções valor DC-EGM e VFI no EG (Na=400); não é resíduo de convergência"><span>Discrepância em V</span><strong>${fmt(eq.discrepancias.dif_sup_V, 4)}</strong><small>||&Delta;V||<sub>&infin;</sub> (DC vs VFI)</small></div>
+            <div class="dcegm-kpi" title="Diferença máxima entre políticas de consumo DC-EGM e VFI no EG (Na=400); não é resíduo de convergência"><span>Discrepância em consumo</span><strong>${fmt(eq.discrepancias.dif_sup_c, 4)}</strong><small>||&Delta;c||<sub>&infin;</sub> (DC vs VFI)</small></div>
+          </div>
+        </div>
       `;
     }
 
@@ -886,10 +923,20 @@
 
       const giniDiff = Math.abs(vfiSol.resumo.gini - dcSol.resumo.gini);
       kpiEl.innerHTML = `
-        <div class="dcegm-kpi dcegm-kpi-primary kpi-dc"><span>Desigualdade · Gini (DC vs VFI)</span><strong>${nw(fmt(dcSol.resumo.gini, 4))} vs ${nw(fmt(vfiSol.resumo.gini, 4))}</strong><small>Dif.: ${fmt(giniDiff, 4)} &middot; P50: ${fmt(dcSol.resumo.P50, 2)} / ${fmt(vfiSol.resumo.P50, 2)}</small></div>
-        <div class="dcegm-kpi kpi-vfi"><span>Restrição a = 0 (DC / VFI)</span><strong>${nw(`${fmt(dcSol.resumo.frac_a_min, 2)}%`)} / ${nw(`${fmt(vfiSol.resumo.frac_a_min, 2)}%`)}</strong><small>Massa acumulada na base</small></div>
-        <div class="dcegm-kpi"><span>Resíduo Mercado |f(k)|/k</span><strong>${fmtSci(dcSol.resumo.erro_rel_mercado)} vs ${fmtSci(vfiSol.resumo.erro_rel_mercado)}</strong><small>Tol. 10⁻⁴: Sim (DC) / Não (VFI)</small></div>
-        <div class="dcegm-kpi"><span>Resíduo Walras (Contábil)</span><strong>${fmtSci(dcSol.resumo.walras)} vs ${fmtSci(vfiSol.resumo.walras)}</strong><small>Consistência Y−C−I−G</small></div>
+        <div class="dcegm-kpi-group">
+          <div class="dcegm-group-title">Resultados distributivos (EG, Na=400)</div>
+          <div class="dcegm-group-pair">
+            <div class="dcegm-kpi dcegm-kpi-primary kpi-dc"><span>Gini (DC vs VFI)</span><strong>${nw(fmt(dcSol.resumo.gini, 4))} / ${nw(fmt(vfiSol.resumo.gini, 4))}</strong><small>Dif.: ${fmt(giniDiff, 4)} &middot; P50: ${fmt(dcSol.resumo.P50, 2)}</small></div>
+            <div class="dcegm-kpi kpi-vfi"><span>Restrição a = 0 (DC / VFI)</span><strong>${nw(`${fmt(dcSol.resumo.frac_a_min, 2)}%`)} / ${nw(`${fmt(vfiSol.resumo.frac_a_min, 2)}%`)}</strong><small>Massa pontual na base</small></div>
+          </div>
+        </div>
+        <div class="dcegm-kpi-group">
+          <div class="dcegm-group-title">Diagnósticos de fechamento</div>
+          <div class="dcegm-group-pair">
+            <div class="dcegm-kpi"><span>Resíduo Mercado |f(k)|/k</span><strong>${fmtSci(dcSol.resumo.erro_rel_mercado)} vs ${fmtSci(vfiSol.resumo.erro_rel_mercado)}</strong><small>Tol. 10⁻⁴: Sim (DC) / Não (VFI)</small></div>
+            <div class="dcegm-kpi"><span>Resíduo Walras (Contábil)</span><strong>${fmtSci(dcSol.resumo.walras)} vs ${fmtSci(vfiSol.resumo.walras)}</strong><small>Consistência Y−C−I−G</small></div>
+          </div>
+        </div>
       `;
     }
 
@@ -980,9 +1027,9 @@
         rows.forEach((pt) => {
           const px = ax.tx(pt.x), py = ax.ty(pt.y);
           const isBest = pt.name.includes('DC-EGM Otimizado'), isDc = pt.name.includes('DC-EGM');
-          ctx.fillStyle = isBest ? pal.green : (isDc ? pal.dc : pal.vfi);
-          ctx.beginPath(); ctx.arc(px, py, isBest ? 7 : 5.2, 0, Math.PI * 2); ctx.fill();
-          ctx.strokeStyle = pal.bg; ctx.lineWidth = 1.6; ctx.stroke();
+          ctx.fillStyle = isDc ? pal.dc : pal.vfi;
+          ctx.beginPath(); ctx.arc(px, py, isBest ? 7.5 : 5.2, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = isBest ? pal.green : pal.bg; ctx.lineWidth = isBest ? 2.4 : 1.6; ctx.stroke();
 
           if (hoverState.active) {
             const d = Math.hypot(hoverState.px - px, hoverState.py - py);
@@ -999,7 +1046,7 @@
           readoutEl.innerHTML = `<strong>Benchmark histórico preliminar (χ̄=0, sem custos de transição — 9 implementações)</strong>. Não equivale à acurácia em quinas do modelo canônico (χ̄=0,05).<br>Passe sobre um ponto: DC-EGM Otimizado combina <strong>${fmt(bestRow.x, 2)}s</strong> com erro médio de Euler <strong>${fmtSci(bestRow.y)}</strong>.`;
         }
         legendEl.innerHTML = `
-          <span class="dcegm-leg-item"><i style="background:${pal.green}"></i>DC-EGM Otimizado (χ̄=0)</span>
+          <span class="dcegm-leg-item"><i class="dot" style="background:${pal.dc};border:2px solid ${pal.green}"></i>DC-EGM Otimizado (χ̄=0, destaque Pareto)</span>
           <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM Padrão (χ̄=0)</span>
           <span class="dcegm-leg-item"><i style="background:${pal.vfi}"></i>Variantes VFI (400–3200, χ̄=0)</span>
         `;
@@ -1046,7 +1093,7 @@
     let controlsHtml = '';
     if (state.tab === 'policies') {
       controlsHtml = `
-        <div class="dcegm-ctrl-row">
+        <div class="dcegm-ctrl-grid">
           <label class="dcegm-field"><span>Variável</span>
             <select id="ctrl-pvar">
               <option value="ap"${state.policyVar === 'ap' ? ' selected' : ''}>Poupança a'(a)</option>
@@ -1057,32 +1104,41 @@
             </select>
           </label>
           <label class="dcegm-field"><span>Produtividade z</span><select id="ctrl-iz">${zOpts}</select></label>
+          <label class="dcegm-field"><span>Ocupação ant. d⁻</span><select id="ctrl-dp">${dOpts}</select></label>
         </div>
         <div class="dcegm-ctrl-row">
-          <label class="dcegm-field"><span>Ocupação ant. d⁻</span><select id="ctrl-dp">${dOpts}</select></label>
           <label class="dcegm-check"><input type="checkbox" id="ctrl-vfi"${state.compareVfi ? ' checked' : ''}> Comparar VFI</label>
           <label class="dcegm-check"><input type="checkbox" id="ctrl-zoom"${state.zoomLow ? ' checked' : ''}> Zoom a &le; 20</label>
           <button type="button" class="dcegm-reset-btn" id="ctrl-reset">Restaurar</button>
         </div>`;
     } else if (state.tab === 'folds') {
-      controlsHtml = `
+      controlsHtml = state.foldMode === 'endo'
+        ? `
         <div class="dcegm-ctrl-row">
           <label class="dcegm-field"><span>Diagnóstico</span>
             <select id="ctrl-fmode">
-              <option value="endo"${state.foldMode === 'endo' ? ' selected' : ''}>Dobras Grade Endógena &amp; Poda (EP Na=1600)</option>
-              <option value="vcond"${state.foldMode === 'vcond' ? ' selected' : ''}>Ramos v_d(a) e Envelope (EG Na=400)</option>
+              <option value="endo" selected>Dobras Grade Endógena &amp; Poda (EP Na=1600)</option>
+              <option value="vcond">Ramos v_d(a) e Envelope (EG Na=400)</option>
             </select>
           </label>
-          ${state.foldMode === 'endo'
-            ? `<label class="dcegm-field"><span>Estado com dobra</span><select id="ctrl-fidx">${foldOpts}</select></label><button type="button" class="dcegm-reset-btn" id="ctrl-reset">Restaurar</button>`
-            : `<label class="dcegm-field"><span>Produtividade z</span><select id="ctrl-iz">${zOpts}</select></label>`}
-        </div>
-        ${state.foldMode === 'vcond' ? `
-        <div class="dcegm-ctrl-row">
+          <label class="dcegm-field"><span>Estado com dobra</span><select id="ctrl-fidx">${foldOpts}</select></label>
+          <button type="button" class="dcegm-reset-btn" id="ctrl-reset">Restaurar</button>
+        </div>`
+        : `
+        <div class="dcegm-ctrl-grid">
+          <label class="dcegm-field"><span>Diagnóstico</span>
+            <select id="ctrl-fmode">
+              <option value="endo">Dobras Grade Endógena &amp; Poda (EP Na=1600)</option>
+              <option value="vcond" selected>Ramos v_d(a) e Envelope (EG Na=400)</option>
+            </select>
+          </label>
+          <label class="dcegm-field"><span>Produtividade z</span><select id="ctrl-iz">${zOpts}</select></label>
           <label class="dcegm-field"><span>Ocupação ant. d⁻</span><select id="ctrl-dp">${dOpts}</select></label>
+        </div>
+        <div class="dcegm-ctrl-row">
           <label class="dcegm-check"><input type="checkbox" id="ctrl-fzoom"${state.foldZoomLow ? ' checked' : ''}> Zoom a &le; 25</label>
           <button type="button" class="dcegm-reset-btn" id="ctrl-reset">Restaurar</button>
-        </div>` : ''}`;
+        </div>`;
     } else if (state.tab === 'dist') {
       controlsHtml = `
         <div class="dcegm-ctrl-row">
