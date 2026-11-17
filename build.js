@@ -143,9 +143,12 @@ function parseFrontMatter(fileContent) {
 // Helper: Apply inline Markdown rules (after math & code protection)
 function applyInlineMarkdown(text) {
   return text
+    .replace(/`([^`]+)`/g, (m, code) => {
+      const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return `<code class="notranslate" translate="no">${escaped}</code>`;
+    })
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    .replace(/`([^`]+)`/g, '<code class="notranslate" translate="no">$1</code>')
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
 }
 
@@ -703,7 +706,7 @@ function renderModals() {
   `;
 }
 
-function renderHtmlDocument({ title, description, activePage, pagePath, depth = 0, content }) {
+function renderHtmlDocument({ title, description, activePage, pagePath, depth = 0, mainClass = '', content }) {
   const prefix = depth > 0 ? '../' : '';
   const pageTitle = title ? `${title} | ${siteConfig.name}` : `${siteConfig.name} — ${siteConfig.title}`;
   const pageDesc = description || siteConfig.bio_short;
@@ -763,7 +766,7 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
 <body>
   <div class="site-wrapper">
     ${renderHeader(activePage, depth)}
-    <main class="site-main" id="main-content">
+    <main class="site-main${mainClass ? ' ' + mainClass : ''}" id="main-content">
       ${content}
     </main>
     ${renderFooter()}
@@ -1176,30 +1179,116 @@ function buildBlog() {
     content
   }));
 
+  function slugifyHeading(rawHtml, usedIds) {
+    const plain = rawHtml
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\$[^$]*\$/g, ' ')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'secao';
+    let slug = plain;
+    let suffix = 2;
+    while (usedIds.has(slug)) {
+      slug = `${plain}-${suffix++}`;
+    }
+    usedIds.add(slug);
+    return slug;
+  }
+
+  function buildPostToc(html) {
+    const usedIds = new Set();
+    const items = [];
+    const htmlWithIds = html.replace(/<h([23])>([\s\S]*?)<\/h\1>/g, (m, lvl, inner) => {
+      const id = slugifyHeading(inner, usedIds);
+      const labelHtml = inner.replace(/<\/?a\b[^>]*>/gi, '').trim();
+      items.push({ level: Number(lvl), id, labelHtml });
+      return `<h${lvl} id="${id}">${inner}</h${lvl}>`;
+    });
+    return { htmlWithIds, items };
+  }
+
+  function renderPostComments(post) {
+    const cfg = siteConfig.comments || {};
+    if (!cfg.enabled) return '';
+    if (cfg.provider === 'giscus' && cfg.repo && cfg.repo_id && cfg.category && cfg.category_id) {
+      return `
+        <section class="post-comments-section" id="comentarios" aria-label="Comentários">
+          <h2 class="post-comments-heading">Comentários</h2>
+          <script src="https://giscus.app/client.js"
+                  data-repo="${cfg.repo}"
+                  data-repo-id="${cfg.repo_id}"
+                  data-category="${cfg.category}"
+                  data-category-id="${cfg.category_id}"
+                  data-mapping="${cfg.mapping || 'pathname'}"
+                  data-strict="0"
+                  data-reactions-enabled="1"
+                  data-emit-metadata="0"
+                  data-input-position="top"
+                  data-theme="${cfg.theme || 'preferred_color_scheme'}"
+                  data-lang="pt"
+                  crossorigin="anonymous"
+                  async></script>
+        </section>`;
+    }
+    return '';
+  }
+
   // Build Individual Posts
   compiledPosts.forEach(post => {
-    const postContent = `
-      <article class="single-post-wrap">
-        <header style="margin-bottom: 32px;">
-          <div class="single-post-meta">
-            <span>${post.date}</span> &bull;
-            <span>${post.reading_time} min de leitura</span> &bull;
-            <span>${post.category}</span>
-          </div>
-          <h1 class="single-post-title">${post.title}</h1>
-          <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por <span class="notranslate" translate="no">${siteConfig.name}</span></p>
-        </header>
-
-        <div class="single-post-body">
-          ${post.htmlContent
-            .replace(/href=["'](?!\/|http|mailto:|#|\.\.\/)([^"']+)["']/g, 'href="../$1"')
-            .replace(/src=["'](?!\/|http|\.\.\/)([^"']+)["']/g, 'src="../$1"')}
+    const rawBody = post.htmlContent
+      .replace(/href=["'](?!\/|http|mailto:|#|\.\.\/)([^"']+)["']/g, 'href="../$1"')
+      .replace(/src=["'](?!\/|http|\.\.\/)([^"']+)["']/g, 'src="../$1"');
+    const { htmlWithIds, items: tocItems } = buildPostToc(rawBody);
+    const tocLinksHtml = tocItems.map(item => `
+      <li class="post-toc-item toc-h${item.level}">
+        <a class="post-toc-link" href="#${item.id}" data-toc-target="${item.id}">${item.labelHtml}</a>
+      </li>`).join('');
+    const hasToc = tocItems.length >= 2;
+    const mobileTocHtml = hasToc ? `
+      <details class="post-toc-mobile">
+        <summary><span class="post-toc-hash">#</span> Índice do artigo (${tocItems.length} seções)</summary>
+        <ul class="post-toc-list">${tocLinksHtml}</ul>
+      </details>` : '';
+    const desktopTocHtml = hasToc ? `
+      <aside class="post-toc-aside" id="post-toc-aside" aria-label="Índice do artigo">
+        <div class="post-toc-header">
+          <span class="post-toc-hash" aria-hidden="true">#</span>
+          <span class="post-toc-heading">Índice</span>
         </div>
+        <nav class="post-toc-nav">
+          <ul class="post-toc-list">${tocLinksHtml}</ul>
+        </nav>
+      </aside>` : '';
 
-        <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
-          <a href="../blog.html" style="font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;">&larr; Voltar para o Blog</a>
-        </footer>
-      </article>
+    const postContent = `
+      <div class="single-post-layout${hasToc ? ' has-toc' : ''}">
+        <article class="single-post-wrap">
+          <header style="margin-bottom: 32px;">
+            <div class="single-post-meta">
+              <span>${post.date}</span> &bull;
+              <span>${post.reading_time} min de leitura</span> &bull;
+              <span>${post.category}</span>
+            </div>
+            <h1 class="single-post-title">${post.title}</h1>
+            <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por <span class="notranslate" translate="no">${siteConfig.name}</span></p>
+          </header>
+
+          ${mobileTocHtml}
+
+          <div class="single-post-body">
+            ${htmlWithIds}
+          </div>
+
+          ${renderPostComments(post)}
+
+          <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
+            <a href="../blog.html" style="font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;">&larr; Voltar para o Blog</a>
+          </footer>
+        </article>
+        ${desktopTocHtml}
+      </div>
     `;
 
     fs.writeFileSync(path.join(POSTS_OUT_DIR, `${post.slug}.html`), renderHtmlDocument({
@@ -1208,6 +1297,7 @@ function buildBlog() {
       activePage: 'blog',
       pagePath: post.url,
       depth: 1,
+      mainClass: hasToc ? 'site-main-post' : '',
       content: postContent
     }));
   });

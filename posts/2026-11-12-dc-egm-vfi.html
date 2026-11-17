@@ -96,21 +96,64 @@
       </div>
     </header>
   
-    <main class="site-main" id="main-content">
+    <main class="site-main site-main-post" id="main-content">
       
-      <article class="single-post-wrap">
-        <header style="margin-bottom: 32px;">
-          <div class="single-post-meta">
-            <span>2026-11-17</span> &bull;
-            <span>16 min de leitura</span> &bull;
-            <span>Economia Computacional</span>
-          </div>
-          <h1 class="single-post-title">Modelo de Agentes Heterogêneos com Escolhas Ocupacionais e Custos de Transição: Uma Comparação entre VFI e DC-EGM</h1>
-          <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por <span class="notranslate" translate="no">Bruno Castro Alves</span></p>
-        </header>
+      <div class="single-post-layout has-toc">
+        <article class="single-post-wrap">
+          <header style="margin-bottom: 32px;">
+            <div class="single-post-meta">
+              <span>2026-11-17</span> &bull;
+              <span>16 min de leitura</span> &bull;
+              <span>Economia Computacional</span>
+            </div>
+            <h1 class="single-post-title">Modelo de Agentes Heterogêneos com Escolhas Ocupacionais e Custos de Transição: Uma Comparação entre VFI e DC-EGM</h1>
+            <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por <span class="notranslate" translate="no">Bruno Castro Alves</span></p>
+          </header>
 
-        <div class="single-post-body">
-          <h2>Introdução e Motivação</h2>
+          
+      <details class="post-toc-mobile">
+        <summary><span class="post-toc-hash">#</span> Índice do artigo (12 seções)</summary>
+        <ul class="post-toc-list">
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#introducao-e-motivacao" data-toc-target="introducao-e-motivacao">Introdução e Motivação</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#ambiente-economico-e-problema-dinamico" data-toc-target="ambiente-economico-e-problema-dinamico">Ambiente Econômico e Problema Dinâmico</a>
+      </li>
+      <li class="post-toc-item toc-h3">
+        <a class="post-toc-link" href="#o-problema-intertemporal-do-agente" data-toc-target="o-problema-intertemporal-do-agente">O Problema Intertemporal do Agente</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#metodos-numericos-e-diagnostico-de-nao-concavidade-ep-vs-eg" data-toc-target="metodos-numericos-e-diagnostico-de-nao-concavidade-ep-vs-eg">Métodos Numéricos e Diagnóstico de Não-Concavidade (EP vs. EG)</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#resultados-computacionais-e-escalabilidade" data-toc-target="resultados-computacionais-e-escalabilidade">Resultados Computacionais e Escalabilidade</a>
+      </li>
+      <li class="post-toc-item toc-h3">
+        <a class="post-toc-link" href="#1-refinamento-multigrade-no-modelo-canonico-ep" data-toc-target="1-refinamento-multigrade-no-modelo-canonico-ep">1. Refinamento Multigrade no Modelo Canônico (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>, EP)</a>
+      </li>
+      <li class="post-toc-item toc-h3">
+        <a class="post-toc-link" href="#2-benchmark-historico-complementar-modelo-preliminar" data-toc-target="2-benchmark-historico-complementar-modelo-preliminar">2. Benchmark Histórico Complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, Modelo Preliminar)</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#equilibrio-geral-competitivo-e-distribuicao-estacionaria" data-toc-target="equilibrio-geral-competitivo-e-distribuicao-estacionaria">Equilíbrio Geral Competitivo e Distribuição Estacionária (<span class="math-inline notranslate" translate="no">$N_a = 400$</span>)</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#laboratorio-numerico-interativo-js-html" data-toc-target="laboratorio-numerico-interativo-js-html">Laboratório Numérico Interativo (JS/HTML)</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#limitacoes-do-estudo" data-toc-target="limitacoes-do-estudo">Limitações do Estudo</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#materiais-didaticos-reprodutibilidade-e-downloads" data-toc-target="materiais-didaticos-reprodutibilidade-e-downloads">Materiais Didáticos, Reprodutibilidade e Downloads</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#referencias-bibliograficas" data-toc-target="referencias-bibliograficas">Referências Bibliográficas</a>
+      </li></ul>
+      </details>
+
+          <div class="single-post-body">
+            <h2 id="introducao-e-motivacao">Introdução e Motivação</h2>
 
 <p>A macroeconomia quantitativa com modelos de agentes heterogêneos e mercados incompletos (na tradição de Bewley, Huggett e Aiyagari) defronta-se frequentemente com elevado custo computacional em espaços de estados contínuos e discretos. Quando os modelos incorporam escolhas discretas (como participação no mercado de trabalho, formalidade versus informalidade ou aposentadoria) juntamente com acumulação contínua de riqueza, a função valor deixa de ser globalmente côncava e suave.</p>
 
@@ -127,7 +170,7 @@
 
 <hr>
 
-<h2>Ambiente Econômico e Problema Dinâmico</h2>
+<h2 id="ambiente-economico-e-problema-dinamico">Ambiente Econômico e Problema Dinâmico</h2>
 
 <p>A economia é habitada por um contínuo de famílias heterogêneas e uma firma representativa com tecnologia Cobb-Douglas em equilíbrio competitivo estacionário:</p>
 
@@ -143,7 +186,7 @@
 <li><strong>Tecnologia Agregada:</strong> Função de produção <span class="math-inline notranslate" translate="no">$Y = A K^\alpha L^{1-\alpha}$</span> com <span class="math-inline notranslate" translate="no">$A = 1{,}00$</span>, <span class="math-inline notranslate" translate="no">$\alpha = 0{,}36$</span> e depreciação anual <span class="math-inline notranslate" translate="no">$\delta = 8\%$</span>.</li>
 </ul>
 
-<h3>O Problema Intertemporal do Agente</h3>
+<h3 id="o-problema-intertemporal-do-agente">O Problema Intertemporal do Agente</h3>
 
 <p>Como a escolha ocupacional corrente implica custo de transição caso difira do estado anterior, a ocupação passada <span class="math-inline notranslate" translate="no">$d^-$</span> integra o vetor de estados individuais <span class="math-inline notranslate" translate="no">$(a, z, d^-)$</span>. O problema recursivo do agente escreve-se como:</p>
 
@@ -159,7 +202,7 @@
 
 <hr>
 
-<h2>Métodos Numéricos e Diagnóstico de Não-Concavidade (EP vs. EG)</h2>
+<h2 id="metodos-numericos-e-diagnostico-de-nao-concavidade-ep-vs-eg">Métodos Numéricos e Diagnóstico de Não-Concavidade (EP vs. EG)</h2>
 
 <p>Para cada escolha discreta <span class="math-inline notranslate" translate="no">$d \in \{N, I, F\}$</span> e estado exógeno <span class="math-inline notranslate" translate="no">$z$</span>, o método inverte analiticamente a Equação de Euler sobre a grade de ativos futuros <span class="math-inline notranslate" translate="no">$a'$</span>, definindo os pontos endógenos:</p>
 
@@ -192,9 +235,9 @@
 
 <hr>
 
-<h2>Resultados Computacionais e Escalabilidade</h2>
+<h2 id="resultados-computacionais-e-escalabilidade">Resultados Computacionais e Escalabilidade</h2>
 
-<h3>1. Refinamento Multigrade no Modelo Canônico (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>, EP)</h3>
+<h3 id="1-refinamento-multigrade-no-modelo-canonico-ep">1. Refinamento Multigrade no Modelo Canônico (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>, EP)</h3>
 
 <div class="table-wrap"><table><thead><tr><th style="text-align:center"><span class="math-inline notranslate" translate="no">$N_a$</span></th><th style="text-align:center">Iter. (VFI / DC)</th><th style="text-align:center">Conv. DC (<span class="math-inline notranslate" translate="no">$10^{-7}$</span>)</th><th style="text-align:center">VFI (s)</th><th style="text-align:center">DC-EGM (s)</th><th style="text-align:center">Speedup</th><th style="text-align:center">Conc. <span class="math-inline notranslate" translate="no">$d^*$</span></th><th style="text-align:center">Dobras</th></tr></thead><tbody><tr><td style="text-align:center">400</td><td style="text-align:center">376 / 1.500</td><td style="text-align:center">Não (teto)</td><td style="text-align:center">2,914</td><td style="text-align:center">4,990</td><td style="text-align:center">0,58x</td><td style="text-align:center">99,27 %</td><td style="text-align:center">0</td></tr><tr><td style="text-align:center">800</td><td style="text-align:center">376 / 376</td><td style="text-align:center">Sim</td><td style="text-align:center">10,591</td><td style="text-align:center">2,530</td><td style="text-align:center">4,19x</td><td style="text-align:center">99,78 %</td><td style="text-align:center">2</td></tr><tr><td style="text-align:center">1.600</td><td style="text-align:center">376 / 376</td><td style="text-align:center">Sim</td><td style="text-align:center">39,749</td><td style="text-align:center">5,199</td><td style="text-align:center"><strong>7,65x</strong></td><td style="text-align:center"><strong>99,97 %</strong></td><td style="text-align:center">4</td></tr></tbody></table></div>
 
@@ -210,7 +253,7 @@
   <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 12: Mapa espacial de escolha ocupacional ótima <span class="math-inline notranslate" translate="no">$d^*(a, z, d^-)$</span> e regiões de histerese (<span class="math-inline notranslate" translate="no">$N_a = 1600$</span>, concordância de 99,97% com a VFI).</em></p>
 </div>
 
-<h3>2. Benchmark Histórico Complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, Modelo Preliminar)</h3>
+<h3 id="2-benchmark-historico-complementar-modelo-preliminar">2. Benchmark Histórico Complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, Modelo Preliminar)</h3>
 
 <p>Em experimento complementar separado sobre o modelo preliminar <strong>sem custos de transição</strong> (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, <span class="math-inline notranslate" translate="no">$N_a = 400$</span>), o <strong>DC-EGM Otimizado</strong> obtém mediana de <strong>1,661 s</strong> (<code class="notranslate" translate="no">4,23x</code> mais rápido que a VFI vetorizada de referência) e resíduo médio na Equação de Euler de <strong><span class="math-inline notranslate" translate="no">$7{,}18 \times 10^{-7}$</span></strong>, frente a <strong><span class="math-inline notranslate" translate="no">$1{,}88 \times 10^{-3}$</span></strong> mesmo na VFI refinada com 3.200 pontos candidatos (<code class="notranslate" translate="no">91,149 s</code>).</p>
 
@@ -223,7 +266,7 @@
 
 <hr>
 
-<h2>Equilíbrio Geral Competitivo e Distribuição Estacionária (<span class="math-inline notranslate" translate="no">$N_a = 400$</span>)</h2>
+<h2 id="equilibrio-geral-competitivo-e-distribuicao-estacionaria">Equilíbrio Geral Competitivo e Distribuição Estacionária (<span class="math-inline notranslate" translate="no">$N_a = 400$</span>)</h2>
 
 <p>Os resultados a seguir representam as soluções numéricas obtidas pelos dois procedimentos de busca do equilíbrio geral, que não encerram com o mesmo grau de precisão no fechamento do mercado de capitais: o DC-EGM atende à tolerância estabelecida para o excesso relativo de capital (<span class="math-inline notranslate" translate="no">$< 10^{-4}$</span>), ao passo que a VFI encerra a bisseção pelo critério de largura do intervalo com resíduo superior à tolerância. Embora as diferenças relativas nos agregados reais fiquem abaixo de <strong><span class="math-inline notranslate" translate="no">$0{,}5\%$</span></strong> (com discrepância de <strong><span class="math-inline notranslate" translate="no">$0{,}633\%$</span></strong>, ou <span class="math-inline notranslate" translate="no">$1{,}8\text{ pb}$</span>, na taxa de juros <span class="math-inline notranslate" translate="no">$r^*$</span>), essa proximidade nos agregados não implica proximidade distributiva equivalente: o coeficiente de Gini da riqueza diverge em <strong><span class="math-inline notranslate" translate="no">$3{,}38\%$</span></strong> e a massa concentrada na restrição de liquidez varia expressivamente.</p>
 
@@ -255,15 +298,15 @@
 
 <hr>
 
-<h2>Laboratório Numérico Interativo (JS/HTML)</h2>
+<h2 id="laboratorio-numerico-interativo-js-html">Laboratório Numérico Interativo (JS/HTML)</h2>
 
-<p>Explore diretamente no navegador as funções políticas de equilíbrio geral, as dobras e o descarte de ramos subótimos no <em>Upper Envelope</em> (<span class="math-inline notranslate" translate="no">$N_a = 1600$</span>), a distribuição estacionária de riqueza e os <em>benchmarks</em> multigrade e histórico de Euler. Por eficiência e fidelidade aos experimentos, o painel carrega localmente matrizes e séries numéricas <strong>pré-computadas diretamente em MATLAB</strong> (<a href="../materials/dc_egm_vfi/dc_egm_vfi_interactive.json"><code class="notranslate" translate="no">dc_egm_vfi_interactive.json</code></a>), renderizadas em tempo real em HTML5 <code class="notranslate" translate="no"><canvas></code> sem reexecutar o solver iterativo no navegador.</p>
+<p>Explore diretamente no navegador as funções políticas de equilíbrio geral, as dobras e o descarte de ramos subótimos no <em>Upper Envelope</em> (<span class="math-inline notranslate" translate="no">$N_a = 1600$</span>), a distribuição estacionária de riqueza e os <em>benchmarks</em> multigrade e histórico de Euler. Por eficiência e fidelidade aos experimentos, o painel carrega localmente matrizes e séries numéricas <strong>pré-computadas diretamente em MATLAB</strong> (<a href="../materials/dc_egm_vfi/dc_egm_vfi_interactive.json"><code class="notranslate" translate="no">dc_egm_vfi_interactive.json</code></a>), renderizadas em tempo real em HTML5 <code class="notranslate" translate="no">&lt;canvas&gt;</code> sem reexecutar o solver iterativo no navegador.</p>
 
 <div id="dcegm-explorer" class="dcegm-explorer"><noscript>Ative o JavaScript para usar o visualizador numérico interativo de VFI vs. DC-EGM.</noscript></div>
 
 <hr>
 
-<h2>Limitações do Estudo</h2>
+<h2 id="limitacoes-do-estudo">Limitações do Estudo</h2>
 
 <ol>
 <li><strong>Dependência da discretização em <span class="math-inline notranslate" translate="no">$N_a = 400$</span>:</strong> No experimento de equilíbrio parcial, o DC-EGM atingiu o limite de 1.500 iterações com diferença de <span class="math-inline notranslate" translate="no">$2{,}09 \times 10^{-6} > 10^{-7}$</span>, alcançando convergência estrita apenas a partir de <span class="math-inline notranslate" translate="no">$N_a = 800$</span>.</li>
@@ -276,7 +319,7 @@
 
 <hr>
 
-<h2>Materiais Didáticos, Reprodutibilidade e Downloads</h2>
+<h2 id="materiais-didaticos-reprodutibilidade-e-downloads">Materiais Didáticos, Reprodutibilidade e Downloads</h2>
 
 <p>Projeto validado em <strong>MATLAB R2026b Update 1</strong> (compatível com R2020b+), com ponto de entrada único <code class="notranslate" translate="no">executar_projeto.m</code> na raiz de <code class="notranslate" translate="no">Projeto_D-EGM/</code> e bateria de <strong>11 testes automatizados</strong> formais aprovados (<code class="notranslate" translate="no">log_execucao_modelo.txt</code>). A apresentação oficial e o pacote de códigos estão disponíveis abaixo:</p>
 
@@ -287,7 +330,7 @@
 
 <hr>
 
-<h2>Referências Bibliográficas</h2>
+<h2 id="referencias-bibliograficas">Referências Bibliográficas</h2>
 
 <ol>
 <li><strong>Aiyagari, S. R. (1994).</strong> Uninsured Idiosyncratic Risk and Aggregate Saving. <em>Quarterly Journal of Economics</em>, 109(3), 659–684.</li>
@@ -296,12 +339,61 @@
 <li><strong>Iskhakov, F., Jørgensen, T. H., Rust, J., & Schjerning, B. (2017).</strong> The Endogenous Grid Method for Discrete-Continuous Dynamic Choice Models with (or without) Taste Shocks. <em>Quantitative Economics</em>, 8(2), 317–365.</li>
 <li><strong>Young, E. R. (2010).</strong> Solving the Incomplete Markets Model with Aggregate Uncertainty Using the Krusell-Smith Algorithm and Non-Stochastic Simulations. <em>Journal of Economic Dynamics and Control</em>, 34(1), 36–41.</li>
 </ol>
-        </div>
+          </div>
 
-        <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
-          <a href="../blog.html" style="font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;">&larr; Voltar para o Blog</a>
-        </footer>
-      </article>
+          
+
+          <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
+            <a href="../blog.html" style="font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;">&larr; Voltar para o Blog</a>
+          </footer>
+        </article>
+        
+      <aside class="post-toc-aside" id="post-toc-aside" aria-label="Índice do artigo">
+        <div class="post-toc-header">
+          <span class="post-toc-hash" aria-hidden="true">#</span>
+          <span class="post-toc-heading">Índice</span>
+        </div>
+        <nav class="post-toc-nav">
+          <ul class="post-toc-list">
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#introducao-e-motivacao" data-toc-target="introducao-e-motivacao">Introdução e Motivação</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#ambiente-economico-e-problema-dinamico" data-toc-target="ambiente-economico-e-problema-dinamico">Ambiente Econômico e Problema Dinâmico</a>
+      </li>
+      <li class="post-toc-item toc-h3">
+        <a class="post-toc-link" href="#o-problema-intertemporal-do-agente" data-toc-target="o-problema-intertemporal-do-agente">O Problema Intertemporal do Agente</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#metodos-numericos-e-diagnostico-de-nao-concavidade-ep-vs-eg" data-toc-target="metodos-numericos-e-diagnostico-de-nao-concavidade-ep-vs-eg">Métodos Numéricos e Diagnóstico de Não-Concavidade (EP vs. EG)</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#resultados-computacionais-e-escalabilidade" data-toc-target="resultados-computacionais-e-escalabilidade">Resultados Computacionais e Escalabilidade</a>
+      </li>
+      <li class="post-toc-item toc-h3">
+        <a class="post-toc-link" href="#1-refinamento-multigrade-no-modelo-canonico-ep" data-toc-target="1-refinamento-multigrade-no-modelo-canonico-ep">1. Refinamento Multigrade no Modelo Canônico (<span class="math-inline notranslate" translate="no">$\bar\chi = 0{,}05$</span>, EP)</a>
+      </li>
+      <li class="post-toc-item toc-h3">
+        <a class="post-toc-link" href="#2-benchmark-historico-complementar-modelo-preliminar" data-toc-target="2-benchmark-historico-complementar-modelo-preliminar">2. Benchmark Histórico Complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, Modelo Preliminar)</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#equilibrio-geral-competitivo-e-distribuicao-estacionaria" data-toc-target="equilibrio-geral-competitivo-e-distribuicao-estacionaria">Equilíbrio Geral Competitivo e Distribuição Estacionária (<span class="math-inline notranslate" translate="no">$N_a = 400$</span>)</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#laboratorio-numerico-interativo-js-html" data-toc-target="laboratorio-numerico-interativo-js-html">Laboratório Numérico Interativo (JS/HTML)</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#limitacoes-do-estudo" data-toc-target="limitacoes-do-estudo">Limitações do Estudo</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#materiais-didaticos-reprodutibilidade-e-downloads" data-toc-target="materiais-didaticos-reprodutibilidade-e-downloads">Materiais Didáticos, Reprodutibilidade e Downloads</a>
+      </li>
+      <li class="post-toc-item toc-h2">
+        <a class="post-toc-link" href="#referencias-bibliograficas" data-toc-target="referencias-bibliograficas">Referências Bibliográficas</a>
+      </li></ul>
+        </nav>
+      </aside>
+      </div>
     
     </main>
     

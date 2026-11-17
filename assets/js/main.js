@@ -23,6 +23,13 @@
       document.body.classList.toggle('dark');
       const isDark = document.body.classList.contains('dark');
       localStorage.setItem('site_theme', isDark ? 'dark' : 'light');
+      const giscusFrame = document.querySelector('iframe.giscus-frame');
+      if (giscusFrame && giscusFrame.contentWindow) {
+        giscusFrame.contentWindow.postMessage(
+          { giscus: { setConfig: { theme: isDark ? 'dark_dimmed' : 'light' } } },
+          'https://giscus.app'
+        );
+      }
     });
   }
 
@@ -456,5 +463,63 @@
     renderAllMath();
   }
   window.addEventListener('load', renderAllMath);
+
+  // ========================================================
+  // 9. POST LATERAL TOC SCROLLSPY
+  // ========================================================
+  const tocAside = document.getElementById('post-toc-aside');
+  const postHeadings = Array.from(document.querySelectorAll('.single-post-body h2[id], .single-post-body h3[id]'));
+  const mobileToc = document.querySelector('.post-toc-mobile');
+
+  if (mobileToc) {
+    mobileToc.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => { mobileToc.open = false; });
+    });
+  }
+
+  if (tocAside && postHeadings.length) {
+    const tocLinks = Array.from(tocAside.querySelectorAll('.post-toc-link'));
+    const setActiveToc = (id) => {
+      tocLinks.forEach((lnk) => {
+        const match = lnk.getAttribute('data-toc-target') === id;
+        lnk.classList.toggle('active', match);
+        if (match) {
+          const nav = tocAside.querySelector('.post-toc-nav');
+          if (nav) {
+            const top = lnk.offsetTop - nav.clientHeight * 0.4;
+            if (top < nav.scrollTop || top > nav.scrollTop + nav.clientHeight * 0.5) {
+              nav.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+            }
+          }
+        }
+      });
+    };
+
+    const updateActiveHeading = () => {
+      const offset = 112;
+      let currentId = postHeadings[0].id;
+      for (let i = 0; i < postHeadings.length; i++) {
+        if (postHeadings[i].getBoundingClientRect().top <= offset) {
+          currentId = postHeadings[i].id;
+        } else {
+          break;
+        }
+      }
+      if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 24) {
+        currentId = postHeadings[postHeadings.length - 1].id;
+      }
+      setActiveToc(currentId);
+    };
+
+    let tocRaf = null;
+    window.addEventListener('scroll', () => {
+      if (tocRaf !== null) return;
+      tocRaf = requestAnimationFrame(() => {
+        tocRaf = null;
+        updateActiveHeading();
+      });
+    }, { passive: true });
+    updateActiveHeading();
+  }
 
 })();
