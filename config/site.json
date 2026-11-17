@@ -29,5 +29,14 @@
       "description": "Macroeconomia estrutural, dinâmica agregada, modelos quantitativos, consumo, investimento e crescimento econômico.",
       "tag": "Macroeconomia"
     }
-  ]
+  ],
+  "comments": {
+    "enabled": false,
+    "provider": "giscus",
+    "repo": "brunocastroal/brunocastroal.github.io",
+    "repo_id": "",
+    "category": "Announcements",
+    "category_id": "",
+    "mapping": "pathname"
+  }
 }

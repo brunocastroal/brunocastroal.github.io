@@ -43,3 +43,16 @@ research_areas:
     name: "Macroeconomia"
     description: "Macroeconomia estrutural, dinâmica agregada, modelos quantitativos, consumo, investimento e crescimento econômico."
     tag: "Macroeconomia"
+
+# ==============================================================================
+# COMENTÁRIOS NOS POSTS DO BLOG (OPCIONAL — GISCUS / GITHUB DISCUSSIONS)
+# Requer: ativar Discussions no GitHub + instalar o app Giscus e preencher os IDs.
+# ==============================================================================
+comments:
+  enabled: false
+  provider: "giscus"
+  repo: "brunocastroal/brunocastroal.github.io"
+  repo_id: ""
+  category: "Announcements"
+  category_id: ""
+  mapping: "pathname"
