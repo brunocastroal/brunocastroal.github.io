@@ -1722,18 +1722,30 @@ body.dark .copy-btn {
   cursor: pointer;
 }
 
+.dcegm-regime-pill {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+
 .dcegm-readout {
-  margin-top: 12px;
-  padding: 9px 12px;
+  margin-top: 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   background: var(--code-bg);
   border: 1px solid var(--line);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.8rem;
-  line-height: 1.45;
+  font-size: 0.79rem;
+  line-height: 1.5;
   color: var(--ink);
-  overflow-x: auto;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .dcegm-canvas-wrap {
@@ -1778,8 +1790,19 @@ body.dark .copy-btn {
 }
 
 .dcegm-leg-item i.dashed {
-  -webkit-mask-image: repeating-linear-gradient(90deg, #000 0 5px, transparent 5px 9px);
-  mask-image: repeating-linear-gradient(90deg, #000 0 5px, transparent 5px 9px);
+  width: 18px;
+  height: 0;
+  border-top: 2.5px dashed;
+  background: transparent !important;
+  border-radius: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.dcegm-leg-item i.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
 .dcegm-kpis {
@@ -1797,7 +1820,8 @@ body.dark .copy-btn {
   min-width: 0;
 }
 
-.dcegm-kpi-label {
+.dcegm-kpi-label,
+.dcegm-kpi > span {
   display: block;
   font-size: 0.74rem;
   color: var(--muted);
@@ -1807,7 +1831,7 @@ body.dark .copy-btn {
 .dcegm-kpi-value,
 .dcegm-kpi strong {
   display: block;
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: var(--ink);
   word-break: break-word;

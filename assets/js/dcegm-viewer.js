@@ -12,8 +12,10 @@
 
   const isPost = window.location.pathname.includes('/posts/');
   const JSON_URL = (isPost ? '../' : '') + 'materials/dc_egm_vfi/dc_egm_vfi_interactive.json';
+  const OCC_SHORT = ['N', 'I', 'F'];
 
   let DATA = null;
+  let rafId = null;
   let state = {
     tab: 'policies',       // policies | folds | dist | bench
     iz: 2,                 // 0..4 (z3 = 0.901 default)
@@ -21,6 +23,7 @@
     policyVar: 'ap',       // V | c | ap | net | d_star
     compareVfi: true,
     zoomLow: true,
+    foldZoomLow: false,
     foldMode: 'endo',      // endo | vcond
     foldIdx: 1,            // 0..3
     distView: 'mu',        // mu | bisection
@@ -55,7 +58,19 @@
     return Number(v).toExponential(2).replace('.', ',');
   }
 
-  // Filter paired (x, y) arrays where both are finite numbers
+  function getRegimeLabel() {
+    if (state.tab === 'policies') return 'Regime ativo: Equilíbrio Geral (Na = 400, χ̄ = 0,05)';
+    if (state.tab === 'folds') {
+      return state.foldMode === 'vcond'
+        ? 'Regime ativo: Equilíbrio Geral (Na = 400, χ̄ = 0,05, r* = 2,80% — sem dobras na grade endógena)'
+        : 'Regime ativo: Equilíbrio Parcial (Na = 1600, χ̄ = 0,05, r = 4,17% — 4 dobras detectadas)';
+    }
+    if (state.tab === 'dist') return 'Regime ativo: Equilíbrio Geral Competitivo (Na = 400, χ̄ = 0,05, operador de Young 2010)';
+    return state.benchView === 'multigrade'
+      ? 'Regime ativo: Equilíbrio Parcial Multigrade (Na = 400, 800, 1600 · χ̄ = 0,05)'
+      : 'Regime ativo: Benchmark Histórico Preliminar (Na = 400 · χ̄ = 0, sem custos de transição)';
+  }
+
   function pairSeries(xs, ys, maxX = Infinity) {
     const out = [];
     for (let i = 0; i < xs.length; i++) {
@@ -68,7 +83,16 @@
     return out;
   }
 
-  // Generic crisp HiDPI Canvas Line/Scatter/Bar helper
+  function computeCdf(mu) {
+    const cdf = new Array(mu.length);
+    let acc = 0;
+    for (let i = 0; i < mu.length; i++) {
+      acc += mu[i] || 0;
+      cdf[i] = Math.min(1, acc);
+    }
+    return cdf;
+  }
+
   function setupCanvas(canvas) {
     const rect = canvas.parentElement.getBoundingClientRect();
     const w = Math.max(280, Math.floor(rect.width));
@@ -119,10 +143,8 @@
     ctx.font = '11px Inter, -apple-system, sans-serif';
     ctx.fillStyle = pal.muted;
 
-    // Horizontal grid & Y ticks
-    const yTicks = 5;
-    for (let t = 0; t <= yTicks; t++) {
-      const frac = t / yTicks;
+    for (let t = 0; t <= 5; t++) {
+      const frac = t / 5;
       const py = pad.t + plotH - frac * plotH;
       ctx.beginPath();
       ctx.moveTo(pad.l, py);
@@ -137,10 +159,8 @@
       ctx.fillText(yFormatter(yVal), pad.l - 6, py);
     }
 
-    // Vertical grid & X ticks
-    const xTicks = 5;
-    for (let t = 0; t <= xTicks; t++) {
-      const frac = t / xTicks;
+    for (let t = 0; t <= 5; t++) {
+      const frac = t / 5;
       const px = pad.l + frac * plotW;
       ctx.beginPath();
       ctx.moveTo(px, pad.t);
@@ -155,11 +175,9 @@
       ctx.fillText(xFormatter(xVal), px, pad.t + plotH + 6);
     }
 
-    // Border box
     ctx.strokeStyle = pal.grid;
     ctx.strokeRect(pad.l, pad.t, plotW, plotH);
 
-    // Axis titles
     ctx.fillStyle = pal.ink;
     ctx.font = '600 11.5px Inter, -apple-system, sans-serif';
     ctx.textAlign = 'center';
@@ -167,10 +185,10 @@
     ctx.fillText(xLabel, pad.l + plotW / 2, pad.t + plotH + pad.b - 2);
 
     ctx.save();
-    ctx.translate(13, pad.t + plotH / 2);
+    ctx.translate(6, pad.t + plotH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textBaseline = 'top';
-    ctx.fillText(yLabel, 0, -4);
+    ctx.fillText(yLabel, 0, 0);
     ctx.restore();
 
     return { tx, ty };
@@ -181,6 +199,7 @@
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = opts.width || 2.2;
+    if (opts.alpha !== undefined) ctx.globalAlpha = opts.alpha;
     if (opts.dashed) ctx.setLineDash([6, 4]);
     ctx.beginPath();
     pts.forEach((p, idx) => {
@@ -188,9 +207,7 @@
       if (idx === 0) {
         ctx.moveTo(x, y);
       } else {
-        if (opts.step) {
-          ctx.lineTo(x, ty(pts[idx - 1].y));
-        }
+        if (opts.step) ctx.lineTo(x, ty(pts[idx - 1].y));
         ctx.lineTo(x, y);
       }
     });
@@ -208,29 +225,78 @@
     ctx.restore();
   }
 
+  function nearestIndex(xs, targetX, maxX = Infinity) {
+    let best = -1, bestDist = Infinity;
+    for (let i = 0; i < xs.length; i++) {
+      if (xs[i] > maxX) break;
+      const d = Math.abs(xs[i] - targetX);
+      if (d < bestDist) { best = i; bestDist = d; }
+    }
+    return best;
+  }
+
   function nearestPoint(pts, targetX) {
     if (!pts.length) return null;
     let best = pts[0], bestDist = Math.abs(pts[0].x - targetX);
     for (let i = 1; i < pts.length; i++) {
       const d = Math.abs(pts[i].x - targetX);
-      if (d < bestDist) {
-        best = pts[i];
-        bestDist = d;
-      }
+      if (d < bestDist) { best = pts[i]; bestDist = d; }
     }
     return best;
   }
 
+  function analyzeEnvelopeBranches(aGrid, branches, maxX) {
+    const pts = [];
+    const crossings = [];
+    let prevDom = null;
+
+    for (let i = 0; i < aGrid.length; i++) {
+      const a = aGrid[i];
+      if (a > maxX) break;
+      const vals = [branches[0][i], branches[1][i], branches[2][i]];
+      let bestD = null, bestV = -Infinity;
+      for (let d = 0; d < 3; d++) {
+        if (vals[d] !== null && Number.isFinite(vals[d]) && vals[d] > bestV) {
+          bestV = vals[d];
+          bestD = d;
+        }
+      }
+      if (bestD === null) continue;
+
+      if (prevDom !== null && bestD !== prevDom.dom) {
+        const dA = prevDom.dom, dB = bestD;
+        const va0 = prevDom.vals[dA], va1 = vals[dA];
+        const vb0 = prevDom.vals[dB], vb1 = vals[dB];
+        if (va0 !== null && va1 !== null && vb0 !== null && vb1 !== null) {
+          const denom = (va1 - va0) - (vb1 - vb0);
+          const t = Math.abs(denom) > 1e-12 ? Math.max(0, Math.min(1, (vb0 - va0) / denom)) : 0.5;
+          const xCross = prevDom.a + t * (a - prevDom.a);
+          const yCross = va0 + t * (va1 - va0);
+          crossings.push({ x: xCross, y: yCross, from: dA, to: dB });
+        } else {
+          crossings.push({ x: a, y: bestV, from: dA, to: dB });
+        }
+      }
+      pts.push({ a, vals, dom: bestD, vEnv: bestV });
+      prevDom = { a, vals, dom: bestD, vEnv: bestV };
+    }
+    return { pts, crossings };
+  }
+
   function renderChart() {
     const canvas = container.querySelector('#dcegm-canvas');
+    const regimeEl = container.querySelector('#dcegm-regime');
     const readoutEl = container.querySelector('#dcegm-readout');
     const legendEl = container.querySelector('#dcegm-legend');
     const kpiEl = container.querySelector('#dcegm-kpis');
     if (!canvas || !DATA) return;
 
+    if (regimeEl) regimeEl.textContent = getRegimeLabel();
+
     const pal = getPalette();
+    const occColors = [pal.slate, pal.green, pal.dc];
     const { ctx, w, h } = setupCanvas(canvas);
-    const pad = { l: w < 460 ? 52 : 62, r: 16, t: 16, b: 36 };
+    const pad = { l: w < 460 ? 60 : 66, r: 16, t: 18, b: 36 };
     const plotW = w - pad.l - pad.r;
     const plotH = h - pad.t - pad.b;
 
@@ -240,7 +306,7 @@
     const occNames = DATA.meta.occupations;
 
     // --------------------------------------------------------
-    // TAB 1: POLICIES & VALUE FUNCTION (EG)
+    // TAB 1: POLICIES & VALUE FUNCTION (EG Na=400)
     // --------------------------------------------------------
     if (state.tab === 'policies') {
       const maxX = state.zoomLow ? 20 : 80;
@@ -284,7 +350,6 @@
 
       const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, 0, maxX, yMin, yMax, pal, 'Ativos a', yLabels[state.policyVar], (v) => v.toFixed(0), yFmt);
 
-      // Reference line (y=0 for net saving, 45-deg for a')
       if (state.policyVar === 'net') {
         drawLineSeries(ctx, [{ x: 0, y: 0 }, { x: maxX, y: 0 }], tx, ty, pal.muted, { width: 1, dashed: true });
       } else if (state.policyVar === 'ap') {
@@ -296,8 +361,7 @@
         drawLineSeries(ctx, ptsVfi, tx, ty, pal.vfi, { width: 2.0, dashed: true, step: isStep });
       }
 
-      // Hover readout
-      let infoText = `Passe o mouse ou toque no gráfico (z${state.iz + 1}=${fmt(zVals[state.iz], 3)}, d⁻=${occNames[state.dPrev]}).`;
+      let infoText = `Equilíbrio Geral (Na=400): passe o cursor ou toque no gráfico (z${state.iz + 1}=${fmt(zVals[state.iz], 3)}, d⁻=${occNames[state.dPrev]}).`;
       if (hoverState.active && hoverState.px >= pad.l && hoverState.px <= pad.l + plotW) {
         const targetX = ((hoverState.px - pad.l) / plotW) * maxX;
         const pDc = nearestPoint(ptsDc, targetX);
@@ -326,63 +390,116 @@
       legendEl.innerHTML = `<span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM (Upper Envelope)</span>` +
         (state.compareVfi ? `<span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.vfi}"></i>VFI Vetorizada</span>` : '');
       kpiEl.innerHTML = `
-        <div class="dcegm-kpi"><span>r* (DC-EGM)</span><strong>${fmt(dcSol.resumo.r, 4)}%</strong></div>
+        <div class="dcegm-kpi"><span>r* (DC / VFI)</span><strong>${fmt(dcSol.resumo.r, 4)}% / ${fmt(vfiSol.resumo.r, 4)}%</strong></div>
         <div class="dcegm-kpi"><span>w* (DC-EGM)</span><strong>${fmt(dcSol.resumo.w, 4)}</strong></div>
-        <div class="dcegm-kpi"><span>||&Delta;V||<sub>&infin;</sub> EG</span><strong>${fmt(eq.discrepancias.dif_sup_V, 4)}</strong></div>
-        <div class="dcegm-kpi"><span>||&Delta;c||<sub>&infin;</sub> EG</span><strong>${fmt(eq.discrepancias.dif_sup_c, 4)}</strong></div>
+        <div class="dcegm-kpi"><span>||&Delta;V||<sub>&infin;</sub> (DC vs VFI, EG)</span><strong>${fmt(eq.discrepancias.dif_sup_V, 4)}</strong></div>
+        <div class="dcegm-kpi"><span>||&Delta;c||<sub>&infin;</sub> (DC vs VFI, EG)</span><strong>${fmt(eq.discrepancias.dif_sup_c, 4)}</strong></div>
       `;
     }
 
     // --------------------------------------------------------
-    // TAB 2: UPPER ENVELOPE & DOBRAS (EP)
+    // TAB 2: UPPER ENVELOPE (v_d EG Na=400 vs Dobras EP Na=1600)
     // --------------------------------------------------------
     else if (state.tab === 'folds') {
-      if (state.foldMode === 'vcond') {
-        const maxX = state.zoomLow ? 16 : 80;
-        const dcVc = eq.dc.v_cond[state.dPrev]; // [3][5][173]
-        const sN = pairSeries(aGrid, dcVc[0][state.iz], maxX);
-        const sI = pairSeries(aGrid, dcVc[1][state.iz], maxX);
-        const sF = pairSeries(aGrid, dcVc[2][state.iz], maxX);
-        const sEnv = pairSeries(aGrid, eq.dc.V[state.dPrev][state.iz], maxX);
+      const row1600 = DATA.benchmarks.multigrade.find(r => String(r.Na) === '1600');
+      const conc1600 = row1600 ? fmt(parseFloat(row1600.Concordancia_Ocup_pct), 2) + '%' : '—';
 
-        const allY = [...sN, ...sI, ...sF, ...sEnv].map(p => p.y);
+      if (state.foldMode === 'vcond') {
+        const maxX = state.foldZoomLow ? 25 : 80;
+        const dcVc = eq.dc.v_cond[state.dPrev];
+        const branches = [dcVc[0][state.iz], dcVc[1][state.iz], dcVc[2][state.iz]];
+        const sN = pairSeries(aGrid, branches[0], maxX);
+        const sI = pairSeries(aGrid, branches[1], maxX);
+        const sF = pairSeries(aGrid, branches[2], maxX);
+
+        const { pts: envPts, crossings } = analyzeEnvelopeBranches(aGrid, branches, maxX);
+        const allY = [...sN, ...sI, ...sF].map(p => p.y);
         const [yMin, yMax] = niceBounds(allY);
         const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, 0, maxX, yMin, yMax, pal, 'Ativos a', 'v(a, z, d, d⁻)', (v) => v.toFixed(0), (v) => v.toFixed(1));
 
-        drawLineSeries(ctx, sN, tx, ty, pal.slate, { width: 1.8, dashed: true });
-        drawLineSeries(ctx, sI, tx, ty, pal.green, { width: 2.0 });
-        drawLineSeries(ctx, sF, tx, ty, pal.dc, { width: 2.0 });
-        drawLineSeries(ctx, sEnv, tx, ty, pal.ink, { width: 2.6 });
+        // 1. Sub-optimal & conditional value branches (subtle)
+        drawLineSeries(ctx, sN, tx, ty, pal.slate, { width: 1.5, dashed: true, alpha: 0.72 });
+        drawLineSeries(ctx, sI, tx, ty, pal.green, { width: 1.5, alpha: 0.55 });
+        drawLineSeries(ctx, sF, tx, ty, pal.dc, { width: 1.5, alpha: 0.55 });
 
-        let infoText = `Cruzamento das funções valor condicionais (z${state.iz + 1}=${fmt(zVals[state.iz], 3)}, d⁻=${occNames[state.dPrev]}).`;
+        // 2. Active Upper Envelope segmented by dominant occupation
+        let segStart = 0;
+        for (let i = 0; i < envPts.length; i++) {
+          const isEnd = (i === envPts.length - 1) || (envPts[i + 1].dom !== envPts[i].dom);
+          if (isEnd) {
+            const seg = envPts.slice(segStart, i + 1).map(p => ({ x: p.a, y: p.vEnv }));
+            if (i + 1 < envPts.length) {
+              const cMatch = crossings.find(c => c.x >= envPts[i].a && c.x <= envPts[i + 1].a);
+              if (cMatch) seg.push({ x: cMatch.x, y: cMatch.y });
+            }
+            if (segStart > 0) {
+              const cPrev = crossings.find(c => c.x >= envPts[segStart - 1].a && c.x <= envPts[segStart].a);
+              if (cPrev) seg.unshift({ x: cPrev.x, y: cPrev.y });
+            }
+            drawLineSeries(ctx, seg, tx, ty, occColors[envPts[i].dom], { width: 3.3 });
+            segStart = i + 1;
+          }
+        }
+
+        // 3. Kink / crossing markers & non-overlapping labels
+        let lastLabelX = -100;
+        crossings.forEach((c) => {
+          const cx = tx(c.x), cy = ty(c.y);
+          ctx.save();
+          ctx.fillStyle = pal.crimson;
+          ctx.beginPath(); ctx.arc(cx, cy, 5.2, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = pal.bg; ctx.lineWidth = 1.6; ctx.stroke();
+          if (cx - lastLabelX > 52) {
+            const lbl = `${OCC_SHORT[c.from]}→${OCC_SHORT[c.to]} (${c.x.toFixed(1)})`;
+            ctx.font = '600 10.5px Inter, sans-serif';
+            ctx.fillStyle = pal.ink;
+            ctx.textAlign = cx > pad.l + plotW - 60 ? 'right' : 'left';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(lbl, cx + (cx > pad.l + plotW - 60 ? -6 : 6), Math.max(pad.t + 14, cy - 6));
+            lastLabelX = cx;
+          }
+          ctx.restore();
+        });
+
+        const pathSeq = envPts.reduce((acc, p) => {
+          const s = OCC_SHORT[p.dom];
+          if (!acc.length || acc[acc.length - 1] !== s) acc.push(s);
+          return acc;
+        }, []).join(' → ');
+
+        let infoText = `Upper Envelope em EG (Na=400, z${state.iz + 1}=${fmt(zVals[state.iz], 3)}, d⁻=${occNames[state.dPrev]}): sequência dominante <strong>${pathSeq || '—'}</strong> · ${crossings.length} cruzamento(s) no trecho.`;
         if (hoverState.active && hoverState.px >= pad.l && hoverState.px <= pad.l + plotW) {
           const targetX = ((hoverState.px - pad.l) / plotW) * maxX;
-          const pEnv = nearestPoint(sEnv, targetX);
-          const pN = nearestPoint(sN, targetX);
-          const pI = nearestPoint(sI, targetX);
-          const pF = nearestPoint(sF, targetX);
+          const pEnv = nearestPoint(envPts.map(p => ({ x: p.a, y: p.vEnv, raw: p })), targetX);
           if (pEnv) {
-            const cx = tx(pEnv.x);
+            const r = pEnv.raw;
+            const cx = tx(r.a);
             ctx.save();
             ctx.strokeStyle = pal.muted; ctx.setLineDash([3, 3]);
             ctx.beginPath(); ctx.moveTo(cx, pad.t); ctx.lineTo(cx, pad.t + plotH); ctx.stroke();
-            ctx.fillStyle = pal.ink; ctx.beginPath(); ctx.arc(cx, ty(pEnv.y), 4.5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = occColors[r.dom];
+            ctx.beginPath(); ctx.arc(cx, ty(r.vEnv), 5, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
-            infoText = `<strong>a=${fmt(pEnv.x, 2)}</strong> &middot; V=${fmt(pEnv.y, 3)} | ` +
-              `<span style="color:${pal.slate}">v_N:${pN ? fmt(pN.y, 2) : '—'}</span> · ` +
-              `<span style="color:${pal.green}">v_I:${pI ? fmt(pI.y, 2) : '—'}</span> · ` +
-              `<span style="color:${pal.dc}">v_F:${pF ? fmt(pF.y, 2) : '—'}</span>`;
+            infoText = `<strong>a = ${fmt(r.a, 2)}</strong> &middot; Ocupação escolhida: <strong style="color:${occColors[r.dom]}">${occNames[r.dom]}</strong> (V=${fmt(r.vEnv, 3)}) | ` +
+              `<span style="color:${pal.slate}">v_N:${r.vals[0] !== null ? fmt(r.vals[0], 2) : 'inviáv.'}</span> · ` +
+              `<span style="color:${pal.green}">v_I:${r.vals[1] !== null ? fmt(r.vals[1], 2) : '—'}</span> · ` +
+              `<span style="color:${pal.dc}">v_F:${r.vals[2] !== null ? fmt(r.vals[2], 2) : '—'}</span>`;
           }
         }
         readoutEl.innerHTML = infoText;
         legendEl.innerHTML = `
-          <span class="dcegm-leg-item"><i style="background:${pal.ink}"></i>Envelope V(a)</span>
-          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>v_F (Formal)</span>
-          <span class="dcegm-leg-item"><i style="background:${pal.green}"></i>v_I (Informal)</span>
-          <span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.slate}"></i>v_N (Inativo)</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>Trecho Formal (F)</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.green}"></i>Trecho Informal (I)</span>
+          <span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.slate}"></i>Ramo Inativo (v_N)</span>
+          <span class="dcegm-leg-item"><i class="dot" style="background:${pal.crimson}"></i>Ponto de cruzamento (quina)</span>
+        `;
+        kpiEl.innerHTML = `
+          <div class="dcegm-kpi"><span>Regime da Vista</span><strong>EG (Na = 400)</strong></div>
+          <div class="dcegm-kpi"><span>Regime Dominante</span><strong>${pathSeq || '—'}</strong></div>
+          <div class="dcegm-kpi"><span>Quinas (a &le; ${maxX})</span><strong>${crossings.length} cruzamento(s)</strong></div>
+          <div class="dcegm-kpi"><span>Dobras Grade EG (Na=400)</span><strong>${eq.dobras_eg} (monotônica)</strong></div>
         `;
       } else {
-        // Endogenous Grid Folds from Na=1600
         const folds = DATA.dobras_ep.folds;
         const fItem = folds[state.foldIdx] || folds[0];
         const pts = fItem.fold_a_prime.map((ap, i) => ({ x: ap, y: fItem.fold_a_endo[i], neg: fItem.neg_rel_indices.includes(i) }));
@@ -391,7 +508,6 @@
         const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, xMin, xMax, yMin, yMax, pal, "Poupança a'", "Grade Endógena a_endog(a')", (v) => v.toFixed(2), (v) => v.toFixed(2));
 
         drawLineSeries(ctx, pts, tx, ty, pal.dc, { width: 2.2 });
-        // Highlight points & negative-slope fold segment(s) in crimson
         ctx.save();
         for (let i = 0; i < pts.length; i++) {
           const p = pts[i];
@@ -410,7 +526,7 @@
         }
         ctx.restore();
 
-        let infoText = `Dobra na grade endógena em ${fItem.label} (N_a = 1.600). Em vermelho: inversão da_endog/da' &lt; 0.`;
+        let infoText = `Equilíbrio Parcial (Na = 1.600, r = ${fmt(DATA.dobras_ep.r_pct, 2)}%): dobra na grade endógena em ${fItem.label}. Em vermelho: trecho invertido da_endog/da' &lt; 0.`;
         if (hoverState.active && hoverState.px >= pad.l && hoverState.px <= pad.l + plotW) {
           const targetX = xMin + ((hoverState.px - pad.l) / plotW) * (xMax - xMin);
           const p = nearestPoint(pts, targetX);
@@ -425,16 +541,16 @@
         }
         readoutEl.innerHTML = infoText;
         legendEl.innerHTML = `
-          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>a_endog(a') monótona</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>a_endog(a') monótona (EP Na=1600)</span>
           <span class="dcegm-leg-item"><i style="background:${pal.crimson}"></i>Dobra (da_endog / da' &lt; 0)</span>
         `;
+        kpiEl.innerHTML = `
+          <div class="dcegm-kpi"><span>Regime da Vista</span><strong>EP (Na = 1600)</strong></div>
+          <div class="dcegm-kpi"><span>Dobras EP (Na=1600)</span><strong>${DATA.dobras_ep.total_dobras} (3 int. + 1 front.)</strong></div>
+          <div class="dcegm-kpi"><span>Dobras EG (Na=400)</span><strong>${eq.dobras_eg} (monotônica)</strong></div>
+          <div class="dcegm-kpi"><span>Conc. d* (EP Na=1600)</span><strong>${conc1600}</strong></div>
+        `;
       }
-      kpiEl.innerHTML = `
-        <div class="dcegm-kpi"><span>Dobras (N_a=1600)</span><strong>${DATA.dobras_ep.total_dobras}</strong></div>
-        <div class="dcegm-kpi"><span>Limiar &chi;&#772;</span><strong>${DATA.meta.params.chi_bar}</strong></div>
-        <div class="dcegm-kpi"><span>Concordância d*</span><strong>99,97%</strong></div>
-        <div class="dcegm-kpi"><span>Violação Orç.</span><strong>&lt; 10<sup>-12</sup></strong></div>
-      `;
     }
 
     // --------------------------------------------------------
@@ -447,38 +563,38 @@
       if (state.distView === 'mu') {
         const maxX = state.zoomLow ? 25 : 80;
         const aFull = DATA.meta.a_full;
+        const cdfDc = computeCdf(dcSol.mu_a);
+        const cdfVfi = computeCdf(vfiSol.mu_a);
         const sDc = pairSeries(aFull, dcSol.mu_a, maxX);
         const sVfi = pairSeries(aFull, vfiSol.mu_a, maxX);
-        const [yMin, yMax] = niceBounds([...sDc.map(p => p.y), ...sVfi.map(p => p.y), 0], 0.08);
+        const [, yMax] = niceBounds([...sDc.map(p => p.y), ...sVfi.map(p => p.y), 0], 0.08);
         const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, 0, maxX, 0, yMax, pal, 'Ativos a', 'Massa estacionária μ(a)', (v) => v.toFixed(0), (v) => (v * 100).toFixed(1) + '%');
 
         drawLineSeries(ctx, sDc, tx, ty, pal.dc, { width: 2.2, fillAlpha: 0.12, baseline: 0 });
         drawLineSeries(ctx, sVfi, tx, ty, pal.vfi, { width: 1.9, dashed: true });
 
-        let infoText = `Distribuição estacionária de riqueza em Equilíbrio Geral (Young, 2010). Massa em a=0: DC-EGM ${dcSol.resumo.frac_a_min}% vs VFI ${vfiSol.resumo.frac_a_min}%.`;
+        let infoText = `EG (Na=400, Young 2010) &middot; Massa em a=0: DC ${fmt(dcSol.resumo.frac_a_min, 2)}% vs VFI ${fmt(vfiSol.resumo.frac_a_min, 2)}% | Média: ${fmt(dcSol.resumo.media_a, 2)} vs ${fmt(vfiSol.resumo.media_a, 2)} | P25: ${fmt(dcSol.resumo.P25, 2)} · P50: ${fmt(dcSol.resumo.P50, 2)} vs ${fmt(vfiSol.resumo.P50, 2)} · P75: ${fmt(dcSol.resumo.P75, 2)} · P90: ${fmt(dcSol.resumo.P90, 2)} vs ${fmt(vfiSol.resumo.P90, 2)}.`;
         if (hoverState.active && hoverState.px >= pad.l && hoverState.px <= pad.l + plotW) {
           const targetX = ((hoverState.px - pad.l) / plotW) * maxX;
-          const pDc = nearestPoint(sDc, targetX);
-          const pVfi = nearestPoint(sVfi, targetX);
-          if (pDc && pVfi) {
-            const cx = tx(pDc.x);
+          const idx = nearestIndex(aFull, targetX, maxX);
+          if (idx >= 0) {
+            const cx = tx(aFull[idx]);
             ctx.save(); ctx.strokeStyle = pal.muted; ctx.setLineDash([3, 3]);
             ctx.beginPath(); ctx.moveTo(cx, pad.t); ctx.lineTo(cx, pad.t + plotH); ctx.stroke(); ctx.restore();
-            infoText = `<strong>a = ${fmt(pDc.x, 2)}</strong> &middot; <span style="color:${pal.dc}">DC-EGM: ${(pDc.y * 100).toFixed(2)}%</span> &middot; <span style="color:${pal.vfi}">VFI: ${(pVfi.y * 100).toFixed(2)}%</span>`;
+            infoText = `<strong>a = ${fmt(aFull[idx], 2)}</strong> &middot; <span style="color:${pal.dc}">DC-EGM: &mu;=${(dcSol.mu_a[idx] * 100).toFixed(2)}%, F(a)=${(cdfDc[idx] * 100).toFixed(1)}%</span> &middot; <span style="color:${pal.vfi}">VFI: &mu;=${(vfiSol.mu_a[idx] * 100).toFixed(2)}%, F(a)=${(cdfVfi[idx] * 100).toFixed(1)}%</span>`;
           }
         }
         readoutEl.innerHTML = infoText;
         legendEl.innerHTML = `
-          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM (Gini ${dcSol.resumo.gini})</span>
-          <span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.vfi}"></i>VFI Vetorizada (Gini ${vfiSol.resumo.gini})</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM (Gini ${fmt(dcSol.resumo.gini, 4)})</span>
+          <span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.vfi}"></i>VFI Vetorizada (Gini ${fmt(vfiSol.resumo.gini, 4)})</span>
         `;
       } else {
-        // Bisection Price r convergence
         const rDc = dcSol.historico.r.map((val, idx) => ({ x: idx + 1, y: val }));
         const rVfi = vfiSol.historico.r.map((val, idx) => ({ x: idx + 1, y: val }));
         const maxIt = Math.max(rDc.length, rVfi.length);
         const [yMin, yMax] = niceBounds([...rDc.map(p => p.y), ...rVfi.map(p => p.y)], 0.1);
-        const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, 1, maxIt, yMin, yMax, pal, 'Iteração da Bisseção', 'Taxa Real de Juros r (%)', (v) => v.toFixed(0), (v) => v.toFixed(2) + '%');
+        const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, 1, maxIt, yMin, yMax, pal, 'Iteração da Bisseção', 'Taxa Real r (%)', (v) => v.toFixed(0), (v) => v.toFixed(2) + '%');
 
         drawLineSeries(ctx, rDc, tx, ty, pal.dc, { width: 2.3 });
         drawLineSeries(ctx, rVfi, tx, ty, pal.vfi, { width: 2.0, dashed: true });
@@ -487,18 +603,25 @@
           s.forEach(p => { ctx.beginPath(); ctx.arc(tx(p.x), ty(p.y), 3.5, 0, Math.PI * 2); ctx.fill(); });
         });
 
-        readoutEl.innerHTML = `Bisseção de equilíbrio geral: DC-EGM converge em <strong>${dcSol.resumo.iter} iterações (${dcSol.resumo.tempo}s)</strong> vs. VFI em <strong>${vfiSol.resumo.iter} iterações (${vfiSol.resumo.tempo}s)</strong>.`;
+        let infoText = `Procedimento de bisseção encerrado após <strong>${dcSol.resumo.iter} iterações (${dcSol.resumo.tempo}s)</strong> no DC-EGM e <strong>${vfiSol.resumo.iter} iterações (${vfiSol.resumo.tempo}s)</strong> na VFI.<br>Resíduo relativo de mercado |f(k)|/k (tol. 10<sup>-4</sup>): DC-EGM = <strong>${fmtSci(dcSol.resumo.erro_rel_mercado)}</strong> (atendida) · VFI = <strong>${fmtSci(vfiSol.resumo.erro_rel_mercado)}</strong> (acima; encerrou por largura do intervalo).`;
+        if (hoverState.active && hoverState.px >= pad.l && hoverState.px <= pad.l + plotW) {
+          const itHit = Math.max(1, Math.min(maxIt, Math.round(1 + ((hoverState.px - pad.l) / plotW) * (maxIt - 1))));
+          const dStr = itHit <= rDc.length ? `r=${fmt(dcSol.historico.r[itHit - 1], 4)}%, f(k)=${fmt(dcSol.historico.fk[itHit - 1], 4)}` : 'encerrado (11 it.)';
+          const vStr = itHit <= rVfi.length ? `r=${fmt(vfiSol.historico.r[itHit - 1], 4)}%, f(k)=${fmt(vfiSol.historico.fk[itHit - 1], 4)}` : 'encerrado';
+          infoText = `<strong>Iteração ${itHit}</strong> &middot; <span style="color:${pal.dc}">DC-EGM: ${dStr}</span> &middot; <span style="color:${pal.vfi}">VFI: ${vStr}</span>`;
+        }
+        readoutEl.innerHTML = infoText;
         legendEl.innerHTML = `
-          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM (${dcSol.resumo.iter} it.)</span>
-          <span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.vfi}"></i>VFI (${vfiSol.resumo.iter} it.)</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM (${dcSol.resumo.iter} it. bisseção)</span>
+          <span class="dcegm-leg-item"><i class="dashed" style="border-color:${pal.vfi}"></i>VFI (${vfiSol.resumo.iter} it. bisseção)</span>
         `;
       }
 
       kpiEl.innerHTML = `
-        <div class="dcegm-kpi"><span>Setor Formal M_F</span><strong>${dcSol.resumo.mu_d[2]}%</strong></div>
-        <div class="dcegm-kpi"><span>Gini Riqueza</span><strong>${fmt(dcSol.resumo.gini, 4)}</strong></div>
-        <div class="dcegm-kpi"><span>Resíduo Walras</span><strong>${fmtSci(dcSol.resumo.walras)}</strong></div>
-        <div class="dcegm-kpi"><span>Speedup EG</span><strong>${eq.discrepancias.speedup_eg}x</strong></div>
+        <div class="dcegm-kpi"><span>Gini (DC vs VFI)</span><strong>${fmt(dcSol.resumo.gini, 4)} vs ${fmt(vfiSol.resumo.gini, 4)}</strong></div>
+        <div class="dcegm-kpi"><span>Mediana P50 (DC / VFI)</span><strong>${fmt(dcSol.resumo.P50, 2)} / ${fmt(vfiSol.resumo.P50, 2)}</strong></div>
+        <div class="dcegm-kpi"><span>Resíduo Mercado |f(k)|/k</span><strong>${fmtSci(dcSol.resumo.erro_rel_mercado)} vs ${fmtSci(vfiSol.resumo.erro_rel_mercado)}</strong></div>
+        <div class="dcegm-kpi"><span>Resíduo Walras (Contábil)</span><strong>${fmtSci(dcSol.resumo.walras)} vs ${fmtSci(vfiSol.resumo.walras)}</strong></div>
       `;
     }
 
@@ -509,13 +632,23 @@
       if (state.benchView === 'multigrade') {
         const rows = DATA.benchmarks.multigrade;
         const maxT = Math.max(...rows.map(r => Math.max(parseFloat(r.Tempo_VFI_s), parseFloat(r.Tempo_DCEGM_s))));
-        const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, 0, rows.length, 0, maxT * 1.15, pal, 'Resolução da Malha (N_a)', 'Tempo de Política EP (s)', () => '', (v) => v.toFixed(0) + 's');
+        const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, 0, rows.length, 0, maxT * 1.15, pal, 'Resolução da Malha (N_a, EP χ̄=0,05)', 'Tempo de Política EP (s)', () => '', (v) => v.toFixed(0) + 's');
 
         const groupW = plotW / rows.length;
         const barW = Math.min(44, groupW * 0.28);
 
+        let hoveredIdx = -1;
+        if (hoverState.active && hoverState.px >= pad.l && hoverState.px <= pad.l + plotW) {
+          hoveredIdx = Math.max(0, Math.min(rows.length - 1, Math.floor((hoverState.px - pad.l) / groupW)));
+        }
+
         rows.forEach((r, idx) => {
           const cx = pad.l + groupW * (idx + 0.5);
+          if (idx === hoveredIdx) {
+            ctx.fillStyle = pal.bgSubtle;
+            ctx.fillRect(pad.l + idx * groupW + 2, pad.t + 1, groupW - 4, plotH - 2);
+          }
+
           const tDc = parseFloat(r.Tempo_DCEGM_s);
           const tVfi = parseFloat(r.Tempo_VFI_s);
           const hDc = plotH - (ty(tDc) - pad.t);
@@ -537,20 +670,34 @@
           ctx.fillText(`Na=${r.Na} (${r.Speedup}x)`, cx, pad.t + plotH + 10);
         });
 
-        readoutEl.innerHTML = `Refinamento multigrade (Fase 1, EP): DC-EGM atinge <strong>7,65x</strong> de aceleração em N_a=1.600 (5,20s vs 39,75s).`;
+        const rSel = hoveredIdx >= 0 ? rows[hoveredIdx] : rows[rows.length - 1];
+        const convNote = String(rSel.Convergencia_DCEGM).toLowerCase() === 'nao'
+          ? `Não atingiu 10⁻⁷ em ${rSel.Iter_DCEGM} it. (resíduo Cauchy V = ${fmtSci(DATA.dobras_ep.na400_erro_V)})`
+          : `Convergiu em ${rSel.Iter_DCEGM} iterações (tol. 10⁻⁷)`;
+        readoutEl.innerHTML = `<strong>Malha N_a = ${rSel.Na} (EP, χ̄=0,05)</strong> &middot; Tempo: <strong>${rSel.Tempo_DCEGM_s}s vs ${rSel.Tempo_VFI_s}s</strong> (${rSel.Speedup}x) · Convergência DC: ${convNote}<br>Discrepância entre métodos (VFI vs DC): ||ΔV||<sub>∞</sub> = <strong>${rSel.dif_sup_V}</strong> · ||Δc||<sub>∞</sub> = <strong>${rSel.dif_sup_c}</strong> · Conc. d* = <strong>${rSel.Concordancia_Ocup_pct}%</strong>.`;
+
         legendEl.innerHTML = `
-          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM com Upper Envelope</span>
-          <span class="dcegm-leg-item"><i style="background:${pal.vfi}"></i>VFI Vetorizada</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM com Upper Envelope (EP)</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.vfi}"></i>VFI Vetorizada (EP)</span>
+        `;
+
+        const r16 = rows[rows.length - 1];
+        const r4 = rows[0];
+        kpiEl.innerHTML = `
+          <div class="dcegm-kpi"><span>Regime da Vista</span><strong>EP Multigrade (χ̄=0,05)</strong></div>
+          <div class="dcegm-kpi"><span>Tempo / Speedup (1600)</span><strong>${r16.Tempo_DCEGM_s}s vs ${r16.Tempo_VFI_s}s (${r16.Speedup}x)</strong></div>
+          <div class="dcegm-kpi"><span>Conv. DC (400 / ≥800)</span><strong>Não (${r4.Iter_DCEGM}) / Sim (${r16.Iter_DCEGM})</strong></div>
+          <div class="dcegm-kpi"><span>Discrep. VFI–DC (1600)</span><strong>||Δc||∞=${r16.dif_sup_c} · d*=${r16.Concordancia_Ocup_pct}%</strong></div>
         `;
       } else {
-        // Log-log frontier: Time (s) vs Euler Error (benchmark historico 9)
         const rows = DATA.benchmarks.historico9.map(r => ({
           name: r.Implementacao,
           x: parseFloat(r.Mediana_s),
           y: parseFloat(r.Euler_Erro_Consumo),
+          bellmanMae: parseFloat(r.Bellman_MAE),
           speedup: r.Speedup_vs_VFI_Vet
         }));
-        const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, 1, 120, 1e-7, 2e-2, pal, 'Tempo Mediano (s, escala log)', 'Erro Médio de Euler (escala log)', (v) => v.toFixed(0) + 's', (v) => v.toExponential(0), true, true);
+        const { tx, ty } = drawAxes(ctx, pad, plotW, plotH, 1, 120, 1e-7, 2e-2, pal, 'Tempo Mediano (s, escala log — χ̄=0)', 'Erro Médio de Euler (log)', (v) => v.toFixed(0) + 's', (v) => v.toExponential(0), true, true);
 
         let hoveredPt = null;
         let minPxDist = 28;
@@ -568,24 +715,27 @@
           }
         });
 
+        const bestRow = rows.find(r => r.name.includes('DC-EGM Otimizado')) || rows[0];
+        const vfi3200 = rows.find(r => r.name.includes('3200')) || rows[rows.length - 1];
+
         if (hoveredPt) {
-          readoutEl.innerHTML = `<strong>${hoveredPt.name}</strong> &middot; Mediana: <strong>${fmt(hoveredPt.x, 3)}s</strong> &middot; Erro Euler: <strong>${fmtSci(hoveredPt.y)}</strong> (${hoveredPt.speedup})`;
+          readoutEl.innerHTML = `<strong>${hoveredPt.name} (χ̄=0)</strong> &middot; Mediana: <strong>${fmt(hoveredPt.x, 3)}s</strong> &middot; Erro Euler: <strong>${fmtSci(hoveredPt.y)}</strong> &middot; Bellman MAE: <strong>${fmtSci(hoveredPt.bellmanMae)}</strong> (${hoveredPt.speedup})`;
         } else {
-          readoutEl.innerHTML = `Benchmark preliminar (&chi;&#772;=0, 9 implementações). Passe sobre um ponto: DC-EGM Otimizado combina <strong>1,66s</strong> com erro de Euler <strong>7,18e-07</strong>.`;
+          readoutEl.innerHTML = `<strong>Benchmark histórico preliminar (χ̄=0, sem custos de transição — 9 implementações)</strong>. Não equivale à acurácia em quinas do modelo canônico (χ̄=0,05).<br>Passe sobre um ponto: DC-EGM Otimizado combina <strong>${fmt(bestRow.x, 2)}s</strong> com erro médio de Euler <strong>${fmtSci(bestRow.y)}</strong>.`;
         }
         legendEl.innerHTML = `
-          <span class="dcegm-leg-item"><i style="background:${pal.green}"></i>DC-EGM Otimizado (ótimo de Pareto)</span>
-          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM Padrão</span>
-          <span class="dcegm-leg-item"><i style="background:${pal.vfi}"></i>Variantes VFI (400–3200)</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.green}"></i>DC-EGM Otimizado (χ̄=0)</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.dc}"></i>DC-EGM Padrão (χ̄=0)</span>
+          <span class="dcegm-leg-item"><i style="background:${pal.vfi}"></i>Variantes VFI (400–3200, χ̄=0)</span>
+        `;
+
+        kpiEl.innerHTML = `
+          <div class="dcegm-kpi"><span>Regime da Vista</span><strong>Histórico (χ̄ = 0)</strong></div>
+          <div class="dcegm-kpi"><span>Euler DC-EGM (χ̄=0)</span><strong>${fmtSci(bestRow.y)}</strong></div>
+          <div class="dcegm-kpi"><span>Euler VFI-3200 (χ̄=0)</span><strong>${fmtSci(vfi3200.y)}</strong></div>
+          <div class="dcegm-kpi"><span>Speedup vs VFI-Vet</span><strong>${bestRow.speedup} (${fmt(bestRow.x, 2)}s)</strong></div>
         `;
       }
-
-      kpiEl.innerHTML = `
-        <div class="dcegm-kpi"><span>Speedup Na=1600</span><strong>7,65x</strong></div>
-        <div class="dcegm-kpi"><span>Euler DC-EGM (&chi;&#772;=0)</span><strong>7,18e-07</strong></div>
-        <div class="dcegm-kpi"><span>Euler VFI-3200</span><strong>1,88e-03</strong></div>
-        <div class="dcegm-kpi"><span>Speedup Bisseção</span><strong>3,49x</strong></div>
-      `;
     }
   }
 
@@ -608,6 +758,8 @@
         </div>
       </div>
 
+      <div class="dcegm-regime-pill" id="dcegm-regime"></div>
+
       <div class="dcegm-controls">
         ${state.tab === 'policies' ? `
           <label class="dcegm-field"><span>Variável</span>
@@ -628,8 +780,8 @@
         ${state.tab === 'folds' ? `
           <label class="dcegm-field"><span>Diagnóstico</span>
             <select id="ctrl-fmode">
-              <option value="endo"${state.foldMode === 'endo' ? ' selected' : ''}>Dobras na Grade Endógena (Na=1600)</option>
-              <option value="vcond"${state.foldMode === 'vcond' ? ' selected' : ''}>Cruzamento v_d(a) e Quinas</option>
+              <option value="endo"${state.foldMode === 'endo' ? ' selected' : ''}>Dobras Grade Endógena (EP Na=1600)</option>
+              <option value="vcond"${state.foldMode === 'vcond' ? ' selected' : ''}>Ramos v_d(a) e Envelope (EG Na=400)</option>
             </select>
           </label>
           ${state.foldMode === 'endo' ? `
@@ -637,15 +789,15 @@
           ` : `
             <label class="dcegm-field"><span>Produtividade z</span><select id="ctrl-iz">${zOpts}</select></label>
             <label class="dcegm-field"><span>Ocupação ant. d⁻</span><select id="ctrl-dp">${dOpts}</select></label>
-            <label class="dcegm-check"><input type="checkbox" id="ctrl-zoom"${state.zoomLow ? ' checked' : ''}> Zoom a &le; 16</label>
+            <label class="dcegm-check"><input type="checkbox" id="ctrl-fzoom"${state.foldZoomLow ? ' checked' : ''}> Zoom a &le; 25</label>
           `}
         ` : ''}
 
         ${state.tab === 'dist' ? `
-          <label class="dcegm-field"><span>Gráfico</span>
+          <label class="dcegm-field"><span>Gráfico (EG Na=400)</span>
             <select id="ctrl-dview">
               <option value="mu"${state.distView === 'mu' ? ' selected' : ''}>Densidade Estacionária μ(a)</option>
-              <option value="bisection"${state.distView === 'bisection' ? ' selected' : ''}>Convergência Bisseção (r*)</option>
+              <option value="bisection"${state.distView === 'bisection' ? ' selected' : ''}>Procedimento de Bisseção (r*)</option>
             </select>
           </label>
           ${state.distView === 'mu' ? `
@@ -654,10 +806,10 @@
         ` : ''}
 
         ${state.tab === 'bench' ? `
-          <label class="dcegm-field"><span>Comparação</span>
+          <label class="dcegm-field"><span>Experimento</span>
             <select id="ctrl-bview">
-              <option value="multigrade"${state.benchView === 'multigrade' ? ' selected' : ''}>Refinamento Multigrade (400–1600)</option>
-              <option value="euler"${state.benchView === 'euler' ? ' selected' : ''}>Fronteira Tempo vs. Euler (9 impl.)</option>
+              <option value="multigrade"${state.benchView === 'multigrade' ? ' selected' : ''}>Refinamento Multigrade (EP, χ̄=0,05)</option>
+              <option value="euler"${state.benchView === 'euler' ? ' selected' : ''}>Benchmark Histórico Euler (χ̄=0, 9 impl.)</option>
             </select>
           </label>
         ` : ''}
@@ -671,7 +823,6 @@
       <div class="dcegm-kpis" id="dcegm-kpis"></div>
     `;
 
-    // Wire events
     container.querySelectorAll('.dcegm-tab-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         state.tab = btn.getAttribute('data-tab');
@@ -699,6 +850,7 @@
     bindVal('#ctrl-bview', 'benchView');
     bindChk('#ctrl-vfi', 'compareVfi');
     bindChk('#ctrl-zoom', 'zoomLow');
+    bindChk('#ctrl-fzoom', 'foldZoomLow');
 
     const canvas = container.querySelector('#dcegm-canvas');
     const updateHover = (clientX, clientY) => {
@@ -716,6 +868,14 @@
     }, { passive: true });
   }
 
+  function scheduleRender() {
+    if (rafId !== null) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      rafId = null;
+      renderChart();
+    });
+  }
+
   async function init() {
     container.innerHTML = '<div class="dcegm-loading">Carregando dados numéricos do modelo MATLAB...</div>';
     try {
@@ -726,12 +886,12 @@
       renderChart();
 
       if (typeof ResizeObserver === 'function') {
-        new ResizeObserver(() => renderChart()).observe(container);
+        new ResizeObserver(() => scheduleRender()).observe(container);
       } else {
-        window.addEventListener('resize', renderChart);
+        window.addEventListener('resize', scheduleRender);
       }
 
-      new MutationObserver(() => renderChart()).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      new MutationObserver(() => scheduleRender()).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     } catch (err) {
       container.innerHTML = `<div class="dcegm-loading">Não foi possível carregar os dados interativos (${err.message}).</div>`;
     }
