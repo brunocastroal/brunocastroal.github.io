@@ -31,12 +31,12 @@
     }
   ],
   "comments": {
-    "enabled": false,
+    "enabled": true,
     "provider": "giscus",
     "repo": "brunocastroal/brunocastroal.github.io",
-    "repo_id": "",
+    "repo_id": "R_kgDOVBhLLg",
     "category": "Announcements",
-    "category_id": "",
+    "category_id": "DIC_kwDOVBhLLs4DLYLH",
     "mapping": "pathname"
   }
 }

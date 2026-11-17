@@ -1216,20 +1216,17 @@ function buildBlog() {
       return `
         <section class="post-comments-section" id="comentarios" aria-label="Comentários">
           <h2 class="post-comments-heading">Comentários</h2>
-          <script src="https://giscus.app/client.js"
-                  data-repo="${cfg.repo}"
-                  data-repo-id="${cfg.repo_id}"
-                  data-category="${cfg.category}"
-                  data-category-id="${cfg.category_id}"
-                  data-mapping="${cfg.mapping || 'pathname'}"
-                  data-strict="0"
-                  data-reactions-enabled="1"
-                  data-emit-metadata="0"
-                  data-input-position="top"
-                  data-theme="${cfg.theme || 'preferred_color_scheme'}"
-                  data-lang="pt"
-                  crossorigin="anonymous"
-                  async></script>
+          <div id="giscus-container"
+               data-repo="${cfg.repo}"
+               data-repo-id="${cfg.repo_id}"
+               data-category="${cfg.category}"
+               data-category-id="${cfg.category_id}"
+               data-mapping="${cfg.mapping || 'pathname'}"
+               data-strict="0"
+               data-reactions-enabled="1"
+               data-emit-metadata="0"
+               data-input-position="top"
+               data-lang="pt"></div>
         </section>`;
     }
     return '';
