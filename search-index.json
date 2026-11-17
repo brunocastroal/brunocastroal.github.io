@@ -11,7 +11,7 @@
       "Upper Envelope",
       "MATLAB"
     ],
-    "date": "2026-11-12",
+    "date": "2026-11-17",
     "url": "posts/2026-11-12-dc-egm-vfi.html",
     "snippet": "Implementação e comparação rigorosa entre a Iteração da Função Valor (VFI) e o Discrete-Continuous Endogenous Grid Method (DC-EGM) com Upper Envelope em modelo com escolhas ocupacionais discretas e custos fixos de transição."
   },
