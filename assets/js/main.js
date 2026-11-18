@@ -311,8 +311,10 @@
   async function loadSearchIndex() {
     if (searchIndexCache) return searchIndexCache;
     try {
+      const mainScript = document.querySelector('script[data-search-index]');
       const isPost = window.location.pathname.includes('/posts/');
-      const indexPath = isPost ? '../search-index.json' : 'search-index.json';
+      const indexPath = (mainScript && mainScript.getAttribute('data-search-index'))
+        || (isPost ? '../search-index.json' : 'search-index.json');
       const res = await fetch(indexPath);
       if (res.ok) {
         searchIndexCache = await res.json();

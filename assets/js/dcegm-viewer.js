@@ -10,8 +10,10 @@
   const container = document.getElementById('dcegm-explorer');
   if (!container) return;
 
+  const viewerScript = document.querySelector('script[data-json-url]');
   const isPost = window.location.pathname.includes('/posts/');
-  const JSON_URL = (isPost ? '../' : '') + 'materials/dc_egm_vfi/dc_egm_vfi_interactive.json';
+  const JSON_URL = (viewerScript && viewerScript.getAttribute('data-json-url'))
+    || ((isPost ? '../' : '') + 'materials/dc_egm_vfi/dc_egm_vfi_interactive.json');
   const OCC_SHORT = ['N', 'I', 'F'];
 
   const DEFAULTS = {

@@ -12,17 +12,53 @@ const yaml = require('./lib/js-yaml.js');
 const ROOT_DIR = __dirname;
 const assetHashCache = new Map();
 function assetUrl(prefix, relPath) {
-  let ver = assetHashCache.get(relPath);
+  const cleanRel = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
+  let ver = assetHashCache.get(cleanRel);
   if (!ver) {
     try {
-      const buf = fs.readFileSync(path.join(ROOT_DIR, relPath));
+      const buf = fs.readFileSync(path.join(ROOT_DIR, cleanRel));
       ver = crypto.createHash('md5').update(buf).digest('hex').slice(0, 8);
     } catch {
       ver = '1';
     }
-    assetHashCache.set(relPath, ver);
+    assetHashCache.set(cleanRel, ver);
   }
-  return `${prefix}${relPath}?v=${ver}`;
+  return `${prefix}${cleanRel}?v=${ver}`;
+}
+
+function versionHtmlLocalAssets(html, depth = 0) {
+  const prefix = depth > 0 ? '../' : '';
+  const pageDir = depth > 0 ? path.join(ROOT_DIR, 'posts') : ROOT_DIR;
+  return html.replace(/\b(href|src)=(["'])([^"']+)\2/g, (full, attr, quote, rawUrl) => {
+    if (!rawUrl || /^(?:https?:|mailto:|tel:|data:|javascript:|#|\/\/)/i.test(rawUrl)) {
+      return full;
+    }
+    const [withoutHash, hashPart] = rawUrl.split('#');
+    const cleanPath = withoutHash.split('?')[0];
+    if (!cleanPath || cleanPath.endsWith('/') || /\.html?$/i.test(cleanPath)) {
+      return full;
+    }
+    let decodedPath = cleanPath;
+    try {
+      decodedPath = decodeURIComponent(cleanPath);
+    } catch {
+      // Keep raw cleanPath if percent-decoding fails
+    }
+    const absPath = path.resolve(pageDir, decodedPath);
+    const relToRoot = path.relative(ROOT_DIR, absPath).replace(/\\/g, '/');
+    if (!relToRoot || relToRoot.startsWith('..') || path.isAbsolute(relToRoot)) {
+      return full;
+    }
+    try {
+      if (fs.existsSync(absPath) && fs.statSync(absPath).isFile()) {
+        const versioned = assetUrl(prefix, relToRoot) + (hashPart ? `#${hashPart}` : '');
+        return `${attr}=${quote}${versioned}${quote}`;
+      }
+    } catch {
+      // Preserve original attribute if file lookup fails
+    }
+    return full;
+  });
 }
 const CONFIG_DIR = path.join(ROOT_DIR, 'config');
 const DATA_DIR = path.join(ROOT_DIR, 'data');
@@ -738,7 +774,7 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
 
   const avatarUrl = siteConfig.avatar ? (siteConfig.avatar.startsWith('http') ? siteConfig.avatar : `${rawBase}/${siteConfig.avatar.replace(/^\//, '')}`) : '';
 
-  return `<!doctype html>
+  const html = `<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
@@ -788,10 +824,11 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
   </div>
 
   ${renderModals()}
-  <script src="${assetUrl(prefix, 'assets/js/main.js')}" defer></script>
-  ${content.includes('id="dcegm-explorer"') ? `<script src="${assetUrl(prefix, 'assets/js/dcegm-viewer.js')}" defer></script>\n  ` : ''}<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+  <script src="${assetUrl(prefix, 'assets/js/main.js')}" data-search-index="${assetUrl(prefix, 'search-index.json')}" defer></script>
+  ${content.includes('id="dcegm-explorer"') ? `<script src="${assetUrl(prefix, 'assets/js/dcegm-viewer.js')}" data-json-url="${assetUrl(prefix, 'materials/dc_egm_vfi/dc_egm_vfi_interactive.json')}" defer></script>\n  ` : ''}<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 </body>
 </html>`;
+  return versionHtmlLocalAssets(html, depth);
 }
 
 // Publication Entry Renderer
