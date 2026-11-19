@@ -11,8 +11,8 @@
   "avatar": "assets/images/avatar.jpeg",
   "cv_pdf": "assets/cv/curriculo.pdf",
   "default_lang": "pt",
-  "bio": "Doutorando em Economia pela FEARP-USP e graduado em Ciências Econômicas pela UFDPar. Desenvolve pesquisa quantitativa em macroeconomia, economia regional e ciência de dados, com experiência em ensino (monitoria em Macroeconomia I, II e Introdução à Economia) e extensão universitária em economia solidária.\n",
-  "bio_short": "Doutorando em Economia pela FEARP-USP e graduado em Ciências Econômicas pela UFDPar. Macroeconomia, Consumo e Poupança, Economia Regional e Ciência de Dados.",
+  "bio": "Doutorando em Economia pela FEARP-USP e graduado em Ciências Econômicas pela UFDPar. Desenvolve pesquisa quantitativa em macroeconomia, economia regional e ciência de dados, com experiência em ensino (monitoria em Macroeconomia I, II, III e Introdução à Economia) e extensão universitária em economia solidária.\n",
+  "bio_short": "Doutorando em Economia pela FEARP-USP e graduado em Ciências Econômicas pela UFDPar. Macroeconomia Quantitativa, Economia Regional e Ciência de Dados.",
   "social": {
     "lattes": "https://lattes.cnpq.br/4936269417036697",
     "google_scholar": "https://scholar.google.com.br/citations?user=G48yrGsAAAAJ&hl=pt-BR&oi=ao",
@@ -25,9 +25,21 @@
   "research_areas": [
     {
       "number": "01",
-      "name": "Macroeconomia",
-      "description": "Macroeconomia estrutural, dinâmica agregada, modelos quantitativos, consumo, investimento e crescimento econômico.",
-      "tag": "Macroeconomia"
+      "name": "Macroeconomia Quantitativa",
+      "description": "Modelos de agentes heterogêneos, consumo, poupança, escolhas ocupacionais e dinâmica agregada.",
+      "tag": "Macroeconomia Quantitativa"
+    },
+    {
+      "number": "02",
+      "name": "Economia Regional",
+      "description": "Econometria espacial, desenvolvimento regional e dinâmicas econômicas territoriais.",
+      "tag": "Economia Regional"
+    },
+    {
+      "number": "03",
+      "name": "Ciência de Dados Aplicada à Economia",
+      "description": "Bibliometria, Machine Learning e métodos numéricos computacionais aplicados à pesquisa econômica.",
+      "tag": "Ciência de Dados"
     }
   ],
   "comments": {

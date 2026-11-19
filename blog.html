@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blog | Bruno Castro Alves</title>
-  <meta name="description" content="Doutorando em Economia pela FEARP-USP e graduado em Ciências Econômicas pela UFDPar. Macroeconomia, Consumo e Poupança, Economia Regional e Ciência de Dados.">
+  <meta name="description" content="Doutorando em Economia pela FEARP-USP e graduado em Ciências Econômicas pela UFDPar. Macroeconomia Quantitativa, Economia Regional e Ciência de Dados.">
   <meta name="author" content="Bruno Castro Alves">
   <link rel="canonical" href="https://brunocastroal.github.io/blog.html">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Blog | Bruno Castro Alves">
-  <meta property="og:description" content="Doutorando em Economia pela FEARP-USP e graduado em Ciências Econômicas pela UFDPar. Macroeconomia, Consumo e Poupança, Economia Regional e Ciência de Dados.">
+  <meta property="og:description" content="Doutorando em Economia pela FEARP-USP e graduado em Ciências Econômicas pela UFDPar. Macroeconomia Quantitativa, Economia Regional e Ciência de Dados.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://brunocastroal.github.io/blog.html">
   <meta property="og:image" content="https://brunocastroal.github.io/assets/images/avatar.jpeg">
@@ -40,12 +40,13 @@
   </script>
 
   <link rel="icon" href="assets/images/favicon.svg?v=c1efd10e" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/css/site.css?v=3adf9dad">
+  <link rel="stylesheet" href="assets/css/site.css?v=8c22a63e">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Ir para o conteúdo principal</a>
   <div class="site-wrapper">
     
     <header class="site-header" role="banner">
@@ -96,7 +97,7 @@
       </div>
     </header>
   
-    <main class="site-main" id="main-content">
+    <main class="site-main" id="main-content" tabindex="-1">
       
     <header style="margin-bottom: 30px;">
       <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Blog Acadêmico</h1>
@@ -107,19 +108,24 @@
 
     <div class="posts-stream" id="blog-stream">
       
-        <article class="post-stream-item" data-category="Economia Computacional">
+        <article class="post-stream-item" data-category="Macroeconomia Quantitativa">
           <div class="post-stream-meta">
             <span>2026-11-17</span> &bull;
             <span>16 min de leitura</span> &bull;
-            <span>Economia Computacional</span>
+            <span>Macroeconomia Quantitativa</span>
           </div>
           <h2 class="post-stream-title">
             <a href="posts/2026-11-12-dc-egm-vfi.html">Modelo de Agentes Heterogêneos com Escolhas Ocupacionais e Custos de Transição: Uma Comparação entre VFI e DC-EGM</a>
           </h2>
           <p class="post-stream-summary">Implementação e comparação rigorosa entre a Iteração da Função Valor (VFI) e o Discrete-Continuous Endogenous Grid Method (DC-EGM) com Upper Envelope em modelo com escolhas ocupacionais discretas e custos fixos de transição.</p>
+          
+          <div class="post-materials-badges" aria-label="Materiais reproduzíveis">
+            <a class="post-repro-pill kind-code" href="materials/dc_egm_vfi/Projeto_D-EGM.zip?v=c5c8d6bc" target="_blank" rel="noreferrer">Códigos MATLAB (.zip)</a>
+<a class="post-repro-pill kind-slides" href="materials/dc_egm_vfi/APRESENTACAO_DC_EGM_VFI.pdf?v=bd79a5e1" target="_blank" rel="noreferrer">Slides Oficiais (PDF, 64 p.)</a>
+<a class="post-repro-pill kind-lab" href="posts/2026-11-12-dc-egm-vfi.html#dcegm-explorer">Laboratório Interativo</a>
+          </div>
           <a class="post-read-link" href="posts/2026-11-12-dc-egm-vfi.html">Ler texto &rarr;</a>
         </article>
-      
     </div>
   
     </main>
@@ -155,15 +161,15 @@
       <div class="cite-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cite-modal-title">
         <div class="cite-modal-header">
           <h3 class="cite-modal-title" id="cite-modal-title">Citar publicação</h3>
-          <button class="cite-close-btn" id="cite-modal-close" type="button">&times;</button>
+          <button class="cite-close-btn" id="cite-modal-close" type="button" aria-label="Fechar janela de citação">&times;</button>
         </div>
-        <div class="cite-modal-tabs notranslate" translate="no">
-          <button class="cite-tab-btn active" data-cite-format="bibtex">BibTeX</button>
-          <button class="cite-tab-btn" data-cite-format="abnt">ABNT</button>
-          <button class="cite-tab-btn" data-cite-format="apa">APA 7</button>
-          <button class="cite-tab-btn" data-cite-format="chicago">Chicago</button>
-          <button class="cite-tab-btn" data-cite-format="mla">MLA 9</button>
-          <button class="cite-tab-btn" data-cite-format="ieee">IEEE</button>
+        <div class="cite-modal-tabs notranslate" translate="no" role="tablist" aria-label="Formatos de citação">
+          <button class="cite-tab-btn active" type="button" data-cite-format="bibtex">BibTeX</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="abnt">ABNT</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="apa">APA 7</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="chicago">Chicago</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="mla">MLA 9</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="ieee">IEEE</button>
         </div>
         <div class="cite-modal-content">
           <div class="cite-box notranslate" translate="no">
@@ -181,10 +187,10 @@
 
     <!-- Search Modal -->
     <div class="search-modal-backdrop" id="search-modal" aria-hidden="true">
-      <div class="search-modal-dialog" role="dialog" aria-modal="true">
+      <div class="search-modal-dialog" role="dialog" aria-modal="true" aria-label="Busca no site">
         <div class="search-modal-header">
-          <input type="search" class="search-input" id="global-search-input" placeholder="Buscar textos, publicações, disciplinas..." autocomplete="off">
-          <button class="search-close-btn" id="search-modal-close" type="button">&times;</button>
+          <input type="search" class="search-input" id="global-search-input" aria-label="Buscar textos, publicações e disciplinas" placeholder="Buscar textos, publicações, disciplinas..." autocomplete="off">
+          <button class="search-close-btn" id="search-modal-close" type="button" aria-label="Fechar busca">&times;</button>
         </div>
         <div class="search-modal-body" id="search-results-container">
           <p class="search-hint">Pressione ESC para fechar ou digite para pesquisar.</p>
@@ -195,7 +201,7 @@
     <!-- Hidden mount target for Google Translate Element -->
     <div id="google_translate_element" class="notranslate" translate="no" aria-hidden="true"></div>
   
-  <script src="assets/js/main.js?v=fc3bed9f" data-search-index="search-index.json?v=5a504a75" defer></script>
+  <script src="assets/js/main.js?v=fc3bed9f" data-search-index="search-index.json?v=385e7af8" defer></script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 </body>
 </html>

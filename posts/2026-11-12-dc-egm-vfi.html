@@ -40,12 +40,13 @@
   </script>
 
   <link rel="icon" href="../assets/images/favicon.svg?v=c1efd10e" type="image/svg+xml">
-  <link rel="stylesheet" href="../assets/css/site.css?v=3adf9dad">
+  <link rel="stylesheet" href="../assets/css/site.css?v=8c22a63e">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Ir para o conteúdo principal</a>
   <div class="site-wrapper">
     
     <header class="site-header" role="banner">
@@ -96,20 +97,29 @@
       </div>
     </header>
   
-    <main class="site-main site-main-post" id="main-content">
+    <main class="site-main site-main-post" id="main-content" tabindex="-1">
       
       <div class="single-post-layout has-toc">
         <article class="single-post-wrap">
-          <header style="margin-bottom: 32px;">
+          <header style="margin-bottom: 24px;">
             <div class="single-post-meta">
               <span>2026-11-17</span> &bull;
               <span>16 min de leitura</span> &bull;
-              <span>Economia Computacional</span>
+              <span>Macroeconomia Quantitativa</span>
             </div>
             <h1 class="single-post-title">Modelo de Agentes Heterogêneos com Escolhas Ocupacionais e Custos de Transição: Uma Comparação entre VFI e DC-EGM</h1>
             <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por <span class="notranslate" translate="no">Bruno Castro Alves</span></p>
           </header>
 
+          
+      <div class="post-repro-bar" role="region" aria-label="Códigos e materiais para reprodução">
+        <span class="post-repro-label">Materiais reproduzíveis:</span>
+        <div class="post-repro-links">
+          <a class="post-repro-pill kind-code" href="../materials/dc_egm_vfi/Projeto_D-EGM.zip?v=c5c8d6bc" target="_blank" rel="noreferrer">Códigos MATLAB (.zip)</a>
+<a class="post-repro-pill kind-slides" href="../materials/dc_egm_vfi/APRESENTACAO_DC_EGM_VFI.pdf?v=bd79a5e1" target="_blank" rel="noreferrer">Slides Oficiais (PDF, 64 p.)</a>
+<a class="post-repro-pill kind-lab" href="#dcegm-explorer">Laboratório Interativo</a>
+        </div>
+      </div>
           
       <details class="post-toc-mobile">
         <summary><span class="post-toc-hash">#</span> Índice do artigo (12 seções)</summary>
@@ -218,17 +228,17 @@
 
 <div style="text-align: center; margin: 1.5rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura1_funcoes_valor_envelope.png?v=0a61668e" alt="Funções Valor Condicionais e Envelope Superior" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 1: Funções valor condicionais e envelope superior exibindo quinas nos pontos de indiferença ocupacional.</em></p>
+  <p class="post-figure-caption"><em>Figura 1: Funções valor condicionais e envelope superior exibindo quinas nos pontos de indiferença ocupacional.</em></p>
 </div>
 
 <div style="text-align: center; margin: 1.5rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura3_grades_endogenas.png?v=3161090e" alt="Grades Endógenas e Dobras no DC-EGM" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 2: Diagnóstico das grades endógenas em equilíbrio parcial sob custos fixos de transição ocupacional.</em></p>
+  <p class="post-figure-caption"><em>Figura 2: Diagnóstico das grades endógenas em equilíbrio parcial sob custos fixos de transição ocupacional.</em></p>
 </div>
 
 <div style="text-align: center; margin: 2rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura14_upper_envelope_dobras.png?v=3a1c474c" alt="Anatomia do Upper Envelope na Dobra Interior" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 3: Anatomia do algoritmo Upper Envelope na dobra interior (<span class="math-inline notranslate" translate="no">$z_2, d=I, N_a=1600$</span>), destacando o descarte de ramos subótimos.</em></p>
+  <p class="post-figure-caption"><em>Figura 3: Anatomia do algoritmo Upper Envelope na dobra interior (<span class="math-inline notranslate" translate="no">$z_2, d=I, N_a=1600$</span>), destacando o descarte de ramos subótimos.</em></p>
 </div>
 
 <p><strong>Contraste entre Equilíbrio Parcial e Equilíbrio Geral:</strong> Os experimentos de equilíbrio parcial (<span class="math-inline notranslate" translate="no">$r = 4{,}1667\%$</span>, <span class="math-inline notranslate" translate="no">$w = 1{,}1781$</span>) identificam dobras na grade endógena a partir de <span class="math-inline notranslate" translate="no">$N_a = 800$</span>, com aumento de ocorrências sob refinamento da discretização: nenhuma dobra discreta em <span class="math-inline notranslate" translate="no">$N_a = 400$</span>, duas dobras em <span class="math-inline notranslate" translate="no">$N_a = 800$</span> e quatro dobras em <span class="math-inline notranslate" translate="no">$N_a = 1600$</span> (três interiores em torno de <span class="math-inline notranslate" translate="no">$a' \approx 60{,}5$</span>, <span class="math-inline notranslate" translate="no">$64{,}5$</span> e <span class="math-inline notranslate" translate="no">$74{,}4$</span> e uma próxima à fronteira superior em <span class="math-inline notranslate" translate="no">$a' \in [78{,}55;\, 80{,}0]$</span>). Entretanto, essas dobras não são uma propriedade universal da parametrização: na solução de equilíbrio geral examinada com <span class="math-inline notranslate" translate="no">$N_a = 400$</span> (<span class="math-inline notranslate" translate="no">$r^* \approx 2{,}80\%$</span>), todas as grades endógenas permaneceram estritamente monotônicas, com incrementos mínimos positivos de <span class="math-inline notranslate" translate="no">$+0{,}1583$</span> na inatividade, <span class="math-inline notranslate" translate="no">$+0{,}1237$</span> na informalidade e <span class="math-inline notranslate" translate="no">$+0{,}1313$</span> na formalidade.</p>
@@ -250,7 +260,7 @@
 
 <div style="text-align: center; margin: 2rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura12_mapa_escolhas_ocupacionais.png?v=b85d8019" alt="Mapa Espacial de Ocupação Ótima e Histerese" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 4: Mapa espacial de escolha ocupacional ótima <span class="math-inline notranslate" translate="no">$d^*(a, z, d^-)$</span> e regiões de histerese (<span class="math-inline notranslate" translate="no">$N_a = 1600$</span>, concordância de 99,97% com a VFI).</em></p>
+  <p class="post-figure-caption"><em>Figura 4: Mapa espacial de escolha ocupacional ótima <span class="math-inline notranslate" translate="no">$d^*(a, z, d^-)$</span> e regiões de histerese (<span class="math-inline notranslate" translate="no">$N_a = 1600$</span>, concordância de 99,97% com a VFI).</em></p>
 </div>
 
 <h3 id="2-benchmark-historico-complementar-modelo-preliminar">2. Benchmark Histórico Complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, Modelo Preliminar)</h3>
@@ -261,7 +271,7 @@
 
 <div style="text-align: center; margin: 2rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura16_fronteira_tempo_precisao_historico.png?v=1e0fde73" alt="Fronteira Tempo vs Precisão no Benchmark Histórico" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 5: Benchmark histórico complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, modelo preliminar): fronteira tempo de execução versus erro médio de Euler entre 9 implementações.</em></p>
+  <p class="post-figure-caption"><em>Figura 5: Benchmark histórico complementar (<span class="math-inline notranslate" translate="no">$\bar\chi = 0$</span>, modelo preliminar): fronteira tempo de execução versus erro médio de Euler entre 9 implementações.</em></p>
 </div>
 
 <hr>
@@ -278,17 +288,17 @@
 
 <div style="text-align: center; margin: 1.5rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura4_comparacao_vfi_dcegm.png?v=08aa69a1" alt="Comparação das Políticas de Poupança" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 6: Comparação entre VFI e DC-EGM na função valor <span class="math-inline notranslate" translate="no">$V(a,z,d^-)$</span> e na política de poupança <span class="math-inline notranslate" translate="no">$a'(a,z,d^-)$</span> em equilíbrio geral (malha uniforme <span class="math-inline notranslate" translate="no">$a \in [0, 80]$</span>).</em></p>
+  <p class="post-figure-caption"><em>Figura 6: Comparação entre VFI e DC-EGM na função valor <span class="math-inline notranslate" translate="no">$V(a,z,d^-)$</span> e na política de poupança <span class="math-inline notranslate" translate="no">$a'(a,z,d^-)$</span> em equilíbrio geral (malha uniforme <span class="math-inline notranslate" translate="no">$a \in [0, 80]$</span>).</em></p>
 </div>
 
 <div style="text-align: center; margin: 2rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura11_politicas_consumo_poupanca.png?v=5679f59d" alt="Políticas de Consumo e Poupança Líquida" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 7: Políticas ótimas de consumo <span class="math-inline notranslate" translate="no">$c^*(a)$</span> e poupança líquida <span class="math-inline notranslate" translate="no">$a'(a)-a$</span> (<span class="math-inline notranslate" translate="no">$N_a=1600$</span>), evidenciando suavização precaucional e restrição de liquidez.</em></p>
+  <p class="post-figure-caption"><em>Figura 7: Políticas ótimas de consumo <span class="math-inline notranslate" translate="no">$c^*(a)$</span> e poupança líquida <span class="math-inline notranslate" translate="no">$a'(a)-a$</span> (<span class="math-inline notranslate" translate="no">$N_a=1600$</span>), evidenciando suavização precaucional e restrição de liquidez.</em></p>
 </div>
 
 <div style="text-align: center; margin: 1.5rem 0;">
   <img src="../assets/images/dc_egm_vfi/figura6_distribuicao_estacionaria.png?v=f6fd102e" alt="Distribuição Estacionária de Riqueza" style="max-width: 90%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;"><em>Figura 8: Densidade marginal estacionária de ativos exibindo a concentração de massa na restrição <span class="math-inline notranslate" translate="no">$a=0$</span>.</em></p>
+  <p class="post-figure-caption"><em>Figura 8: Densidade marginal estacionária de ativos exibindo a concentração de massa na restrição <span class="math-inline notranslate" translate="no">$a=0$</span>.</em></p>
 </div>
 
 <ul>
@@ -341,6 +351,7 @@
 </ol>
           </div>
 
+          
           
         <section class="post-comments-section notranslate" id="comentarios" aria-label="Comentários">
           <h2 class="post-comments-heading">Comentários</h2>
@@ -455,15 +466,15 @@
       <div class="cite-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cite-modal-title">
         <div class="cite-modal-header">
           <h3 class="cite-modal-title" id="cite-modal-title">Citar publicação</h3>
-          <button class="cite-close-btn" id="cite-modal-close" type="button">&times;</button>
+          <button class="cite-close-btn" id="cite-modal-close" type="button" aria-label="Fechar janela de citação">&times;</button>
         </div>
-        <div class="cite-modal-tabs notranslate" translate="no">
-          <button class="cite-tab-btn active" data-cite-format="bibtex">BibTeX</button>
-          <button class="cite-tab-btn" data-cite-format="abnt">ABNT</button>
-          <button class="cite-tab-btn" data-cite-format="apa">APA 7</button>
-          <button class="cite-tab-btn" data-cite-format="chicago">Chicago</button>
-          <button class="cite-tab-btn" data-cite-format="mla">MLA 9</button>
-          <button class="cite-tab-btn" data-cite-format="ieee">IEEE</button>
+        <div class="cite-modal-tabs notranslate" translate="no" role="tablist" aria-label="Formatos de citação">
+          <button class="cite-tab-btn active" type="button" data-cite-format="bibtex">BibTeX</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="abnt">ABNT</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="apa">APA 7</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="chicago">Chicago</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="mla">MLA 9</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="ieee">IEEE</button>
         </div>
         <div class="cite-modal-content">
           <div class="cite-box notranslate" translate="no">
@@ -481,10 +492,10 @@
 
     <!-- Search Modal -->
     <div class="search-modal-backdrop" id="search-modal" aria-hidden="true">
-      <div class="search-modal-dialog" role="dialog" aria-modal="true">
+      <div class="search-modal-dialog" role="dialog" aria-modal="true" aria-label="Busca no site">
         <div class="search-modal-header">
-          <input type="search" class="search-input" id="global-search-input" placeholder="Buscar textos, publicações, disciplinas..." autocomplete="off">
-          <button class="search-close-btn" id="search-modal-close" type="button">&times;</button>
+          <input type="search" class="search-input" id="global-search-input" aria-label="Buscar textos, publicações e disciplinas" placeholder="Buscar textos, publicações, disciplinas..." autocomplete="off">
+          <button class="search-close-btn" id="search-modal-close" type="button" aria-label="Fechar busca">&times;</button>
         </div>
         <div class="search-modal-body" id="search-results-container">
           <p class="search-hint">Pressione ESC para fechar ou digite para pesquisar.</p>
@@ -495,7 +506,7 @@
     <!-- Hidden mount target for Google Translate Element -->
     <div id="google_translate_element" class="notranslate" translate="no" aria-hidden="true"></div>
   
-  <script src="../assets/js/main.js?v=fc3bed9f" data-search-index="../search-index.json?v=5a504a75" defer></script>
+  <script src="../assets/js/main.js?v=fc3bed9f" data-search-index="../search-index.json?v=385e7af8" defer></script>
   <script src="../assets/js/dcegm-viewer.js?v=fb52f214" data-json-url="../materials/dc_egm_vfi/dc_egm_vfi_interactive.json?v=7f55739f" defer></script>
   <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 </body>

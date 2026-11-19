@@ -387,11 +387,12 @@ blogPostFiles.forEach(file => {
     id: slug,
     title: data.title || slug,
     date: postDate,
-    category: data.category || 'Macroeconomia',
+    category: data.category || 'Macroeconomia Quantitativa',
     tags: Array.isArray(data.tags) ? data.tags : (typeof data.tags === 'string' ? [data.tags] : []),
     summary: data.summary || data.description || '',
     reading_time: readingTime,
     featured: data.featured === true,
+    materials: Array.isArray(data.materials) ? data.materials : [],
     slug: slug,
     url: `posts/${slug}.html`,
     rawContent: content,
@@ -715,15 +716,15 @@ function renderModals() {
       <div class="cite-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cite-modal-title">
         <div class="cite-modal-header">
           <h3 class="cite-modal-title" id="cite-modal-title">Citar publicação</h3>
-          <button class="cite-close-btn" id="cite-modal-close" type="button">&times;</button>
+          <button class="cite-close-btn" id="cite-modal-close" type="button" aria-label="Fechar janela de citação">&times;</button>
         </div>
-        <div class="cite-modal-tabs notranslate" translate="no">
-          <button class="cite-tab-btn active" data-cite-format="bibtex">BibTeX</button>
-          <button class="cite-tab-btn" data-cite-format="abnt">ABNT</button>
-          <button class="cite-tab-btn" data-cite-format="apa">APA 7</button>
-          <button class="cite-tab-btn" data-cite-format="chicago">Chicago</button>
-          <button class="cite-tab-btn" data-cite-format="mla">MLA 9</button>
-          <button class="cite-tab-btn" data-cite-format="ieee">IEEE</button>
+        <div class="cite-modal-tabs notranslate" translate="no" role="tablist" aria-label="Formatos de citação">
+          <button class="cite-tab-btn active" type="button" data-cite-format="bibtex">BibTeX</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="abnt">ABNT</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="apa">APA 7</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="chicago">Chicago</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="mla">MLA 9</button>
+          <button class="cite-tab-btn" type="button" data-cite-format="ieee">IEEE</button>
         </div>
         <div class="cite-modal-content">
           <div class="cite-box notranslate" translate="no">
@@ -741,10 +742,10 @@ function renderModals() {
 
     <!-- Search Modal -->
     <div class="search-modal-backdrop" id="search-modal" aria-hidden="true">
-      <div class="search-modal-dialog" role="dialog" aria-modal="true">
+      <div class="search-modal-dialog" role="dialog" aria-modal="true" aria-label="Busca no site">
         <div class="search-modal-header">
-          <input type="search" class="search-input" id="global-search-input" placeholder="Buscar textos, publicações, disciplinas..." autocomplete="off">
-          <button class="search-close-btn" id="search-modal-close" type="button">&times;</button>
+          <input type="search" class="search-input" id="global-search-input" aria-label="Buscar textos, publicações e disciplinas" placeholder="Buscar textos, publicações, disciplinas..." autocomplete="off">
+          <button class="search-close-btn" id="search-modal-close" type="button" aria-label="Fechar busca">&times;</button>
         </div>
         <div class="search-modal-body" id="search-results-container">
           <p class="search-hint">Pressione ESC para fechar ou digite para pesquisar.</p>
@@ -815,9 +816,10 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Ir para o conteúdo principal</a>
   <div class="site-wrapper">
     ${renderHeader(activePage, depth)}
-    <main class="site-main${mainClass ? ' ' + mainClass : ''}" id="main-content">
+    <main class="site-main${mainClass ? ' ' + mainClass : ''}" id="main-content" tabindex="-1">
       ${content}
     </main>
     ${renderFooter()}
@@ -877,7 +879,7 @@ function buildHome() {
     <!-- Single Hero Profile -->
     <section class="profile-hero">
       <div class="profile-avatar-wrap">
-        <img class="profile-avatar" src="${siteConfig.avatar}" alt="${siteConfig.name}" width="120" height="120">
+        <img class="profile-avatar" src="${siteConfig.avatar}" alt="Fotografia de perfil de ${siteConfig.name}" width="120" height="120">
       </div>
       <div class="profile-intro">
         <h1 class="profile-name notranslate" translate="no">${siteConfig.name}</h1>
@@ -985,26 +987,47 @@ function buildHome() {
   }));
 }
 
-// --- 6.2 RESEARCH PAGE (research.html - Publications First, Compact Agenda After) ---
+const PUBLICATION_GROUPS = [
+  { cat: 'journal_article', label: 'Artigos publicados em periódicos' },
+  { cat: 'conference_paper', label: 'Trabalhos completos em anais de congressos' },
+  { cat: 'working_paper', label: 'Working papers e manuscritos' },
+  { cat: 'work_in_progress', label: 'Pesquisas em andamento' },
+  { cat: 'monograph', label: 'Monografias e Trabalhos de Conclusão de Curso (TCC)' }
+];
+
+function renderPublicationGroups(headingTag = 'h2') {
+  return PUBLICATION_GROUPS.map(group => {
+    const items = publications.filter(p => p.category === group.cat);
+    if (!items.length) return '';
+    return `
+      <section class="publications-group">
+        <${headingTag} class="pub-group-heading">${group.label} <span class="pub-group-count">(${items.length})</span></${headingTag}>
+        <div class="publications-stream">
+          ${items.map(p => renderPubEntry(p)).join('\n')}
+        </div>
+      </section>
+    `;
+  }).join('\n');
+}
+
+// --- 6.2 RESEARCH PAGE (research.html - Categorized Publications First, 3-Axis Agenda After) ---
 function buildResearch() {
   const content = `
     <header style="margin-bottom: 40px;">
       <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Pesquisa</h1>
-      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Produção científica, artigos publicados e agenda de investigação acadêmica.</p>
+      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Produção científica organizada por categoria e eixos temáticos da agenda de investigação.</p>
     </header>
 
-    <!-- Publicações Científicas (FIRST!) -->
+    <!-- Publicações Científicas por Categoria -->
     <section class="academic-section">
       <div class="section-header-row">
-        <h2 class="section-title">Publicações Científicas</h2>
-        <a class="section-more-link" href="publications.html">Visão detalhada &rarr;</a>
+        <h2 class="section-title">Produção Científica</h2>
+        <a class="section-more-link" href="publications.html">Lista dedicada &rarr;</a>
       </div>
-      <div class="publications-stream">
-        ${publications.map(p => renderPubEntry(p)).join('\n')}
-      </div>
+      ${renderPublicationGroups('h3')}
     </section>
 
-    <!-- Agenda de Pesquisa (AFTER publications) -->
+    <!-- Agenda de Pesquisa (3 Eixos) -->
     <section class="academic-section">
       <div class="section-header-row">
         <h2 class="section-title">Agenda de Pesquisa</h2>
@@ -1033,32 +1056,13 @@ function buildResearch() {
 
 // --- 6.3 PUBLICATIONS PAGE (publications.html) ---
 function buildPublications() {
-  const groups = [
-    { cat: 'journal_article', label: 'Artigos em periódicos' },
-    { cat: 'conference_paper', label: 'Trabalhos em anais de congressos' },
-    { cat: 'working_paper', label: 'Working Papers' },
-    { cat: 'work_in_progress', label: 'Trabalhos em elaboração' },
-    { cat: 'monograph', label: 'Monografias e Trabalhos de Conclusão de Curso (TCC)' }
-  ];
-
   const content = `
     <header style="margin-bottom: 40px;">
       <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Publicações &amp; Working Papers</h1>
-      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Produção científica, artigos em periódicos, apresentações em congressos e textos para discussão.</p>
+      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Produção científica, artigos em periódicos, trabalhos completos em congressos e manuscritos.</p>
     </header>
 
-    ${groups.map(group => {
-      const items = publications.filter(p => p.category === group.cat);
-      if (!items.length) return '';
-      return `
-        <section class="publications-group">
-          <h2 class="pub-group-heading">${group.label}</h2>
-          <div class="publications-stream">
-            ${items.map(p => renderPubEntry(p)).join('\n')}
-          </div>
-        </section>
-      `;
-    }).join('\n')}
+    ${renderPublicationGroups('h2')}
   `;
 
   fs.writeFileSync(path.join(ROOT_DIR, 'publications.html'), renderHtmlDocument({
@@ -1077,51 +1081,74 @@ function buildTeaching() {
   const content = `
     <header style="margin-bottom: 40px;">
       <h1 style="font-size: 2.2rem; margin-bottom: 8px;">Ensino</h1>
-      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Disciplinas de graduação, materiais didáticos e atividades de monitoria docente.</p>
+      <p style="font-size: 1.05rem; color: var(--muted); line-height: 1.6;">Materiais didáticos produzidos em disciplinas de graduação e histórico completo de monitorias docentes.</p>
     </header>
 
-    <!-- Disciplinas -->
+    <!-- Materiais Didáticos por Disciplina -->
     <section class="academic-section">
-      <h2 class="section-title" style="margin-bottom: 24px;">Disciplinas</h2>
+      <div class="section-header-row">
+        <h2 class="section-title">Materiais Didáticos por Disciplina</h2>
+      </div>
       <div class="courses-container">
         ${courses.map(course => `
-          <article class="course-entry" id="${course.id}">
-            <h3 class="course-name-title">${course.name}</h3>
-            <p class="course-meta-subtitle">${course.institution} &bull; ${course.level} &bull; ${course.period} &bull; <strong>${course.role}</strong></p>
+          <article class="course-card" id="${course.id}">
+            <div class="course-card-header">
+              <div>
+                <div class="course-card-badges">
+                  ${course.code ? `<span class="course-code-badge notranslate" translate="no">${course.code}</span>` : ''}
+                  <span class="course-period-badge">${course.period}</span>
+                  <span class="course-role-badge">${course.role}</span>
+                </div>
+                <h3 class="course-name-title">${course.name}</h3>
+                <p class="course-meta-subtitle">${course.institution} &bull; ${course.level}</p>
+              </div>
+            </div>
+
             <p class="course-desc-p">${course.description}</p>
 
-            ${course.syllabus && course.syllabus.length ? `
-              <h4 class="course-subheading">Ementa:</h4>
-              <ul class="course-syllabus-list">
-                ${course.syllabus.map(s => `<li>${s}</li>`).join('')}
-              </ul>
+            ${course.materials && course.materials.length ? `
+              <div class="course-downloads-block">
+                <h4 class="course-subheading">Download de Materiais</h4>
+                <div class="course-materials-grid">
+                  ${course.materials.map(m => `
+                    <a class="material-link-item material-link-featured" href="${m.url}" target="_blank" rel="noreferrer">
+                      <span class="material-type-pill notranslate" translate="no">${m.type || 'PDF'}</span>
+                      <span class="material-link-text">
+                        <strong>&darr; ${m.title}</strong>
+                        ${m.description ? `<small>${m.description}</small>` : ''}
+                      </span>
+                    </a>
+                  `).join('\n')}
+                </div>
+              </div>
             ` : ''}
 
-            ${course.materials && course.materials.length ? `
-              <h4 class="course-subheading">Materiais Didáticos &amp; Downloads:</h4>
-              <div class="course-materials-grid">
-                ${course.materials.map(m => `
-                  <a class="material-link-item" href="${m.url}" target="_blank" rel="noreferrer">
-                    <span class="material-type-pill notranslate" translate="no">${m.type || 'PDF'}</span>
-                    <span>${m.title}</span>
-                  </a>
-                `).join('\n')}
-              </div>
+            ${course.syllabus && course.syllabus.length ? `
+              <details class="course-syllabus-details">
+                <summary>Ver ementa completa (${course.syllabus.length} tópicos)</summary>
+                <ul class="course-syllabus-list">
+                  ${course.syllabus.map(s => `<li>${s}</li>`).join('')}
+                </ul>
+              </details>
             ` : ''}
           </article>
         `).join('\n')}
       </div>
     </section>
 
-    <!-- Atividades de Monitoria -->
-    <section class="academic-section" style="margin-top: 48px;">
-      <h2 class="section-title" style="margin-bottom: 24px;">Atividades de Monitoria Docente</h2>
+    <!-- Atividades de Monitoria Docente -->
+    <section class="academic-section teaching-assistantships-section">
+      <div class="section-header-row">
+        <h2 class="section-title">Atividades de Monitoria Docente</h2>
+      </div>
+      <p class="teaching-section-note">Histórico completo de atuações em monitoria na graduação (incluindo disciplinas sem apostila publicada).</p>
       <div class="teaching-timeline">
         ${assistantships.map(item => `
           <div class="assistantship-row">
             <span class="assistantship-period">${item.period}</span>
             <div class="assistantship-details">
               <strong>${item.course} — ${item.role}</strong>
+              <span class="assistantship-inst">${item.institution}</span>
               <p>${item.description}</p>
             </div>
           </div>
@@ -1207,7 +1234,16 @@ function buildBlog() {
     ${filtersHtml}
 
     <div class="posts-stream" id="blog-stream">
-      ${compiledPosts.map(post => `
+      ${compiledPosts.map(post => {
+        const materialsBadges = (post.materials || []).length ? `
+          <div class="post-materials-badges" aria-label="Materiais reproduzíveis">
+            ${post.materials.map(m => {
+              const href = m.url.startsWith('#') ? `${post.url}${m.url}` : m.url;
+              const external = !m.url.startsWith('#') && !m.url.endsWith('.html');
+              return `<a class="post-repro-pill kind-${m.kind || 'file'}" href="${href}"${external ? ' target="_blank" rel="noreferrer"' : ''}>${m.label}</a>`;
+            }).join('\n')}
+          </div>` : '';
+        return `
         <article class="post-stream-item" data-category="${post.category}">
           <div class="post-stream-meta">
             <span>${post.date}</span> &bull;
@@ -1218,9 +1254,10 @@ function buildBlog() {
             <a href="${post.url}">${post.title}</a>
           </h2>
           <p class="post-stream-summary">${post.summary}</p>
+          ${materialsBadges}
           <a class="post-read-link" href="${post.url}">Ler texto &rarr;</a>
-        </article>
-      `).join('\n')}
+        </article>`;
+      }).join('\n')}
     </div>
   `;
 
@@ -1297,6 +1334,35 @@ function buildBlog() {
     return '';
   }
 
+  function renderRelatedPosts(currentPost) {
+    const curTags = new Set((currentPost.tags || []).map(t => String(t).toLowerCase()));
+    const related = compiledPosts
+      .filter(p => p.slug !== currentPost.slug)
+      .map(p => {
+        const sameCat = p.category === currentPost.category ? 3 : 0;
+        const overlap = (p.tags || []).filter(t => curTags.has(String(t).toLowerCase())).length;
+        return { post: p, score: sameCat + overlap };
+      })
+      .sort((a, b) => (b.score - a.score) || (b.post.date || '').localeCompare(a.post.date || ''))
+      .slice(0, 3)
+      .map(r => r.post);
+
+    if (!related.length) return '';
+
+    return `
+      <section class="post-related-section" aria-label="Artigos relacionados">
+        <h2 class="post-related-heading">Artigos relacionados</h2>
+        <div class="post-related-grid">
+          ${related.map(p => `
+            <a class="post-related-card" href="${p.slug}.html">
+              <span class="post-related-meta">${p.category} &bull; ${p.reading_time} min</span>
+              <strong class="post-related-title">${p.title}</strong>
+            </a>
+          `).join('\n')}
+        </div>
+      </section>`;
+  }
+
   // Build Individual Posts
   compiledPosts.forEach(post => {
     const rawBody = post.htmlContent
@@ -1324,10 +1390,22 @@ function buildBlog() {
         </nav>
       </aside>` : '';
 
+    const reproBarHtml = (post.materials || []).length ? `
+      <div class="post-repro-bar" role="region" aria-label="Códigos e materiais para reprodução">
+        <span class="post-repro-label">Materiais reproduzíveis:</span>
+        <div class="post-repro-links">
+          ${post.materials.map(m => {
+            const href = (m.url.startsWith('#') || /^https?:/i.test(m.url)) ? m.url : `../${m.url.replace(/^\.\.\//, '')}`;
+            const external = !m.url.startsWith('#');
+            return `<a class="post-repro-pill kind-${m.kind || 'file'}" href="${href}"${external ? ' target="_blank" rel="noreferrer"' : ''}>${m.label}</a>`;
+          }).join('\n')}
+        </div>
+      </div>` : '';
+
     const postContent = `
       <div class="single-post-layout${hasToc ? ' has-toc' : ''}">
         <article class="single-post-wrap">
-          <header style="margin-bottom: 32px;">
+          <header style="margin-bottom: 24px;">
             <div class="single-post-meta">
               <span>${post.date}</span> &bull;
               <span>${post.reading_time} min de leitura</span> &bull;
@@ -1337,12 +1415,14 @@ function buildBlog() {
             <p style="font-size: 1.05rem; color: var(--ink-secondary); font-style: italic; margin-top: 8px;">Por <span class="notranslate" translate="no">${siteConfig.name}</span></p>
           </header>
 
+          ${reproBarHtml}
           ${mobileTocHtml}
 
           <div class="single-post-body">
             ${htmlWithIds}
           </div>
 
+          ${renderRelatedPosts(post)}
           ${renderPostComments(post)}
 
           <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
@@ -1367,6 +1447,7 @@ function buildBlog() {
 
 // --- 6.7 CV PAGE (cv.html) ---
 function buildCv() {
+  const cvSummary = (cvData.summary || siteConfig.bio || '').trim();
   const education = Array.isArray(cvData.education) ? cvData.education : [];
   const experience = Array.isArray(cvData.experience) ? cvData.experience : [];
   const researchExtension = Array.isArray(cvData.research_and_extension) ? cvData.research_and_extension : [];
@@ -1374,6 +1455,7 @@ function buildCv() {
   const conferenceHighlights = Array.isArray(cvData.conference_highlights) ? cvData.conference_highlights : [];
   const skills = Array.isArray(cvData.skills) ? cvData.skills : [];
   const languages = Array.isArray(cvData.languages) ? cvData.languages : [];
+  const journalArticles = publications.filter(p => p.category === 'journal_article');
 
   const content = `
     <div class="cv-wrap">
@@ -1390,9 +1472,16 @@ function buildCv() {
           </p>
         </div>
         <div>
-          <a class="cv-download-pill" href="${siteConfig.cv_pdf}" target="_blank" rel="noreferrer">&darr; Baixar CV (PDF)</a>
+          <a class="cv-download-pill" href="${siteConfig.cv_pdf}" target="_blank" rel="noreferrer">&darr; Baixar CV Resumido (PDF, 1 p.)</a>
         </div>
       </header>
+
+      ${cvSummary ? `
+      <!-- Resumo Acadêmico -->
+      <section class="cv-section-block cv-summary-section">
+        <h2 class="cv-section-heading">Resumo Acadêmico</h2>
+        <p class="cv-summary-box">${cvSummary}</p>
+      </section>` : ''}
 
       <!-- Formação Acadêmica -->
       <section class="cv-section-block">
@@ -1411,6 +1500,30 @@ function buildCv() {
         </div>
       </section>
 
+      <!-- Artigos Publicados em Periódicos (Destaque) -->
+      ${journalArticles.length ? `
+      <section class="cv-section-block">
+        <h2 class="cv-section-heading">Artigos Publicados em Periódicos</h2>
+        <div class="cv-featured-pubs">
+          ${journalArticles.map(p => `
+            <article class="cv-pub-card">
+              <div class="cv-pub-top">
+                <span class="cv-pub-journal-pill notranslate" translate="no">${p.journal} (${p.year})</span>
+              </div>
+              <h3 class="cv-pub-title">${p.title}</h3>
+              <p class="cv-pub-meta">
+                <span class="notranslate" translate="no">${p.authors.join(', ')}</span>${p.volume ? ` &bull; v. ${p.volume}` : ''}${p.pages ? `, p. ${p.pages}` : ''}.
+              </p>
+              <div class="cv-pub-links">
+                ${p.doi ? `<a class="pub-pill-link notranslate" translate="no" href="https://doi.org/${p.doi}" target="_blank" rel="noreferrer">DOI: ${p.doi}</a>` : ''}
+                ${p.url ? `<a class="pub-pill-link" href="${p.url}" target="_blank" rel="noreferrer">Ler artigo</a>` : ''}
+                <a class="pub-pill-link" href="publications.html#${p.id}">Citar / Resumo</a>
+              </div>
+            </article>
+          `).join('\n')}
+        </div>
+      </section>` : ''}
+
       <!-- Atuação Acadêmica, Ensino e Pesquisa -->
       <section class="cv-section-block">
         <h2 class="cv-section-heading">Atuação Acadêmica, Ensino e Grupos de Pesquisa</h2>
@@ -1427,6 +1540,15 @@ function buildCv() {
           `).join('\n')}
         </div>
       </section>
+
+      ${conferenceHighlights.length ? `
+      <!-- Trabalhos em Anais de Congressos -->
+      <section class="cv-section-block">
+        <h2 class="cv-section-heading">Trabalhos Completos em Anais de Congressos</h2>
+        <ul style="font-family: var(--font-sans); font-size: 0.9rem; line-height: 1.65; color: var(--ink-secondary); padding-left: 18px; margin: 0;">
+          ${conferenceHighlights.map(c => `<li style="margin-bottom: 6px;">${c}</li>`).join('\n')}
+        </ul>
+      </section>` : ''}
 
       ${researchExtension.length ? `
       <!-- Projetos de Pesquisa e Extensão -->
@@ -1445,25 +1567,6 @@ function buildCv() {
           `).join('\n')}
         </div>
       </section>` : ''}
-
-      <!-- Produção Bibliográfica -->
-      <section class="cv-section-block">
-        <h2 class="cv-section-heading">Artigos em Periódicos</h2>
-        <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
-          ${publications.filter(p => p.category === 'journal_article').map(p => `
-            <div>
-              <strong>${p.title}</strong> (${p.year}). <em>${p.journal}</em>${p.volume ? `, v. ${p.volume}` : ''}${p.pages ? `, p. ${p.pages}` : ''}.
-              <a href="publications.html#${p.id}">[Ver detalhes]</a>
-            </div>
-          `).join('\n')}
-        </div>
-        ${conferenceHighlights.length ? `
-          <h3 style="font-size: 1.05rem; margin-bottom: 10px;">Trabalhos completos em anais de congressos</h3>
-          <ul style="font-family: var(--font-sans); font-size: 0.9rem; line-height: 1.65; color: var(--ink-secondary); padding-left: 18px; margin: 0;">
-            ${conferenceHighlights.map(c => `<li style="margin-bottom: 6px;">${c}</li>`).join('\n')}
-          </ul>
-        ` : ''}
-      </section>
 
       ${technicalEvents.length ? `
       <!-- Produção Técnica e Eventos -->

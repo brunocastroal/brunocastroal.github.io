@@ -1,4 +1,5 @@
 {
+  "summary": "Doutorando em Economia pela FEARP-USP (bolsista CAPES) e bacharel em Ciências Econômicas pela UFDPar. Pesquisa concentrada em macroeconomia quantitativa com agentes heterogêneos, economia regional (econometria espacial) e ciência de dados aplicada à economia (bibliometria, Machine Learning e métodos numéricos), com atuação em ensino nas monitorias de Macroeconomia I, II, III e Introdução à Economia.\n",
   "education": [
     {
       "period": "2026 — Atual",
@@ -22,26 +23,33 @@
     },
     {
       "period": "2025.1",
-      "role": "Monitor Bolsista de Macroeconomia I",
-      "institution": "Universidade Federal do Delta do Parnaíba (UFDPar)",
-      "details": "Disciplina DCEQUANT/CMRV021 (16h semanais). Plantões de dúvidas e resolução de exercícios em contabilidade social e equilíbrio IS-LM."
-    },
-    {
-      "period": "2024.1",
       "role": "Monitor Bolsista de Macroeconomia II",
       "institution": "Universidade Federal do Delta do Parnaíba (UFDPar)",
-      "details": "Disciplina DCEQUANT/CMRV021 (16h semanais). Listas preparatórias e suporte analítico em crescimento neoclássico e dinâmica inflacionária."
+      "details": "Disciplina DCE0034 (16h semanais). Plantões de dúvidas, notas de apoio e resolução de listas em economia aberta, Mundell-Fleming, OA-DA e expectativas."
+    },
+    {
+      "period": "2024.2",
+      "role": "Monitor Bolsista de Macroeconomia II",
+      "institution": "Universidade Federal do Delta do Parnaíba (UFDPar)",
+      "details": "Disciplina DCE0034 (16h semanais). Listas preparatórias e suporte analítico em balanço de pagamentos, modelo OA-DA e dinâmica inflacionária."
+    },
+    {
+      "period": "2024.2",
+      "role": "Monitor Auxiliar de Macroeconomia III",
+      "institution": "Universidade Federal do Delta do Parnaíba (UFDPar)",
+      "details": "Disciplina ECO0204. Apoio discente e notas de resolução em ciclos econômicos (RBC e novo-keynesiano) e modelos de crescimento (Solow e crescimento endógeno)."
     },
     {
       "period": "2023.2",
       "role": "Monitor Bolsista de Macroeconomia I",
       "institution": "Universidade Federal do Delta do Parnaíba (UFDPar)",
-      "details": "Disciplina DCEQUANT/CMRV021 (16h semanais). Notas de apoio e atendimento discente sobre determinação do produto e mercado de trabalho."
+      "details": "16h semanais. Notas de apoio e atendimento discente sobre contabilidade social, equilíbrio IS-LM, determinação do produto e mercado de trabalho."
     },
     {
-      "period": "05/2023 — 08/2023",
-      "role": "Monitor de Introdução à Economia",
-      "institution": "Universidade Federal do Delta do Parnaíba (UFDPar)"
+      "period": "2023.1",
+      "role": "Monitor Voluntário de Introdução à Economia",
+      "institution": "Universidade Federal do Delta do Parnaíba (UFDPar)",
+      "details": "Apoio didático nos fundamentos de microeconomia e macroeconomia introdutória."
     },
     {
       "period": "2022 — 2023",
@@ -90,7 +98,7 @@
     "Gama, F. J. C.; Azevedo, C. O.; Alves, B. C.; Nascimento, A. E. S.; Bastos, S. Q. A. (2025). Integração da econometria espacial nos estudos em economia regional e urbana. XXVIII ANPEC Sul / XXII ENABER (2024).",
     "Alves, B. C.; Costa, J. K. Q.; Crespo, M. F. V.; Carvalho, J. N. F. (2024). Tecnologias e Empoderamento na Economia Solidária em Feira Agroecológica. 62º Congresso da SOBER.",
     "Gama, F. J. C. et al.; Alves, B. C. (2024). Crescimento econômico e mudanças climáticas: uma análise bibliométrica. XXIX ANPEC Nordeste / XXII ENABER.",
-    "Azevedo, C. O.; Alves, B. C.; Gama, F. J. C.; Costa, J. K. Q. (2023). Avanço da Ciência de Dados nos estudos de Economia: machine learning. XXVIII ANPEC Nordeste.",
+    "Azevedo, C. O.; Gama, F. J. C.; Alves, B. C.; Feitoza, K. M. N. (2023). Avanço da Ciência de Dados nos estudos de Economia: uma análise bibliométrica do uso de machine learning. XXVIII ANPEC Nordeste.",
     "Alves, B. C.; Azevedo, C. O.; Gama, F. J. C.; Feitoza, K. M. N. (2024). Avanço da ciência de dados nos estudos de economia. II SICONFINPA (UFDPar).",
     "Gama, F. J. C.; Azevedo, C. O.; Feitoza, K. M. N.; Alves, B. C. (2023). Advancement of Data Science in Economics Studies. IV Seven International Multidisciplinary Congress."
   ],
