@@ -758,10 +758,10 @@ function renderModals() {
   `;
 }
 
-function renderHtmlDocument({ title, description, activePage, pagePath, depth = 0, mainClass = '', content }) {
+function renderHtmlDocument({ title, description, activePage, pagePath, depth = 0, mainClass = '', ogType = 'website', postMeta = null, content }) {
   const prefix = depth > 0 ? '../' : '';
   const pageTitle = title ? `${title} | ${siteConfig.name}` : `${siteConfig.name} — ${siteConfig.title}`;
-  const pageDesc = description || siteConfig.bio_short;
+  const pageDesc = String(description || siteConfig.bio_short || '').replace(/\s+/g, ' ').trim().replace(/"/g, '&quot;');
 
   const rawBase = (siteConfig.site_url || '').replace(/\/$/, '') + (siteConfig.baseurl || '');
   let canonicalUrl = rawBase;
@@ -774,6 +774,22 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
   }
 
   const avatarUrl = siteConfig.avatar ? (siteConfig.avatar.startsWith('http') ? siteConfig.avatar : `${rawBase}/${siteConfig.avatar.replace(/^\//, '')}`) : '';
+
+  const blogPostingLdJson = postMeta ? `\n  <script type="application/ld+json">\n  ${JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: postMeta.title,
+    description: String(postMeta.summary || '').replace(/\s+/g, ' ').trim(),
+    datePublished: postMeta.date,
+    inLanguage: 'pt-BR',
+    author: {
+      '@type': 'Person',
+      name: siteConfig.name,
+      url: siteConfig.site_url
+    },
+    mainEntityOfPage: canonicalUrl,
+    keywords: Array.isArray(postMeta.tags) ? postMeta.tags : []
+  }, null, 2).split('\n').join('\n  ')}\n  </script>` : '';
 
   const html = `<!doctype html>
 <html lang="pt-BR">
@@ -788,7 +804,7 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
   <!-- Open Graph -->
   <meta property="og:title" content="${pageTitle}">
   <meta property="og:description" content="${pageDesc}">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="${ogType}">
   <meta property="og:url" content="${canonicalUrl}">
   <meta property="og:image" content="${avatarUrl}">
   <meta name="twitter:card" content="summary">
@@ -807,7 +823,7 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
     "url": "${siteConfig.site_url}",
     "sameAs": ${JSON.stringify(Object.values(siteConfig.social || {}).filter(u => u && !u.startsWith('mailto:')), null, 6)}
   }
-  </script>
+  </script>${blogPostingLdJson}
 
   <link rel="icon" href="${prefix}assets/images/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="${assetUrl(prefix, 'assets/css/site.css')}">
@@ -1440,6 +1456,8 @@ function buildBlog() {
       pagePath: post.url,
       depth: 1,
       mainClass: hasToc ? 'site-main-post' : '',
+      ogType: 'article',
+      postMeta: post,
       content: postContent
     }));
   });
@@ -1639,6 +1657,7 @@ function buildCv() {
 
 // --- 6.8 REDIRECT STUBS (Zero Broken Links) ---
 function buildRedirects() {
+  const rawBase = (siteConfig.site_url || '').replace(/\/$/, '') + (siteConfig.baseurl || '');
   const redirects = [
     { from: 'curriculo.html', to: 'cv.html', title: 'Currículo' },
     { from: 'sobre.html', to: 'index.html', title: 'Início' },
@@ -1649,13 +1668,15 @@ function buildRedirects() {
   ];
 
   redirects.forEach(({ from, to, title }) => {
+    const canonicalTarget = to === 'index.html' ? `${rawBase}/` : `${rawBase}/${to}`;
     const html = `<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
+  <meta name="robots" content="noindex, follow">
   <meta http-equiv="refresh" content="0; url=${to}">
   <title>Redirecionando para ${title}...</title>
-  <link rel="canonical" href="${to}">
+  <link rel="canonical" href="${canonicalTarget}">
 </head>
 <body>
   <p>Redirecionando para <a href="${to}">${title}</a>...</p>
