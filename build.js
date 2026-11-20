@@ -798,7 +798,7 @@ function renderHtmlDocument({ title, description, activePage, pagePath, depth = 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${pageTitle}</title>
   <meta name="description" content="${pageDesc}">
-  <meta name="author" content="${siteConfig.name}">
+  <meta name="author" content="${siteConfig.name}">${siteConfig.google_site_verification ? `\n  <meta name="google-site-verification" content="${siteConfig.google_site_verification}">` : ''}
   <link rel="canonical" href="${canonicalUrl}">
 
   <!-- Open Graph -->
