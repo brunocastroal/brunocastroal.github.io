@@ -1112,6 +1112,7 @@ function buildTeaching() {
               <div>
                 <div class="course-card-badges">
                   ${course.code ? `<span class="course-code-badge notranslate" translate="no">${course.code}</span>` : ''}
+                  ${course.workload ? `<span class="course-period-badge">${course.workload}</span>` : ''}
                   <span class="course-period-badge">${course.period}</span>
                   <span class="course-role-badge">${course.role}</span>
                 </div>
@@ -1164,8 +1165,9 @@ function buildTeaching() {
             <span class="assistantship-period">${item.period}</span>
             <div class="assistantship-details">
               <strong>${item.course} — ${item.role}</strong>
-              <span class="assistantship-inst">${item.institution}</span>
+              <span class="assistantship-inst">${item.code ? `<span class="assistantship-code notranslate" translate="no">${item.code}</span> &bull; ` : ''}${item.workload ? `${item.workload} &bull; ` : ''}${item.institution}</span>
               <p>${item.description}</p>
+              ${item.syllabus ? `<details class="assistantship-syllabus"><summary>Ver ementa oficial</summary><p>${item.syllabus}</p></details>` : ''}
             </div>
           </div>
         `).join('\n')}

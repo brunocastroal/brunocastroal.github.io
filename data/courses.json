@@ -3,23 +3,21 @@
     {
       "id": "macroeconomia-ii",
       "name": "Macroeconomia II",
-      "code": "DCE0034",
+      "code": "DCEQUANT/CMRV021",
+      "workload": "60h",
       "institution": "Universidade Federal do Delta do Parnaíba (UFDPar)",
       "level": "Graduação em Ciências Econômicas",
       "period": "2024.2 e 2025.1",
       "role": "Monitor Bolsista",
-      "description": "Estudo da macroeconomia aberta, do balanço de pagamentos e dos modelos Mundell-Fleming e OA-DA, além das teorias da Curva de Phillips, expectativas adaptativas e racionais, monetarismo e inconsistência temporal.\n",
+      "description": "Macroeconomia aberta, regimes cambiais e Balanço de Pagamentos, modelos clássico e IS/LM/BP, oferta e demanda agregada, inflação, desemprego, Curva de Phillips, expectativas adaptativas e racionais, e Macroeconomia Kaleckiana.\n",
       "syllabus": [
-        "1. Apresentação da disciplina e o Balanço de Pagamentos",
-        "2. Aspectos de uma economia aberta",
-        "3. Modelo Mundell-Fleming",
-        "4. Modelo de OA-DA",
-        "5. Curva de Phillips original",
-        "6. Taxa natural de desemprego e Curva de Phillips tradicional",
-        "7. Expectativas adaptativas",
-        "8. A visão monetarista da Curva de Phillips",
-        "9. Expectativas Racionais",
-        "10. Inconsistência temporal"
+        "1. Macroeconomia Aberta: regimes cambiais e Balanço de Pagamentos",
+        "2. Modelo de determinação da renda em economia aberta: modelo clássico e modelo IS/LM/BP",
+        "3. Equilíbrios interno e externo e impacto das políticas econômicas sob diferentes regimes cambiais e mobilidade de capitais",
+        "4. Modelos de Oferta Agregada / Demanda Agregada (OA-DA)",
+        "5. Inflação, desemprego e Curva de Phillips",
+        "6. O papel das expectativas racionais e adaptativas",
+        "7. Macroeconomia Kaleckiana: distribuição e determinantes da renda nacional"
       ],
       "materials": [
         {
@@ -33,25 +31,22 @@
     {
       "id": "macroeconomia-iii",
       "name": "Macroeconomia III",
-      "code": "ECO0204",
+      "code": "DCEQUANT/CMRV026",
+      "workload": "60h",
       "institution": "Universidade Federal do Delta do Parnaíba (UFDPar)",
       "level": "Graduação em Ciências Econômicas",
       "period": "2024.2",
       "role": "Monitor Auxiliar",
-      "description": "Estudo dos ciclos econômicos, dos modelos novo-keynesianos e reais de negócios, e das teorias de crescimento econômico, incluindo os modelos de Solow, capital humano, progresso tecnológico, convergência de renda e crescimento endógeno.\n",
+      "description": "Teorias do crescimento econômico (Harrod-Domar, Kaldor, Solow, Arrow, AK, Romer, Lucas e modelos da CEPAL) e teorias dos ciclos econômicos clássicos e keynesianos, flutuações e estabilização.\n",
       "syllabus": [
-        "1. Introdução à Macroeconomia e aos Ciclos Econômicos",
-        "2. Ciclos Econômicos: Conceitos, Características e Flutuações da Atividade Econômica",
-        "3. O Ciclo dos Estoques",
-        "4. Teoria dos Ciclos Econômicos Reais (RBC)",
-        "5. O Modelo Novo-Keynesiano de Ciclos Econômicos",
-        "6. Fatos Estilizados sobre o Crescimento Econômico",
-        "7. O Modelo Básico de Solow: Acumulação de Capital e Estado Estacionário",
-        "8. Progresso Tecnológico e o Modelo de Solow",
-        "9. Decomposição do Crescimento Econômico e Resíduo de Solow",
-        "10. O Modelo de Solow com Capital Humano",
-        "11. Convergência de Renda: Convergência Absoluta, Condicional e Divergência entre Economias",
-        "12. Modelos de Crescimento Endógeno"
+        "1. Conceitos básicos do crescimento econômico, processo de acumulação e tendência de longo prazo",
+        "2. Fatores do crescimento: investimento, poupança, crescimento populacional, progresso técnico e inovação",
+        "3. Modelos de Harrod-Domar e de Kaldor",
+        "4. Modelo de Solow e convergência de rendas",
+        "5. Nova teoria do crescimento e não convergência de rendas: modelos de Arrow, AK, Romer (P&D) e Lucas (capital humano)",
+        "6. Modelos da CEPAL (Prebisch, Hirschman, Myrdal e Furtado)",
+        "7. Teorias do ciclo econômico: ciclos de negócios e de Kondratiev; ciclos no modelo clássico (choques tecnológicos e desemprego voluntário)",
+        "8. Ciclos no modelo keynesiano (preços rígidos e salário-eficiência), flutuações e estabilização"
       ],
       "materials": [
         {
@@ -67,37 +62,52 @@
     {
       "period": "2025.1",
       "course": "Macroeconomia II",
+      "code": "DCEQUANT/CMRV021",
+      "workload": "60h",
       "institution": "UFDPar",
       "role": "Monitor Bolsista",
-      "description": "Plantões presenciais de dúvidas, elaboração de notas de apoio e resolução de listas sobre macroeconomia aberta, modelo Mundell-Fleming, OA-DA, Curva de Phillips e expectativas."
+      "description": "Plantões presenciais de dúvidas, elaboração de notas de apoio, resolução de listas e apoio ao docente na atualização de materiais.",
+      "syllabus": "Macroeconomia Aberta: Regimes cambiais e Balanço de Pagamentos; Modelo de determinação da renda em economia aberta; o modelo clássico e o modelo IS/LM/BP; Determinação dos equilíbrios interno e externo e impacto das políticas econômicas sob diferentes regimes cambiais e mobilidade de capitais. Modelos de oferta agregada/demanda agregada. Inflação, desemprego e curva de Phillips. O papel das expectativas racionais e adaptativas. Macroeconomia Kaleckiana: a distribuição e os determinantes da renda nacional."
     },
     {
       "period": "2024.2",
       "course": "Macroeconomia II",
+      "code": "DCEQUANT/CMRV021",
+      "workload": "60h",
       "institution": "UFDPar",
       "role": "Monitor Bolsista",
-      "description": "Elaboração de listas preparatórias, atendimento discente e suporte analítico em balanço de pagamentos, modelo OA-DA e dinâmica inflacionária."
+      "description": "Plantões presenciais de dúvidas, elaboração de notas de apoio, resolução de listas e apoio ao docente na atualização de materiais.",
+      "syllabus": "Macroeconomia Aberta: Regimes cambiais e Balanço de Pagamentos; Modelo de determinação da renda em economia aberta; o modelo clássico e o modelo IS/LM/BP; Determinação dos equilíbrios interno e externo e impacto das políticas econômicas sob diferentes regimes cambiais e mobilidade de capitais. Modelos de oferta agregada/demanda agregada. Inflação, desemprego e curva de Phillips. O papel das expectativas racionais e adaptativas. Macroeconomia Kaleckiana: a distribuição e os determinantes da renda nacional."
     },
     {
       "period": "2024.2",
       "course": "Macroeconomia III",
+      "code": "DCEQUANT/CMRV026",
+      "workload": "60h",
       "institution": "UFDPar",
       "role": "Monitor Auxiliar",
-      "description": "Apoio didático e resolução de listas sobre ciclos econômicos (RBC e novo-keynesiano) e modelos de crescimento (Solow, capital humano e crescimento endógeno)."
+      "description": "Plantões presenciais de dúvidas, elaboração de notas de apoio, resolução de listas e apoio ao docente na atualização de materiais.",
+      "syllabus": "Conceitos básicos do crescimento econômico. O Processo de Crescimento Econômico e os problemas da acumulação. A tendência a longo prazo. Os fatores do crescimento: investimento, poupança, crescimento populacional, progresso técnico e inovação. Modelo de Harrod e Domar. O modelo de Kaldor. O modelo de Solow e a convergência de rendas. A nova teoria do crescimento e a não convergência de rendas. O modelo de Arrow. O modelo AK. O Modelo de Romer e P&D. Modelo de Lucas e o capital humano. Os modelos da Cepal (Prebisch, Hirschman, Myrdal e Furtado). Teorias do ciclo econômico (Ciclo de negócios e ciclos de Kondratiev, os ciclos no modelo clássico, choques tecnológicos e desemprego voluntário. Os ciclos no modelo keynesiano preços rígidos e salário eficiência). Flutuações e estabilização."
     },
     {
       "period": "2023.2",
       "course": "Macroeconomia I",
+      "code": "DCEQUANT/CMRV018",
+      "workload": "60h",
       "institution": "UFDPar",
       "role": "Monitor Bolsista",
-      "description": "Atendimento discente, plantões de dúvidas e resolução de listas sobre contabilidade social, determinação do produto, equilíbrio IS-LM e mercado de trabalho."
+      "description": "Plantões presenciais de dúvidas, elaboração de notas de apoio, resolução de listas e apoio ao docente na atualização de materiais.",
+      "syllabus": "Conceitos básicos de Macroeconomia. Modelo Clássico: a lei de Say e a Teoria Quantitativa da Moeda; determinação da renda de equilíbrio de pleno emprego; poupança, investimento e taxa de juros; modelo clássico com procura especulativa de moeda; obstáculos ao pleno emprego e as políticas econômicas; análise gráfica do modelo Clássico; Keynes e os Clássicos. Modelo Keynesiano: Princípio da demanda efetiva; Consumo, determinação do investimento e eficiência marginal do capital; papel do Governo e do Setor Externo; Multiplicadores. As políticas econômicas no modelo Keynesiano. Modelo IS-LM: equilíbrio no mercado de bens e financeiro. Políticas econômicas no modelo IS-LM. Dedução da demanda agregada. Efeito Pigou e Efeito Fisher. Tópicos especiais de Macroeconomia."
     },
     {
       "period": "2023.1",
       "course": "Introdução à Economia",
+      "code": "DCEQUANT/CMRV002",
+      "workload": "60h",
       "institution": "UFDPar",
       "role": "Monitor Voluntário",
-      "description": "Apoio discente e revisão de fundamentos de microeconomia e macroeconomia introdutória para turmas ingressantes."
+      "description": "Plantões presenciais de dúvidas, elaboração de notas de apoio, resolução de listas e apoio ao docente na atualização de materiais.",
+      "syllabus": "Objeto da economia. Evolução do Pensamento Econômico. Introdução à Microeconomia: fundamentos e divisão. Equilíbrio de mercado, Elasticidade, Estruturas de mercado. Noções gerais de macroeconomia: fundamentos e políticas macroeconômicas. Introdução ao Desenvolvimento Regional Sustentável. Aplicações."
     }
   ]
 }

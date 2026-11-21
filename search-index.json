@@ -81,23 +81,23 @@
     "title": "Macroeconomia II",
     "category": "Ensino",
     "tags": [
-      "DCE0034",
+      "DCEQUANT/CMRV021",
       "2024.2 e 2025.1"
     ],
     "date": "2024.2 e 2025.1",
     "url": "teaching.html#macroeconomia-ii",
-    "snippet": "Estudo da macroeconomia aberta, do balanço de pagamentos e dos modelos Mundell-Fleming e OA-DA, além das teorias da Curva de Phillips, expectativas adaptativas e racionais, monetarismo e inconsistência temporal.\n"
+    "snippet": "Macroeconomia aberta, regimes cambiais e Balanço de Pagamentos, modelos clássico e IS/LM/BP, oferta e demanda agregada, inflação, desemprego, Curva de Phillips, expectativas adaptativas e racionais, e Macroeconomia Kaleckiana.\n"
   },
   {
     "type": "teaching",
     "title": "Macroeconomia III",
     "category": "Ensino",
     "tags": [
-      "ECO0204",
+      "DCEQUANT/CMRV026",
       "2024.2"
     ],
     "date": "2024.2",
     "url": "teaching.html#macroeconomia-iii",
-    "snippet": "Estudo dos ciclos econômicos, dos modelos novo-keynesianos e reais de negócios, e das teorias de crescimento econômico, incluindo os modelos de Solow, capital humano, progresso tecnológico, convergência de renda e crescimento endógeno.\n"
+    "snippet": "Teorias do crescimento econômico (Harrod-Domar, Kaldor, Solow, Arrow, AK, Romer, Lucas e modelos da CEPAL) e teorias dos ciclos econômicos clássicos e keynesianos, flutuações e estabilização.\n"
   }
 ]
