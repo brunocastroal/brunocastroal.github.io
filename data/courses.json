@@ -9,15 +9,14 @@
       "level": "Graduação em Ciências Econômicas",
       "period": "2024.2 e 2025.1",
       "role": "Monitor Bolsista",
-      "description": "Macroeconomia aberta, regimes cambiais e Balanço de Pagamentos, modelos clássico e IS/LM/BP, oferta e demanda agregada, inflação, desemprego, Curva de Phillips, expectativas adaptativas e racionais, e Macroeconomia Kaleckiana.\n",
+      "description": "Macroeconomia aberta, regimes cambiais e Balanço de Pagamentos, modelos clássico e IS/LM/BP, oferta e demanda agregada, inflação, desemprego, Curva de Phillips e expectativas adaptativas e racionais.\n",
       "syllabus": [
         "1. Macroeconomia Aberta: regimes cambiais e Balanço de Pagamentos",
         "2. Modelo de determinação da renda em economia aberta: modelo clássico e modelo IS/LM/BP",
         "3. Equilíbrios interno e externo e impacto das políticas econômicas sob diferentes regimes cambiais e mobilidade de capitais",
         "4. Modelos de Oferta Agregada / Demanda Agregada (OA-DA)",
         "5. Inflação, desemprego e Curva de Phillips",
-        "6. O papel das expectativas racionais e adaptativas",
-        "7. Macroeconomia Kaleckiana: distribuição e determinantes da renda nacional"
+        "6. O papel das expectativas racionais e adaptativas"
       ],
       "materials": [
         {
@@ -37,16 +36,14 @@
       "level": "Graduação em Ciências Econômicas",
       "period": "2024.2",
       "role": "Monitor Auxiliar",
-      "description": "Teorias do crescimento econômico (Harrod-Domar, Kaldor, Solow, Arrow, AK, Romer, Lucas e modelos da CEPAL) e teorias dos ciclos econômicos clássicos e keynesianos, flutuações e estabilização.\n",
+      "description": "Teorias do crescimento econômico (Solow, Arrow, AK, Romer e Lucas) e teorias dos ciclos econômicos clássicos e keynesianos, flutuações e estabilização.\n",
       "syllabus": [
         "1. Conceitos básicos do crescimento econômico, processo de acumulação e tendência de longo prazo",
         "2. Fatores do crescimento: investimento, poupança, crescimento populacional, progresso técnico e inovação",
-        "3. Modelos de Harrod-Domar e de Kaldor",
-        "4. Modelo de Solow e convergência de rendas",
-        "5. Nova teoria do crescimento e não convergência de rendas: modelos de Arrow, AK, Romer (P&D) e Lucas (capital humano)",
-        "6. Modelos da CEPAL (Prebisch, Hirschman, Myrdal e Furtado)",
-        "7. Teorias do ciclo econômico: ciclos de negócios e de Kondratiev; ciclos no modelo clássico (choques tecnológicos e desemprego voluntário)",
-        "8. Ciclos no modelo keynesiano (preços rígidos e salário-eficiência), flutuações e estabilização"
+        "3. Modelo de Solow e convergência de rendas",
+        "4. Nova teoria do crescimento e não convergência de rendas: modelos de Arrow, AK, Romer (P&D) e Lucas (capital humano)",
+        "5. Teorias do ciclo econômico: ciclos de negócios e de Kondratiev; ciclos no modelo clássico (choques tecnológicos e desemprego voluntário)",
+        "6. Ciclos no modelo keynesiano (preços rígidos e salário-eficiência), flutuações e estabilização"
       ],
       "materials": [
         {
